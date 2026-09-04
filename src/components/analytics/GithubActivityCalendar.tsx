@@ -381,44 +381,65 @@ export const GithubActivityCalendar: React.FC<GithubActivityCalendarProps> = ({
       </Box>
 
       {/* Contribution Calendar Scrollable Container */}
-      <Box sx={{ overflowX: 'auto', pb: 1 }}>
-        <Box sx={{ minWidth: 780 }}>
+      <Box sx={{ overflowX: 'auto', pb: 1, width: '100%' }}>
+        <Box sx={{ minWidth: 800, width: '100%' }}>
           {/* Month Header Row */}
-          <Box sx={{ display: 'flex', ml: 3.5, mb: 0.5, height: 16 }}>
-            {weeks.map((_, colIdx) => {
-              const monthHeader = monthHeaders.find((m) => m.colIndex === colIdx);
-              return (
-                <Box
-                  key={colIdx}
-                  sx={{
-                    width: 14,
-                    mr: '3px',
-                    fontSize: '0.68rem',
-                    fontWeight: 700,
-                    color: 'text.secondary',
-                    textAlign: 'left',
-                  }}
-                >
-                  {monthHeader ? monthHeader.name : ''}
-                </Box>
-              );
-            })}
+          <Box sx={{ display: 'flex', mb: 0.75, height: 18, alignItems: 'center' }}>
+            {/* Spacer for day labels column width */}
+            <Box sx={{ width: 26, mr: '4px', flexShrink: 0 }} />
+
+            {/* Header Columns aligned 1:1 with week columns */}
+            <Box sx={{ display: 'flex', flex: 1, gap: '3px', width: '100%' }}>
+              {weeks.map((_, colIdx) => {
+                const monthHeader = monthHeaders.find((m) => m.colIndex === colIdx);
+                return (
+                  <Box
+                    key={colIdx}
+                    sx={{
+                      flex: 1,
+                      minWidth: 10,
+                      position: 'relative',
+                    }}
+                  >
+                    {monthHeader && (
+                      <Typography
+                        component="span"
+                        sx={{
+                          position: 'absolute',
+                          left: 0,
+                          top: -2,
+                          fontSize: '0.68rem',
+                          fontWeight: 700,
+                          color: 'text.secondary',
+                          whiteSpace: 'nowrap',
+                          pointerEvents: 'none',
+                        }}
+                      >
+                        {monthHeader.name}
+                      </Typography>
+                    )}
+                  </Box>
+                );
+              })}
+            </Box>
           </Box>
 
           {/* Grid: 7 rows x 53 columns */}
-          <Box sx={{ display: 'flex' }}>
+          <Box sx={{ display: 'flex', width: '100%', alignItems: 'stretch' }}>
             {/* Day of Week labels (Mon, Wed, Fri) */}
-            <Box sx={{ display: 'flex', flexDirection: 'column', gap: '3px', mr: 1, width: 20 }}>
+            <Box sx={{ display: 'flex', flexDirection: 'column', gap: '3px', mr: '4px', width: 26, flexShrink: 0 }}>
               {DAY_LABELS.map((label, idx) => (
                 <Box
                   key={idx}
                   sx={{
-                    height: 12,
-                    fontSize: '0.62rem',
+                    flex: 1,
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'flex-end',
+                    fontSize: '0.64rem',
                     color: 'text.secondary',
                     fontWeight: 600,
-                    lineHeight: '12px',
-                    textAlign: 'right',
+                    lineHeight: 1,
                   }}
                 >
                   {label}
@@ -427,9 +448,18 @@ export const GithubActivityCalendar: React.FC<GithubActivityCalendarProps> = ({
             </Box>
 
             {/* Weeks columns */}
-            <Box sx={{ display: 'flex', gap: '3px' }}>
+            <Box sx={{ display: 'flex', flex: 1, gap: '3px', width: '100%' }}>
               {weeks.map((week, colIdx) => (
-                <Box key={colIdx} sx={{ display: 'flex', flexDirection: 'column', gap: '3px' }}>
+                <Box
+                  key={colIdx}
+                  sx={{
+                    flex: 1,
+                    minWidth: 10,
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: '3px',
+                  }}
+                >
                   {week.map((day, rowIdx) => {
                     const stats = dailyMap.get(day.dateStr);
                     const cellColor = getCellColor(stats, day.inYear);
@@ -440,8 +470,8 @@ export const GithubActivityCalendar: React.FC<GithubActivityCalendarProps> = ({
                         <Box
                           key={rowIdx}
                           sx={{
-                            width: 12,
-                            height: 12,
+                            width: '100%',
+                            aspectRatio: '1 / 1',
                             visibility: 'hidden',
                           }}
                         />
@@ -494,8 +524,8 @@ export const GithubActivityCalendar: React.FC<GithubActivityCalendarProps> = ({
                       <Tooltip key={rowIdx} title={tooltipContent} arrow placement="top">
                         <Box
                           sx={{
-                            width: 12,
-                            height: 12,
+                            width: '100%',
+                            aspectRatio: '1 / 1',
                             borderRadius: '2px',
                             backgroundColor: cellColor,
                             border: cellBorder,
