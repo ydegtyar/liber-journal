@@ -40,6 +40,7 @@
   },
   "table": {
     "dealId": "Deal ID",
+    "date": "Date",
     "instrument": "Instrument",
     "direction": "Direction",
     "buy": "BUY",
