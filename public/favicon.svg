@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0E121A"/>
+      <stop offset="100%" stop-color="#05070A"/>
+    </linearGradient>
+    <linearGradient id="bullGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#00F5D4"/>
+      <stop offset="100%" stop-color="#00C853"/>
+    </linearGradient>
+    <linearGradient id="trendGrad" x1="0%" y1="100%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#388BFD"/>
+      <stop offset="100%" stop-color="#00F5D4"/>
+    </linearGradient>
+    <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="1.5" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <!-- Base Badge -->
+  <rect x="2" y="2" width="60" height="60" rx="14" fill="url(#bgGrad)" stroke="#30363D" stroke-width="2"/>
+
+  <!-- Candlestick 1: Bearish candle (left) -->
+  <line x1="20" y1="20" x2="20" y2="44" stroke="#F85149" stroke-width="2" stroke-linecap="round"/>
+  <rect x="16" y="25" width="8" height="13" rx="2" fill="#F85149"/>
+
+  <!-- Candlestick 2: Bullish candle (right) -->
+  <line x1="44" y1="12" x2="44" y2="38" stroke="#00F5D4" stroke-width="2" stroke-linecap="round"/>
+  <rect x="40" y="16" width="8" height="16" rx="2" fill="url(#bullGrad)"/>
+
+  <!-- Dynamic Ascending Equity Line -->
+  <path d="M 12 46 L 24 36 L 36 40 L 52 14" fill="none" stroke="url(#trendGrad)" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" filter="url(#glow)"/>
+
+  <!-- Glowing Head Point -->
+  <circle cx="52" cy="14" r="3" fill="#FFFFFF" stroke="#00F5D4" stroke-width="1.5"/>
+</svg>
