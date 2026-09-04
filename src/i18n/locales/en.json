@@ -64,7 +64,15 @@
     "groupMonth": "Month",
     "sortOldestFirst": "Oldest First",
     "sortNewestFirst": "Newest First",
-    "initialDeposit": "Initial Deposit"
+    "initialDeposit": "Initial Deposit",
+    "showing": "Showing",
+    "of": "of",
+    "page": "page",
+    "prev": "Prev",
+    "next": "Next",
+    "pageOf": "Page",
+    "searchInstruments": "Search instruments...",
+    "noTradesFound": "No trades found"
   },
   "charts": {
     "equityCurve": "Cumulative Equity Curve",
@@ -74,7 +82,12 @@
     "instruments": "Performance by Instrument",
     "equity": "Equity",
     "pnl": "P&L",
-    "drawdownPct": "Drawdown %"
+    "drawdownPct": "Drawdown %",
+    "zoomHint": "bottom slider to zoom range",
+    "byDates": "By Dates",
+    "byTrades": "By Trades",
+    "averageDaily": "Average",
+    "average": "Avg"
   },
   "theme": {
     "light": "Light",
@@ -112,5 +125,54 @@
     "monthlyPnl": "Monthly P&L",
     "totalOrders": "Total Orders",
     "noTrades": "No trades recorded"
+  },
+  "banner": {
+    "totalProfit": "TOTAL PROFIT",
+    "tradesCount": "trades",
+    "goal": "Goal",
+    "setMonthGoal": "Set month goal",
+    "targetProfit": "Target Profit",
+    "goalDescription": "Set a monthly target profit to track your milestone progress.",
+    "customRange": "Custom Range",
+    "startDate": "Start Date",
+    "endDate": "End Date"
+  },
+  "insights": {
+    "title": "Period Insights"
+  },
+  "streaks": {
+    "title": "Trade Streak Analysis",
+    "longestWin": "Longest Win Streak",
+    "longestWinSub": "Max consecutive winning trades",
+    "longestLoss": "Longest Loss Streak",
+    "longestLossSub": "Max consecutive losing trades",
+    "currentStreak": "Current Streak",
+    "winningStreak": "Winning streak",
+    "losingStreak": "Losing streak",
+    "breakevenStreak": "Breakeven streak",
+    "avgWin": "Avg Win Streak",
+    "avgWinSub": "Typical winning streak length",
+    "avgLoss": "Avg Loss Streak",
+    "avgLossSub": "Typical losing streak length",
+    "stability": "Results Stability",
+    "stabilitySub": "Streak consistency ratio"
+  },
+  "instruments": {
+    "title": "Instruments",
+    "subtitle": "Click row to filter by instrument · «Details» to view trades",
+    "instrument": "INSTRUMENT",
+    "trades": "TRADES",
+    "winRate": "WIN %",
+    "netPnl": "NET P&L",
+    "avg": "AVG",
+    "share": "SHARE",
+    "trend": "TREND",
+    "details": "Details"
+  },
+  "monthly": {
+    "title": "Monthly Performance",
+    "noData": "No data available for heatmap.",
+    "year": "Year",
+    "totalYear": "Total"
   }
 }

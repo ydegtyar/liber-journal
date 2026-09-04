@@ -64,7 +64,15 @@
     "groupMonth": "Месяц",
     "sortOldestFirst": "Сначала старые",
     "sortNewestFirst": "Сначала новые",
-    "initialDeposit": "Начальный депозит"
+    "initialDeposit": "Начальный депозит",
+    "showing": "Показано",
+    "of": "из",
+    "page": "стр.",
+    "prev": "Назад",
+    "next": "Вперед",
+    "pageOf": "Страница",
+    "searchInstruments": "Поиск инструментов...",
+    "noTradesFound": "Сделки не найдены"
   },
   "charts": {
     "equityCurve": "Кривая доходности (Equity)",
@@ -74,7 +82,12 @@
     "instruments": "Результаты по инструментам",
     "equity": "Депозит",
     "pnl": "P&L",
-    "drawdownPct": "Просадка %"
+    "drawdownPct": "Просадка %",
+    "zoomHint": "slider снизу для масштабирования",
+    "byDates": "По датам",
+    "byTrades": "По сделкам",
+    "averageDaily": "Средний",
+    "average": "Ср."
   },
   "theme": {
     "light": "Светлая",
@@ -112,5 +125,54 @@
     "monthlyPnl": "Месячный P&L",
     "totalOrders": "Всего сделок",
     "noTrades": "Сделки отсутствуют"
+  },
+  "banner": {
+    "totalProfit": "ОБЩАЯ ПРИБЫЛЬ",
+    "tradesCount": "сделок",
+    "goal": "Цель",
+    "setMonthGoal": "Задать цель месяца",
+    "targetProfit": "Целевая прибыль",
+    "goalDescription": "Укажите целевую прибыль для отслеживания прогресса за месяц.",
+    "customRange": "Свой диапазон",
+    "startDate": "Дата начала",
+    "endDate": "Дата окончания"
+  },
+  "insights": {
+    "title": "Инсайты за период"
+  },
+  "streaks": {
+    "title": "Анализ серий сделок",
+    "longestWin": "Самая длинная серия выигрышей",
+    "longestWinSub": "Макс. прибыльных сделок подряд",
+    "longestLoss": "Самая длинная серия убытков",
+    "longestLossSub": "Макс. убыточных сделок подряд",
+    "currentStreak": "Текущая серия",
+    "winningStreak": "Выигрышная серия",
+    "losingStreak": "Убыточная серия",
+    "breakevenStreak": "Безубыточная серия",
+    "avgWin": "Средняя серия выигрышей",
+    "avgWinSub": "Типичная длина выигрышной серии",
+    "avgLoss": "Средняя серия убытков",
+    "avgLossSub": "Типичная длина убыточной серии",
+    "stability": "Устойчивость результатов",
+    "stabilitySub": "Соотношение серий"
+  },
+  "instruments": {
+    "title": "Инструменты",
+    "subtitle": "Клик по ряду — фильтр по инструменту · «Детали» — список сделок",
+    "instrument": "ИНСТРУМЕНТ",
+    "trades": "СДЕЛОК",
+    "winRate": "WIN %",
+    "netPnl": "NET P&L",
+    "avg": "AVG",
+    "share": "ДОЛЯ",
+    "trend": "ТРЕНД",
+    "details": "Детали"
+  },
+  "monthly": {
+    "title": "Месячная доходность",
+    "noData": "Нет данных для построения карты.",
+    "year": "Год",
+    "totalYear": "Всего"
   }
 }

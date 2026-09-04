@@ -2,16 +2,28 @@ import { useState } from 'react';
 import { saveAs } from 'file-saver';
 import { generateXlsxWorkbook } from '../lib/xlsxTemplate';
 import { Trade } from '../types/trade';
-import { JournalSettings } from '../types/preferences';
+import { JournalSettings, Locale } from '../types/preferences';
+import { useAppPreferences } from './useAppPreferences';
 
 export function useXlsxExport() {
   const [isExporting, setIsExporting] = useState(false);
+  const { currentLocale } = useAppPreferences();
 
-  const exportJournal = async (trades: Trade[], settings: JournalSettings) => {
+  const exportJournal = async (
+    trades: Trade[],
+    settings: JournalSettings,
+    exportLocale?: string | Locale
+  ) => {
     if (trades.length === 0) return;
     setIsExporting(true);
     try {
-      const blob = await generateXlsxWorkbook(trades, settings);
+      const loc = exportLocale || currentLocale;
+      const activeLocale: Locale = loc?.startsWith('uk')
+        ? 'uk'
+        : loc?.startsWith('ru')
+          ? 'ru'
+          : 'en';
+      const blob = await generateXlsxWorkbook(trades, settings, activeLocale);
       const dateStr = new Date().toISOString().split('T')[0];
       saveAs(blob, `trading_journal_${dateStr}.xlsx`);
     } catch (err) {

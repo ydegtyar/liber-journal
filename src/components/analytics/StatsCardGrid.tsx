@@ -75,6 +75,7 @@ export const StatsCardGrid: React.FC<StatsCardGridProps> = ({
           value={formatPercent(analytics.winRate, 1, numberFormat, currentLang)}
           subValue={`W: ${analytics.winningTrades} | L: ${analytics.losingTrades}`}
           sentiment={analytics.winRate >= 50 ? 'positive' : 'negative'}
+          circularProgress={analytics.winRate}
         />
       </Grid>
 

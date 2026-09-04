@@ -13,6 +13,7 @@ export interface JournalSettings {
   sortOrder: SortOrder;
   groupBy: GroupByOption;
   numberFormat: NumberFormatOption;
+  monthlyGoal?: number;
 }
 
 export interface AppPreferences {
@@ -27,6 +28,7 @@ export const DEFAULT_JOURNAL_SETTINGS: JournalSettings = {
   sortOrder: 'asc',
   groupBy: 'none',
   numberFormat: 'locale',
+  monthlyGoal: 0,
 };
 
 export const DEFAULT_APP_PREFERENCES: AppPreferences = {

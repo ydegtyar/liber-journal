@@ -22,6 +22,7 @@ import { useJournalSettings } from '../hooks/useJournalSettings';
 import { useAppPreferences } from '../hooks/useAppPreferences';
 import { useCsvImport } from '../hooks/useCsvImport';
 import { useXlsxExport } from '../hooks/useXlsxExport';
+import { useTimeframeFilter } from '../hooks/useTimeframeFilter';
 import {
   calculateAnalytics,
   calculateDrawdowns,
@@ -32,7 +33,12 @@ import { ThemeSwitcher } from '../components/settings/ThemeSwitcher';
 import { SettingsDialog } from '../components/settings/SettingsDialog';
 import { CsvUploadDropzone } from '../components/upload/CsvUploadDropzone';
 import { ParseErrorSummary } from '../components/upload/ParseErrorSummary';
+import { TimeframeHeaderBanner } from '../components/analytics/TimeframeHeaderBanner';
+import { PeriodInsightsCard } from '../components/analytics/PeriodInsightsCard';
 import { StatsCardGrid } from '../components/analytics/StatsCardGrid';
+import { StreakAnalysisSection } from '../components/analytics/StreakAnalysisSection';
+import { InstrumentsTable } from '../components/analytics/InstrumentsTable';
+import { MonthlyReturnsHeatmap } from '../components/analytics/MonthlyReturnsHeatmap';
 import { EquityCurveChart } from '../components/analytics/EquityCurveChart';
 import { DailyPnlChart } from '../components/analytics/DailyPnlChart';
 import { DayOfWeekChart } from '../components/analytics/DayOfWeekChart';
@@ -45,6 +51,7 @@ import { DailyOrdersMatrixTable } from '../components/matrix/DailyOrdersMatrixTa
 export const TradingJournalPage: React.FC = () => {
   const { t } = useTranslation();
   const {
+    currentLocale,
     themeMode,
     setThemeMode,
     numberFormat,
@@ -78,20 +85,35 @@ export const TradingJournalPage: React.FC = () => {
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [activeChartTab, setActiveChartTab] = useState(0);
   const [tableViewMode, setTableViewMode] = useState<'ledger' | 'matrix'>('ledger');
+  const [tableSearchQuery, setTableSearchQuery] = useState('');
 
-  // Compute analytics from current trades and initial deposit
+  // Timeframe and instrument filtering hook
+  const {
+    timeframe,
+    setTimeframe,
+    customStartDate,
+    setCustomStartDate,
+    customEndDate,
+    setCustomEndDate,
+    selectedInstrument,
+    setSelectedInstrument,
+    filteredTrades,
+    dateRangeLabel,
+  } = useTimeframeFilter(trades);
+
+  // Compute analytics dynamically from filtered trades
   const analytics = useMemo(() => {
-    return calculateAnalytics(settings.initialDeposit, trades);
-  }, [trades, settings.initialDeposit]);
+    return calculateAnalytics(settings.initialDeposit, filteredTrades);
+  }, [filteredTrades, settings.initialDeposit]);
 
   const { equityCurve } = useMemo(() => {
-    return calculateDrawdowns(settings.initialDeposit, trades);
-  }, [trades, settings.initialDeposit]);
+    return calculateDrawdowns(settings.initialDeposit, filteredTrades);
+  }, [filteredTrades, settings.initialDeposit]);
 
   // Aggregate daily P&L data for the periodic chart
   const dailyPnlData = useMemo(() => {
     const map: Record<string, { pnl: number; count: number }> = {};
-    for (const trade of trades) {
+    for (const trade of filteredTrades) {
       const dateKey = trade.closedAt ? trade.closedAt.split('T')[0] : 'Unknown';
       if (!map[dateKey]) {
         map[dateKey] = { pnl: 0, count: 0 };
@@ -107,7 +129,7 @@ export const TradingJournalPage: React.FC = () => {
         tradesCount: val.count,
       }))
       .sort((a, b) => a.date.localeCompare(b.date));
-  }, [trades]);
+  }, [filteredTrades]);
 
   return (
     <Box sx={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', backgroundColor: 'background.default' }}>
@@ -152,21 +174,46 @@ export const TradingJournalPage: React.FC = () => {
             <CircularProgress />
           </Box>
         ) : trades.length === 0 ? (
-          /* Empty State (Scenario A) */
+          /* Empty State */
           <Box sx={{ my: 'auto', py: 6, maxWidth: 640, mx: 'auto', width: '100%' }}>
             <CsvUploadDropzone onFileSelected={handleFileImport} isImporting={isImporting} />
           </Box>
         ) : (
           /* Populated State with Live Dashboard */
           <>
-            {/* 1. Analytics Metric Cards Grid */}
+            {/* 1. Timeframe Banner matching competitor Page 1 */}
+            <TimeframeHeaderBanner
+              netPnl={analytics.netPnl}
+              roiPercent={analytics.roiPercent}
+              tradeCount={filteredTrades.length}
+              currency={settings.currency}
+              numberFormat={numberFormat}
+              dateRangeLabel={dateRangeLabel}
+              timeframe={timeframe}
+              onSelectTimeframe={setTimeframe}
+              selectedInstrument={selectedInstrument}
+              onClearInstrument={() => setSelectedInstrument(null)}
+              monthlyGoal={settings.monthlyGoal}
+              onUpdateMonthlyGoal={(goal) => updateSettings({ monthlyGoal: goal })}
+              customStartDate={customStartDate}
+              customEndDate={customEndDate}
+              onUpdateCustomRange={(start, end) => {
+                setCustomStartDate(start);
+                setCustomEndDate(end);
+              }}
+            />
+
+            {/* 2. Key Metrics Grid (Win Rate with circular ring, Profit Factor, etc.) */}
             <StatsCardGrid
               analytics={analytics}
               currency={settings.currency}
               numberFormat={numberFormat}
             />
 
-            {/* 2. Visualizations Tabs & Recharts Display */}
+            {/* 3. Period Insights Card matching competitor Screenshot 1 */}
+            <PeriodInsightsCard insights={analytics.insights} />
+
+            {/* 4. Visualizations Tabs & Recharts Display */}
             <Box sx={{ mb: 2.5 }}>
               <Tabs
                 value={activeChartTab}
@@ -221,14 +268,35 @@ export const TradingJournalPage: React.FC = () => {
               )}
               {activeChartTab === 4 && (
                 <InstrumentChart
-                  data={calculateInstrumentPerformance(trades).byInstrument}
+                  data={calculateInstrumentPerformance(filteredTrades).byInstrument}
                   currency={settings.currency}
                   numberFormat={numberFormat}
                 />
               )}
             </Box>
 
-            {/* 3. Trades Ledger & Daily Orders Matrix Views */}
+            {/* 5. Streak Analysis Section matching competitor Screenshot 5 */}
+            <StreakAnalysisSection streakAnalysis={analytics.streakAnalysis} />
+
+            {/* 6. Instruments Breakdown Table with Sparklines matching competitor Screenshot 3 */}
+            <InstrumentsTable
+              data={analytics.instrumentBreakdown}
+              currency={settings.currency}
+              numberFormat={numberFormat}
+              selectedInstrument={selectedInstrument}
+              onSelectInstrument={(sym) =>
+                setSelectedInstrument(selectedInstrument?.toLowerCase() === sym.toLowerCase() ? null : sym)
+              }
+            />
+
+            {/* 7. Monthly Returns Heatmap / Matrix matching competitor Screenshot 3 */}
+            <MonthlyReturnsHeatmap
+              data={analytics.monthlyReturns}
+              currency={settings.currency}
+              numberFormat={numberFormat}
+            />
+
+            {/* 8. Trades Ledger & Daily Orders Matrix Views */}
             <Box sx={{ mb: 1.5, display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 1 }}>
               <Tabs
                 value={tableViewMode}
@@ -248,7 +316,7 @@ export const TradingJournalPage: React.FC = () => {
                   value="ledger"
                   icon={<ReceiptLongIcon sx={{ fontSize: 18 }} />}
                   iconPosition="start"
-                  label={`${t('dailyMatrix.tabLedger')} (${trades.length})`}
+                  label={`${t('dailyMatrix.tabLedger')} (${filteredTrades.length})`}
                 />
                 <Tab
                   value="matrix"
@@ -263,30 +331,39 @@ export const TradingJournalPage: React.FC = () => {
               <Box sx={{ borderRadius: 1, overflow: 'hidden', border: (theme) => `1px solid ${theme.palette.divider}` }}>
                 <TradesTableToolbar
                   settings={settings}
-                  tradeCount={trades.length}
+                  tradeCount={
+                    tableSearchQuery.trim()
+                      ? filteredTrades.filter((t) =>
+                          t.instrument.toLowerCase().includes(tableSearchQuery.trim().toLowerCase())
+                        ).length
+                      : filteredTrades.length
+                  }
+                  searchQuery={tableSearchQuery}
+                  onSearchChange={setTableSearchQuery}
                   isExporting={isExporting}
                   isImporting={isImporting}
                   onUpdateDeposit={updateInitialDeposit}
                   onSetGroupBy={setGroupBy}
                   onToggleSort={toggleSortOrder}
-                  onExportXlsx={() => exportJournal(trades, settings)}
+                  onExportXlsx={() => exportJournal(trades, settings, currentLocale)}
                   onUploadFile={handleFileImport}
                   onOpenSettings={() => setSettingsOpen(true)}
                 />
 
                 <TradesTable
-                  trades={trades}
+                  trades={filteredTrades}
                   settings={settings}
                   numberFormat={numberFormat}
+                  searchQuery={tableSearchQuery}
                   onToggleSort={toggleSortOrder}
                 />
               </Box>
             ) : (
               <DailyOrdersMatrixTable
-                trades={trades}
+                trades={filteredTrades}
                 currency={settings.currency}
                 numberFormat={numberFormat}
-                onExportXlsx={() => exportJournal(trades, settings)}
+                onExportXlsx={() => exportJournal(trades, settings, currentLocale)}
                 isExporting={isExporting}
               />
             )}

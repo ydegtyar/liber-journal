@@ -160,19 +160,19 @@ export const DailyOrdersMatrixTable: React.FC<DailyOrdersMatrixTableProps> = ({
     }
   };
 
-  // Copy single day row (full row: Date \t Count \t Trades... \t DailyPnL)
+  // Copy single day row (full row: Date \t Count \t DailyPnL \t Trades...)
   const handleCopyFullRow = (row: DayRowData) => {
     const cells: string[] = [
       row.displayDate,
       String(row.orderCount),
+      formatSpreadsheetNumber(row.dailyPnl),
       ...row.trades.map((t) => formatSpreadsheetNumber(t.pnl)),
     ];
 
-    // Pad empty cells up to orderColumnsCount so Daily P&L aligns with last column
-    while (cells.length < 2 + orderColumnsCount) {
+    // Pad empty cells up to orderColumnsCount
+    while (cells.length < 3 + orderColumnsCount) {
       cells.push('');
     }
-    cells.push(formatSpreadsheetNumber(row.dailyPnl));
 
     const tsv = cells.join('\t');
     copyToClipboard(
@@ -182,7 +182,7 @@ export const DailyOrdersMatrixTable: React.FC<DailyOrdersMatrixTableProps> = ({
     );
   };
 
-  // Copy trade values only (without Date or Count, suitable for pasting from Col C)
+  // Copy trade values only (without Date or Count, suitable for pasting from Col D)
   const handleCopyTradesOnly = (row: DayRowData) => {
     const cells = row.trades.map((t) => formatSpreadsheetNumber(t.pnl));
     const tsv = cells.join('\t');
@@ -201,8 +201,8 @@ export const DailyOrdersMatrixTable: React.FC<DailyOrdersMatrixTableProps> = ({
     const headers: string[] = [
       t('dailyMatrix.date'),
       t('dailyMatrix.closedOrders'),
-      ...Array.from({ length: orderColumnsCount }, (_, i) => `${t('dailyMatrix.order')} ${i + 1}`),
       t('dailyMatrix.dailyPnl'),
+      ...Array.from({ length: orderColumnsCount }, (_, i) => `${t('dailyMatrix.order')} ${i + 1}`),
     ];
 
     const lines: string[] = [headers.join('\t')];
@@ -211,12 +211,12 @@ export const DailyOrdersMatrixTable: React.FC<DailyOrdersMatrixTableProps> = ({
       const cells: string[] = [
         row.displayDate,
         String(row.orderCount),
+        formatSpreadsheetNumber(row.dailyPnl),
         ...row.trades.map((t) => formatSpreadsheetNumber(t.pnl)),
       ];
-      while (cells.length < 2 + orderColumnsCount) {
+      while (cells.length < 3 + orderColumnsCount) {
         cells.push('');
       }
-      cells.push(formatSpreadsheetNumber(row.dailyPnl));
       lines.push(cells.join('\t'));
     });
 
@@ -224,8 +224,8 @@ export const DailyOrdersMatrixTable: React.FC<DailyOrdersMatrixTableProps> = ({
     const totalsCells: string[] = [
       t('dailyMatrix.total'),
       String(totalOrders),
-      ...columnSums.map((val) => formatSpreadsheetNumber(val)),
       formatSpreadsheetNumber(totalPnl),
+      ...columnSums.map((val) => formatSpreadsheetNumber(val)),
     ];
     lines.push(totalsCells.join('\t'));
 
@@ -370,10 +370,10 @@ export const DailyOrdersMatrixTable: React.FC<DailyOrdersMatrixTableProps> = ({
                 {t('dailyMatrix.date')}
               </TableCell>
 
-              {/* Closed Orders Count */}
+              {/* Closed Orders Count Column */}
               <TableCell
                 sx={{
-                  width: 80,
+                  width: 90,
                   textAlign: 'center',
                   fontWeight: 700,
                   fontSize: '0.75rem',
@@ -381,6 +381,20 @@ export const DailyOrdersMatrixTable: React.FC<DailyOrdersMatrixTableProps> = ({
                 }}
               >
                 {t('dailyMatrix.closedOrders')}
+              </TableCell>
+
+              {/* Daily P&L Column */}
+              <TableCell
+                sx={{
+                  width: 110,
+                  textAlign: 'right',
+                  fontWeight: 800,
+                  fontSize: '0.75rem',
+                  backgroundColor: (theme) => theme.palette.background.paper,
+                  borderRight: (theme) => `1px solid ${theme.palette.divider}`,
+                }}
+              >
+                {t('dailyMatrix.dailyPnl')}
               </TableCell>
 
               {/* Sequential Trade Columns 1, 2, 3 ... N */}
@@ -400,19 +414,6 @@ export const DailyOrdersMatrixTable: React.FC<DailyOrdersMatrixTableProps> = ({
                   {i + 1}
                 </TableCell>
               ))}
-
-              {/* Daily P&L Column */}
-              <TableCell
-                sx={{
-                  width: 110,
-                  textAlign: 'right',
-                  fontWeight: 800,
-                  fontSize: '0.75rem',
-                  backgroundColor: (theme) => theme.palette.background.paper,
-                }}
-              >
-                {t('dailyMatrix.dailyPnl')}
-              </TableCell>
             </TableRow>
           </TableHead>
 
@@ -510,6 +511,25 @@ export const DailyOrdersMatrixTable: React.FC<DailyOrdersMatrixTableProps> = ({
                       {row.orderCount}
                     </TableCell>
 
+                    {/* Daily P&L Cell */}
+                    <TableCell
+                      sx={{
+                        textAlign: 'right',
+                        fontWeight: 700,
+                        fontFamily: "'JetBrains Mono', monospace",
+                        fontSize: '0.85rem',
+                        borderRight: (theme) => `1px solid ${theme.palette.divider}`,
+                        color: (theme) =>
+                          row.dailyPnl > 0
+                            ? theme.palette.trade.gain
+                            : row.dailyPnl < 0
+                              ? theme.palette.trade.loss
+                              : theme.palette.trade.breakeven,
+                      }}
+                    >
+                      {formatCurrency(row.dailyPnl, currency, numberFormat)}
+                    </TableCell>
+
                     {/* Individual Trade P&L Cells (1..N) */}
                     {Array.from({ length: orderColumnsCount }, (_, cIdx) => {
                       const trade = row.trades[cIdx];
@@ -587,25 +607,6 @@ export const DailyOrdersMatrixTable: React.FC<DailyOrdersMatrixTableProps> = ({
                         </TableCell>
                       );
                     })}
-
-                    {/* Daily P&L Cell */}
-                    <TableCell
-                      sx={{
-                        textAlign: 'right',
-                        fontWeight: 700,
-                        fontFamily: "'JetBrains Mono', monospace",
-                        fontSize: '0.85rem',
-                        borderLeft: (theme) => `2px solid ${theme.palette.divider}`,
-                        color: (theme) =>
-                          row.dailyPnl > 0
-                            ? theme.palette.trade.gain
-                            : row.dailyPnl < 0
-                              ? theme.palette.trade.loss
-                              : theme.palette.trade.breakeven,
-                      }}
-                    >
-                      {formatCurrency(row.dailyPnl, currency, numberFormat)}
-                    </TableCell>
                   </TableRow>
                 );
               })
@@ -663,6 +664,25 @@ export const DailyOrdersMatrixTable: React.FC<DailyOrdersMatrixTableProps> = ({
                   {totalOrders}
                 </TableCell>
 
+                {/* Total Cumulative P&L */}
+                <TableCell
+                  sx={{
+                    textAlign: 'right',
+                    fontWeight: 800,
+                    fontFamily: "'JetBrains Mono', monospace",
+                    fontSize: '0.9rem',
+                    borderRight: (theme) => `1px solid ${theme.palette.divider}`,
+                    color: (theme) =>
+                      totalPnl > 0
+                        ? theme.palette.trade.gain
+                        : totalPnl < 0
+                          ? theme.palette.trade.loss
+                          : theme.palette.trade.breakeven,
+                  }}
+                >
+                  {formatCurrency(totalPnl, currency, numberFormat)}
+                </TableCell>
+
                 {/* Column Sums for each Trade position */}
                 {columnSums.map((cSum, idx) => (
                   <TableCell
@@ -684,25 +704,6 @@ export const DailyOrdersMatrixTable: React.FC<DailyOrdersMatrixTableProps> = ({
                     {cSum !== 0 ? (cSum > 0 ? `+${cSum.toFixed(2)}` : cSum.toFixed(2)) : '—'}
                   </TableCell>
                 ))}
-
-                {/* Total Cumulative P&L */}
-                <TableCell
-                  sx={{
-                    textAlign: 'right',
-                    fontWeight: 800,
-                    fontFamily: "'JetBrains Mono', monospace",
-                    fontSize: '0.9rem',
-                    borderLeft: (theme) => `2px solid ${theme.palette.divider}`,
-                    color: (theme) =>
-                      totalPnl > 0
-                        ? theme.palette.trade.gain
-                        : totalPnl < 0
-                          ? theme.palette.trade.loss
-                          : theme.palette.trade.breakeven,
-                  }}
-                >
-                  {formatCurrency(totalPnl, currency, numberFormat)}
-                </TableCell>
               </TableRow>
             )}
           </TableBody>
@@ -726,7 +727,7 @@ export const DailyOrdersMatrixTable: React.FC<DailyOrdersMatrixTableProps> = ({
           </ListItemIcon>
           <ListItemText
             primary={t('dailyMatrix.copyRow')}
-            secondary="Date + Orders + Trades + Daily P&L"
+            secondary="Date + Orders + Daily P&L + Trades"
           />
         </MenuItem>
 

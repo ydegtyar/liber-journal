@@ -4,6 +4,11 @@ import {
   GroupSummary,
   JournalAnalytics,
   EquityPoint,
+  StreakAnalysis,
+  PeriodInsight,
+  InstrumentSummary,
+  YearMonthlyReturns,
+  MonthlyReturnItem,
 } from '../types/trade';
 
 /**
@@ -446,6 +451,306 @@ export function calculateGroupSummaries(
 }
 
 /**
+ * Calculates complete streak analytics including max streaks, average lengths, and consistency ratio.
+ */
+export function calculateStreakAnalysis(trades: Trade[]): StreakAnalysis {
+  if (trades.length === 0) {
+    return {
+      maxWinStreak: 0,
+      maxLossStreak: 0,
+      currentStreak: { type: 'none', count: 0 },
+      avgWinStreak: 0,
+      avgLossStreak: 0,
+      streakRatio: 0,
+    };
+  }
+
+  // Sort chronologically ascending (oldest first)
+  const sorted = [...trades].sort(
+    (a, b) => new Date(a.closedAt).getTime() - new Date(b.closedAt).getTime()
+  );
+
+  const winStreaks: number[] = [];
+  const lossStreaks: number[] = [];
+
+  let currentRunType: 'win' | 'loss' | 'breakeven' | null = null;
+  let currentRunCount = 0;
+
+  for (const t of sorted) {
+    let tType: 'win' | 'loss' | 'breakeven';
+    if (t.pnl > 0.0001) tType = 'win';
+    else if (t.pnl < -0.0001) tType = 'loss';
+    else tType = 'breakeven';
+
+    if (tType === currentRunType) {
+      currentRunCount++;
+    } else {
+      if (currentRunType === 'win' && currentRunCount > 0) {
+        winStreaks.push(currentRunCount);
+      } else if (currentRunType === 'loss' && currentRunCount > 0) {
+        lossStreaks.push(currentRunCount);
+      }
+      currentRunType = tType;
+      currentRunCount = 1;
+    }
+  }
+
+  // push trailing run
+  if (currentRunType === 'win' && currentRunCount > 0) {
+    winStreaks.push(currentRunCount);
+  } else if (currentRunType === 'loss' && currentRunCount > 0) {
+    lossStreaks.push(currentRunCount);
+  }
+
+  const maxWinStreak = winStreaks.length > 0 ? Math.max(...winStreaks) : 0;
+  const maxLossStreak = lossStreaks.length > 0 ? Math.max(...lossStreaks) : 0;
+
+  const avgWinStreak =
+    winStreaks.length > 0
+      ? round(winStreaks.reduce((a, b) => a + b, 0) / winStreaks.length, 1)
+      : 0;
+
+  const avgLossStreak =
+    lossStreaks.length > 0
+      ? round(lossStreaks.reduce((a, b) => a + b, 0) / lossStreaks.length, 1)
+      : 0;
+
+  let streakRatio = 0;
+  if (avgLossStreak > 0) {
+    streakRatio = round(avgWinStreak / avgLossStreak, 2);
+  } else if (avgWinStreak > 0) {
+    streakRatio = avgWinStreak;
+  }
+
+  const currentStreak = calculateCurrentStreak(trades);
+
+  return {
+    maxWinStreak,
+    maxLossStreak,
+    currentStreak,
+    avgWinStreak,
+    avgLossStreak,
+    streakRatio,
+  };
+}
+
+/**
+ * Calculates instrument breakdown with cumulative sparkline data and profit share.
+ */
+export function calculateInstrumentBreakdown(trades: Trade[]): InstrumentSummary[] {
+  if (trades.length === 0) return [];
+
+  // Sort trades chronologically
+  const sorted = [...trades].sort(
+    (a, b) => new Date(a.closedAt).getTime() - new Date(b.closedAt).getTime()
+  );
+
+  const totalGrossWin = trades
+    .filter((t) => t.pnl > 0)
+    .reduce((sum, t) => sum + t.pnl, 0);
+
+  const map: Record<string, Trade[]> = {};
+  for (const t of sorted) {
+    const sym = t.instrument || 'Unknown';
+    if (!map[sym]) {
+      map[sym] = [];
+    }
+    map[sym].push(t);
+  }
+
+  const result: InstrumentSummary[] = Object.entries(map).map(([symbol, instTrades]) => {
+    const count = instTrades.length;
+    const netPnl = calculateNetPnl(instTrades);
+    const winRate = calculateWinRate(instTrades);
+    const avgPnl = count > 0 ? round(netPnl / count) : 0;
+
+    const instGrossWin = instTrades
+      .filter((t) => t.pnl > 0)
+      .reduce((sum, t) => sum + t.pnl, 0);
+
+    const sharePercent =
+      totalGrossWin > 0 ? round((instGrossWin / totalGrossWin) * 100, 1) : 0;
+
+    // Cumulative sparkline points starting at 0
+    let running = 0;
+    const sparkline: number[] = [0];
+    for (const t of instTrades) {
+      running = round(running + t.pnl);
+      sparkline.push(running);
+    }
+
+    return {
+      symbol,
+      trades: count,
+      winRate,
+      netPnl,
+      avgPnl,
+      sharePercent,
+      sparkline,
+    };
+  });
+
+  return result.sort((a, b) => b.netPnl - a.netPnl);
+}
+
+/**
+ * Calculates monthly performance table / heatmap (Year x Month).
+ */
+export function calculateMonthlyReturns(trades: Trade[]): YearMonthlyReturns[] {
+  if (trades.length === 0) return [];
+
+  const yearMap: Record<number, Record<number, Trade[]>> = {};
+
+  for (const t of trades) {
+    const d = new Date(t.closedAt);
+    if (isNaN(d.getTime())) continue;
+    const year = d.getFullYear();
+    const month = d.getMonth() + 1; // 1-12
+
+    if (!yearMap[year]) {
+      yearMap[year] = {};
+    }
+    if (!yearMap[year][month]) {
+      yearMap[year][month] = [];
+    }
+    yearMap[year][month].push(t);
+  }
+
+  const years = Object.keys(yearMap)
+    .map(Number)
+    .sort((a, b) => b - a);
+
+  return years.map((year) => {
+    const monthsData: Record<number, MonthlyReturnItem> = {};
+    let yearTrades: Trade[] = [];
+
+    for (let m = 1; m <= 12; m++) {
+      const monthTrades = yearMap[year][m] || [];
+      yearTrades = yearTrades.concat(monthTrades);
+      monthsData[m] = {
+        month: m,
+        pnl: calculateNetPnl(monthTrades),
+        trades: monthTrades.length,
+        winRate: calculateWinRate(monthTrades),
+      };
+    }
+
+    return {
+      year,
+      months: monthsData,
+      totalPnl: calculateNetPnl(yearTrades),
+      totalTrades: yearTrades.length,
+      winRate: calculateWinRate(yearTrades),
+    };
+  });
+}
+
+/**
+ * Generates automated bullet insights for the selected period.
+ */
+export function generatePeriodInsights(
+  trades: Trade[],
+  instrumentBreakdown: InstrumentSummary[],
+  streakAnalysis: StreakAnalysis,
+  metrics: { profitFactor: number; winRate: number; maxDrawdownPercent: number }
+): PeriodInsight[] {
+  if (trades.length === 0) return [];
+
+  const insights: PeriodInsight[] = [];
+
+  // 1. Top asset contribution
+  if (instrumentBreakdown.length > 0) {
+    const topAsset = instrumentBreakdown[0];
+    if (topAsset.netPnl > 0 && topAsset.sharePercent > 0) {
+      insights.push({
+        id: 'top-asset-share',
+        type: 'highlight',
+        text: `${topAsset.symbol} contributed ${topAsset.sharePercent}% of gross profit (+${topAsset.netPnl >= 0 ? topAsset.netPnl.toFixed(2) : topAsset.netPnl})`,
+      });
+    }
+  }
+
+  // 2. Current streak
+  if (streakAnalysis.currentStreak.count >= 2) {
+    const isWin = streakAnalysis.currentStreak.type === 'win';
+    insights.push({
+      id: 'current-streak',
+      type: isWin ? 'positive' : 'negative',
+      text: `Current streak: ${streakAnalysis.currentStreak.count} consecutive ${isWin ? 'winning' : 'losing'} trades`,
+    });
+  } else if (streakAnalysis.maxWinStreak >= 3) {
+    insights.push({
+      id: 'max-win-streak',
+      type: 'positive',
+      text: `Best streak: ${streakAnalysis.maxWinStreak} consecutive winning trades in this period`,
+    });
+  }
+
+  // 3. Profit Factor / Efficiency
+  if (metrics.profitFactor >= 2.0 && metrics.profitFactor !== Infinity) {
+    insights.push({
+      id: 'profit-factor',
+      type: 'positive',
+      text: `Outstanding profit factor of ${metrics.profitFactor.toFixed(2)} demonstrates high edge`,
+    });
+  } else if (metrics.profitFactor === Infinity && trades.length >= 3) {
+    insights.push({
+      id: 'zero-losses',
+      type: 'positive',
+      text: `Flawless execution: 0 losing trades across ${trades.length} closed deals`,
+    });
+  }
+
+  // 4. Drawdown control
+  if (metrics.maxDrawdownPercent < 5 && trades.length >= 5) {
+    insights.push({
+      id: 'drawdown-control',
+      type: 'info',
+      text: `Capital preservation: max drawdown kept under ${metrics.maxDrawdownPercent}%`,
+    });
+  }
+
+  return insights;
+}
+
+/**
+ * Calculates trade holding duration from openedAt to closedAt.
+ */
+export function calculateDuration(
+  openedAt?: string | null,
+  closedAt?: string | null
+): { formatted: string; ms: number } {
+  if (!openedAt || !closedAt) {
+    return { formatted: '—', ms: 0 };
+  }
+
+  const tOpen = new Date(openedAt).getTime();
+  const tClose = new Date(closedAt).getTime();
+
+  if (isNaN(tOpen) || isNaN(tClose) || tClose < tOpen) {
+    return { formatted: '—', ms: 0 };
+  }
+
+  const diffMs = tClose - tOpen;
+  const totalSeconds = Math.floor(diffMs / 1000);
+  const days = Math.floor(totalSeconds / 86400);
+  const hours = Math.floor((totalSeconds % 86400) / 3600);
+  const minutes = Math.floor((totalSeconds % 3600) / 60);
+  const seconds = totalSeconds % 60;
+
+  if (days > 0) {
+    return { formatted: `${days}d ${hours}h`, ms: diffMs };
+  }
+  if (hours > 0) {
+    return { formatted: `${hours}h ${minutes}m`, ms: diffMs };
+  }
+  if (minutes > 0) {
+    return { formatted: `${minutes}m`, ms: diffMs };
+  }
+  return { formatted: `${seconds}s`, ms: diffMs };
+}
+
+/**
  * Calculates complete dashboard analytics.
  */
 export function calculateAnalytics(initialDeposit: number, trades: Trade[]): JournalAnalytics {
@@ -461,9 +766,17 @@ export function calculateAnalytics(initialDeposit: number, trades: Trade[]): Jou
   const expectancy = calculateExpectancy(trades);
   const { maxDrawdownAmount, maxDrawdownPercent } = calculateDrawdowns(initialDeposit, trades);
   const currentStreak = calculateCurrentStreak(trades);
+  const streakAnalysis = calculateStreakAnalysis(trades);
   const { best, worst } = calculateInstrumentPerformance(trades);
+  const instrumentBreakdown = calculateInstrumentBreakdown(trades);
+  const monthlyReturns = calculateMonthlyReturns(trades);
   const dayOfWeekPerformance = calculateDayOfWeekPerformance(trades);
   const hourlyDistribution = calculateHourlyDistribution(trades);
+  const insights = generatePeriodInsights(trades, instrumentBreakdown, streakAnalysis, {
+    profitFactor,
+    winRate,
+    maxDrawdownPercent,
+  });
 
   return {
     totalTrades: total,
@@ -482,6 +795,10 @@ export function calculateAnalytics(initialDeposit: number, trades: Trade[]): Jou
     maxDrawdownAmount,
     maxDrawdownPercent,
     currentStreak,
+    streakAnalysis,
+    insights,
+    instrumentBreakdown,
+    monthlyReturns,
     bestInstrument: best,
     worstInstrument: worst,
     dayOfWeekPerformance,

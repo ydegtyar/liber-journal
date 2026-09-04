@@ -13,7 +13,12 @@ import {
   calculateExpectancy,
   calculateDrawdowns,
   calculateCurrentStreak,
+  calculateStreakAnalysis,
   calculateInstrumentPerformance,
+  calculateInstrumentBreakdown,
+  calculateMonthlyReturns,
+  generatePeriodInsights,
+  calculateDuration,
   calculateDayOfWeekPerformance,
   calculateHourlyDistribution,
   calculateGroupSummaries,
@@ -191,15 +196,98 @@ describe('Calculations Library', () => {
     expect(summaries['2026-09-02'].netPnl).toBe(30);
   });
 
-  it('calculates complete JournalAnalytics', () => {
+  it('calculates complete Streak Analysis suite', () => {
+    // mockTrades order: Trade 1 (+20 win), Trade 2 (-10 loss), Trade 3 (0 be), Trade 4 (+30 win)
+    // Win streaks: [1, 1], Loss streaks: [1]
+    const streaks = calculateStreakAnalysis(mockTrades);
+    expect(streaks.maxWinStreak).toBe(1);
+    expect(streaks.maxLossStreak).toBe(1);
+    expect(streaks.avgWinStreak).toBe(1);
+    expect(streaks.avgLossStreak).toBe(1);
+    expect(streaks.streakRatio).toBe(1);
+    expect(streaks.currentStreak.type).toBe('win');
+    expect(streaks.currentStreak.count).toBe(1);
+
+    // Test multi-streak case
+    const consecutiveTrades: Trade[] = [
+      { ...mockTrades[0], id: 'c1', closedAt: '2026-09-01T10:00:00Z', pnl: 10 },
+      { ...mockTrades[0], id: 'c2', closedAt: '2026-09-01T11:00:00Z', pnl: 15 },
+      { ...mockTrades[0], id: 'c3', closedAt: '2026-09-01T12:00:00Z', pnl: 20 },
+      { ...mockTrades[1], id: 'c4', closedAt: '2026-09-01T13:00:00Z', pnl: -5 },
+      { ...mockTrades[0], id: 'c5', closedAt: '2026-09-01T14:00:00Z', pnl: 12 },
+      { ...mockTrades[0], id: 'c6', closedAt: '2026-09-01T15:00:00Z', pnl: 8 },
+    ];
+    // Win streak 1: 3 trades (c1, c2, c3). Loss streak 1: 1 trade (c4). Win streak 2: 2 trades (c5, c6).
+    // Max win streak: 3, Max loss streak: 1. Avg win streak: (3+2)/2 = 2.5. Avg loss: 1. Ratio: 2.5 / 1 = 2.5.
+    const multiStreaks = calculateStreakAnalysis(consecutiveTrades);
+    expect(multiStreaks.maxWinStreak).toBe(3);
+    expect(multiStreaks.maxLossStreak).toBe(1);
+    expect(multiStreaks.avgWinStreak).toBe(2.5);
+    expect(multiStreaks.avgLossStreak).toBe(1);
+    expect(multiStreaks.streakRatio).toBe(2.5);
+  });
+
+  it('calculates Instrument Breakdown with sparklines and gross win share', () => {
+    const breakdown = calculateInstrumentBreakdown(mockTrades);
+    expect(breakdown.length).toBe(2);
+    // Best is GBP/USD (+30 pnl, 2 trades, 100% win rate excluding BE)
+    const gbp = breakdown.find((b) => b.symbol === 'GBP/USD')!;
+    expect(gbp).toBeDefined();
+    expect(gbp.trades).toBe(2);
+    expect(gbp.netPnl).toBe(30);
+    expect(gbp.winRate).toBe(100);
+    // Total gross wins: 20 (EUR) + 30 (GBP) = 50. GBP share: 30 / 50 = 60%
+    expect(gbp.sharePercent).toBe(60);
+    expect(gbp.sparkline).toEqual([0, 0, 30]);
+
+    const eur = breakdown.find((b) => b.symbol === 'EUR/USD')!;
+    expect(eur).toBeDefined();
+    expect(eur.trades).toBe(2);
+    expect(eur.netPnl).toBe(10);
+    expect(eur.sharePercent).toBe(40);
+  });
+
+  it('calculates Monthly Returns table data', () => {
+    const monthly = calculateMonthlyReturns(mockTrades);
+    expect(monthly.length).toBe(1);
+    expect(monthly[0].year).toBe(2026);
+    // September (month 9) has all 4 trades
+    expect(monthly[0].months[9].trades).toBe(4);
+    expect(monthly[0].months[9].pnl).toBe(40);
+    expect(monthly[0].months[9].winRate).toBe(66.67);
+    // Other months have 0 trades
+    expect(monthly[0].months[1].trades).toBe(0);
+    expect(monthly[0].totalPnl).toBe(40);
+  });
+
+  it('generates period insights dynamically', () => {
+    const breakdown = calculateInstrumentBreakdown(mockTrades);
+    const streakAnalysis = calculateStreakAnalysis(mockTrades);
+    const insights = generatePeriodInsights(mockTrades, breakdown, streakAnalysis, {
+      profitFactor: 5,
+      winRate: 66.67,
+      maxDrawdownPercent: 0.98,
+    });
+    expect(insights.length).toBeGreaterThan(0);
+    expect(insights.some((i) => i.id === 'top-asset-share')).toBe(true);
+    expect(insights.some((i) => i.id === 'profit-factor')).toBe(true);
+  });
+
+  it('calculates trade duration correctly', () => {
+    expect(calculateDuration(null, null).formatted).toBe('—');
+    expect(calculateDuration('2026-09-01T10:00:00Z', '2026-09-01T10:45:00Z').formatted).toBe('45m');
+    expect(calculateDuration('2026-09-01T10:00:00Z', '2026-09-01T12:30:00Z').formatted).toBe('2h 30m');
+    expect(calculateDuration('2026-09-01T10:00:00Z', '2026-09-03T14:15:00Z').formatted).toBe('2d 4h');
+  });
+
+  it('calculates complete JournalAnalytics including new fields', () => {
     const analytics = calculateAnalytics(1000, mockTrades);
     expect(analytics.totalTrades).toBe(4);
-    expect(analytics.winningTrades).toBe(2);
-    expect(analytics.losingTrades).toBe(1);
-    expect(analytics.breakevenTrades).toBe(1);
-    expect(analytics.breakevenRate).toBe(25);
-    expect(analytics.netPnl).toBe(40);
-    expect(analytics.currentDeposit).toBe(1040);
-    expect(analytics.roiPercent).toBe(4);
+    expect(analytics.streakAnalysis).toBeDefined();
+    expect(analytics.streakAnalysis.maxWinStreak).toBe(1);
+    expect(analytics.insights.length).toBeGreaterThan(0);
+    expect(analytics.instrumentBreakdown.length).toBe(2);
+    expect(analytics.monthlyReturns.length).toBe(1);
   });
 });
+

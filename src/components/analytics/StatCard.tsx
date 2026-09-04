@@ -7,6 +7,7 @@ interface StatCardProps {
   subValue?: string;
   sentiment?: 'positive' | 'negative' | 'neutral' | 'accent';
   icon?: React.ReactNode;
+  circularProgress?: number; // 0 - 100 percentage
 }
 
 export const StatCard: React.FC<StatCardProps> = ({
@@ -15,6 +16,7 @@ export const StatCard: React.FC<StatCardProps> = ({
   subValue,
   sentiment = 'neutral',
   icon,
+  circularProgress,
 }) => {
   return (
     <Paper
@@ -43,23 +45,28 @@ export const StatCard: React.FC<StatCardProps> = ({
         {icon && <Box sx={{ color: 'text.secondary', opacity: 0.5, display: 'flex' }}>{icon}</Box>}
       </Box>
 
-      <Typography
-        variant="h6"
-        sx={{
-          fontFamily: "'JetBrains Mono', 'Roboto Mono', monospace",
-          fontVariantNumeric: 'tabular-nums',
-          fontWeight: 700,
-          fontSize: '1.2rem',
-          lineHeight: 1.2,
-          color: (theme) => {
-            if (sentiment === 'positive') return theme.palette.trade.gain;
-            if (sentiment === 'negative') return theme.palette.trade.loss;
-            return theme.palette.text.primary;
-          },
-        }}
-      >
-        {value}
-      </Typography>
+      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+        {circularProgress !== undefined && (
+          <CircularRing progress={circularProgress} sentiment={sentiment} />
+        )}
+        <Typography
+          variant="h6"
+          sx={{
+            fontFamily: "'JetBrains Mono', 'Roboto Mono', monospace",
+            fontVariantNumeric: 'tabular-nums',
+            fontWeight: 700,
+            fontSize: '1.2rem',
+            lineHeight: 1.2,
+            color: (theme) => {
+              if (sentiment === 'positive') return theme.palette.trade.gain;
+              if (sentiment === 'negative') return theme.palette.trade.loss;
+              return theme.palette.text.primary;
+            },
+          }}
+        >
+          {value}
+        </Typography>
+      </Box>
 
       {subValue && (
         <Typography
@@ -75,5 +82,47 @@ export const StatCard: React.FC<StatCardProps> = ({
         </Typography>
       )}
     </Paper>
+  );
+};
+
+const CircularRing: React.FC<{ progress: number; sentiment: string }> = ({ progress, sentiment }) => {
+  const size = 26;
+  const strokeWidth = 3.5;
+  const radius = (size - strokeWidth) / 2;
+  const circumference = 2 * Math.PI * radius;
+  const normalizedProgress = Math.min(Math.max(progress, 0), 100);
+  const offset = circumference - (normalizedProgress / 100) * circumference;
+
+  const color =
+    sentiment === 'positive'
+      ? '#10b981'
+      : sentiment === 'negative'
+      ? '#ef4444'
+      : '#3b82f6';
+
+  return (
+    <svg width={size} height={size} style={{ transform: 'rotate(-90deg)' }}>
+      {/* Background track */}
+      <circle
+        cx={size / 2}
+        cy={size / 2}
+        r={radius}
+        fill="transparent"
+        stroke="rgba(128, 128, 128, 0.2)"
+        strokeWidth={strokeWidth}
+      />
+      {/* Progress ring */}
+      <circle
+        cx={size / 2}
+        cy={size / 2}
+        r={radius}
+        fill="transparent"
+        stroke={color}
+        strokeWidth={strokeWidth}
+        strokeDasharray={circumference}
+        strokeDashoffset={offset}
+        strokeLinecap="round"
+      />
+    </svg>
   );
 };

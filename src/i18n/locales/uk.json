@@ -64,7 +64,15 @@
     "groupMonth": "Місяць",
     "sortOldestFirst": "Спочатку старі",
     "sortNewestFirst": "Спочатку нові",
-    "initialDeposit": "Початковий депозит"
+    "initialDeposit": "Початковий депозит",
+    "showing": "Показано",
+    "of": "з",
+    "page": "стор.",
+    "prev": "Назад",
+    "next": "Вперед",
+    "pageOf": "Сторінка",
+    "searchInstruments": "Пошук інструментів...",
+    "noTradesFound": "Угоди не знайдено"
   },
   "charts": {
     "equityCurve": "Крива прибутковості (Equity)",
@@ -74,7 +82,12 @@
     "instruments": "Результати за інструментами",
     "equity": "Депозит",
     "pnl": "P&L",
-    "drawdownPct": "Просідання %"
+    "drawdownPct": "Просідання %",
+    "zoomHint": "slider знизу для масштабування",
+    "byDates": "По датах",
+    "byTrades": "По угодах",
+    "averageDaily": "Середній",
+    "average": "Сер."
   },
   "theme": {
     "light": "Світла",
@@ -112,5 +125,54 @@
     "monthlyPnl": "Місячний P&L",
     "totalOrders": "Всього угод",
     "noTrades": "Угоди відсутні"
+  },
+  "banner": {
+    "totalProfit": "ЗАГАЛЬНИЙ ПРИБУТОК",
+    "tradesCount": "угод",
+    "goal": "Ціль",
+    "setMonthGoal": "Задати ціль місяця",
+    "targetProfit": "Цільовий прибуток",
+    "goalDescription": "Вкажіть цільовий прибуток для відстеження прогресу за місяць.",
+    "customRange": "Свій діапазон",
+    "startDate": "Дата початку",
+    "endDate": "Дата кінця"
+  },
+  "insights": {
+    "title": "Інсайти за період"
+  },
+  "streaks": {
+    "title": "Аналіз серій угод",
+    "longestWin": "Найдовша серія виграшів",
+    "longestWinSub": "Макс. позитивних угод підряд",
+    "longestLoss": "Найдовша серія збитків",
+    "longestLossSub": "Макс. негативних угод підряд",
+    "currentStreak": "Поточна серія",
+    "winningStreak": "Виграшна серія",
+    "losingStreak": "Програшна серія",
+    "breakevenStreak": "Безубиткова серія",
+    "avgWin": "Середня серія виграшів",
+    "avgWinSub": "Типова довжина виграшної серії",
+    "avgLoss": "Середня серія збитків",
+    "avgLossSub": "Типова довжина програшної серії",
+    "stability": "Стійкість результатів",
+    "stabilitySub": "Співвідношення серій"
+  },
+  "instruments": {
+    "title": "Інструменти",
+    "subtitle": "Клік по ряду — фільтр за інструментом · «Деталі» — список угод",
+    "instrument": "ІНСТРУМЕНТ",
+    "trades": "УГОД",
+    "winRate": "WIN %",
+    "netPnl": "NET P&L",
+    "avg": "AVG",
+    "share": "ЧАСТКА",
+    "trend": "ТРЕНД",
+    "details": "Деталі"
+  },
+  "monthly": {
+    "title": "Місячна дохідність",
+    "noData": "Немає даних для побудови карти.",
+    "year": "Рік",
+    "totalYear": "Всього"
   }
 }

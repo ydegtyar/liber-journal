@@ -9,11 +9,15 @@ import {
   Tooltip,
   IconButton,
   CircularProgress,
+  TextField,
+  InputAdornment,
 } from '@mui/material';
 import FileDownloadIcon from '@mui/icons-material/FileDownload';
 import SettingsIcon from '@mui/icons-material/Settings';
 import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
+import SearchIcon from '@mui/icons-material/Search';
+import ClearIcon from '@mui/icons-material/Clear';
 import { useTranslation } from 'react-i18next';
 import { JournalSettings } from '../../types/preferences';
 import { GroupByOption } from '../../types/trade';
@@ -23,6 +27,8 @@ import { CsvUploadDropzone } from '../upload/CsvUploadDropzone';
 interface TradesTableToolbarProps {
   settings: JournalSettings;
   tradeCount: number;
+  searchQuery?: string;
+  onSearchChange?: (query: string) => void;
   isExporting: boolean;
   isImporting: boolean;
   onUpdateDeposit: (amount: number) => void;
@@ -36,6 +42,8 @@ interface TradesTableToolbarProps {
 export const TradesTableToolbar: React.FC<TradesTableToolbarProps> = ({
   settings,
   tradeCount,
+  searchQuery = '',
+  onSearchChange,
   isExporting,
   isImporting,
   onUpdateDeposit,
@@ -73,8 +81,39 @@ export const TradesTableToolbar: React.FC<TradesTableToolbarProps> = ({
         />
       </Box>
 
-      {/* Right controls: Group by, Sort, Upload, Export, Settings */}
+      {/* Right controls: Search, Group by, Sort, Upload, Export, Settings */}
       <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.2, flexWrap: 'wrap' }}>
+        {/* Search input for instruments */}
+        {onSearchChange && (
+          <TextField
+            size="small"
+            value={searchQuery}
+            onChange={(e) => onSearchChange(e.target.value)}
+            placeholder={t('table.searchInstruments', { defaultValue: 'Search instruments...' })}
+            InputProps={{
+              startAdornment: (
+                <InputAdornment position="start">
+                  <SearchIcon fontSize="small" sx={{ color: 'text.secondary' }} />
+                </InputAdornment>
+              ),
+              endAdornment: searchQuery ? (
+                <InputAdornment position="end">
+                  <IconButton
+                    size="small"
+                    onClick={() => onSearchChange('')}
+                    edge="end"
+                    sx={{ p: 0.25 }}
+                    aria-label="clear search"
+                  >
+                    <ClearIcon sx={{ fontSize: 16 }} />
+                  </IconButton>
+                </InputAdornment>
+              ) : null,
+              sx: { height: 32, fontSize: '0.8rem', minWidth: 160, maxWidth: 220 },
+            }}
+          />
+        )}
+
         {/* Group By selector */}
         <FormControl size="small" sx={{ minWidth: 120 }}>
           <Select

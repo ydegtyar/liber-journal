@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { Paper, Typography, Box, useTheme } from '@mui/material';
 import {
   ResponsiveContainer,
@@ -10,6 +10,7 @@ import {
   CartesianGrid,
   ReferenceLine,
   Cell,
+  Brush,
 } from 'recharts';
 import { useTranslation } from 'react-i18next';
 import { NumberFormatOption } from '../../types/preferences';
@@ -36,17 +37,28 @@ export const DailyPnlChart: React.FC<DailyPnlChartProps> = ({
   const theme = useTheme();
   const currentLang = i18n.language || 'en-US';
 
+  const avgDailyPnl = useMemo(() => {
+    if (data.length === 0) return 0;
+    const sum = data.reduce((acc, pt) => acc + pt.pnl, 0);
+    return Math.round((sum / data.length) * 100) / 100;
+  }, [data]);
+
   return (
-    <Paper sx={{ p: 2, height: 320, display: 'flex', flexDirection: 'column' }}>
+    <Paper sx={{ p: 2, height: 380, display: 'flex', flexDirection: 'column' }}>
       <Box sx={{ mb: 1, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <Typography variant="subtitle2" sx={{ fontWeight: 600 }}>
           {t('charts.periodicPnl')}
         </Typography>
+        {data.length > 0 && (
+          <Typography variant="caption" sx={{ color: '#eab308', fontWeight: 600 }}>
+            {t('charts.averageDaily', { defaultValue: 'Середній' })}: {formatCurrency(avgDailyPnl, currency, numberFormat, currentLang)}
+          </Typography>
+        )}
       </Box>
 
       <Box sx={{ flex: 1, width: '100%', minHeight: 0 }}>
         <ResponsiveContainer width="100%" height="100%">
-          <BarChart data={data} margin={{ top: 10, right: 20, left: 10, bottom: 5 }}>
+          <BarChart data={data} margin={{ top: 10, right: 20, left: 10, bottom: 0 }}>
             <CartesianGrid strokeDasharray="3 3" stroke={theme.palette.divider} opacity={0.6} />
             <XAxis dataKey="date" stroke={theme.palette.text.secondary} fontSize={11} tickLine={false} />
             <YAxis
@@ -56,6 +68,20 @@ export const DailyPnlChart: React.FC<DailyPnlChartProps> = ({
               tickFormatter={(val) => formatCurrency(val, currency, numberFormat, currentLang)}
             />
             <ReferenceLine y={0} stroke={theme.palette.text.secondary} />
+            {avgDailyPnl !== 0 && (
+              <ReferenceLine
+                y={avgDailyPnl}
+                stroke="#eab308"
+                strokeDasharray="4 4"
+                label={{
+                  value: `${t('charts.average', { defaultValue: 'Сер.' })}: ${formatCurrency(avgDailyPnl, currency, numberFormat, currentLang)}`,
+                  position: 'insideTopRight',
+                  fill: '#eab308',
+                  fontSize: 10,
+                  fontWeight: 700,
+                }}
+              />
+            )}
             <Tooltip
               content={({ active, payload }) => {
                 if (active && payload && payload.length) {
@@ -104,6 +130,15 @@ export const DailyPnlChart: React.FC<DailyPnlChartProps> = ({
                 />
               ))}
             </Bar>
+            {data.length > 5 && (
+              <Brush
+                dataKey="date"
+                height={26}
+                stroke={theme.palette.primary.main}
+                fill={theme.palette.background.default}
+                travellerWidth={10}
+              />
+            )}
           </BarChart>
         </ResponsiveContainer>
       </Box>

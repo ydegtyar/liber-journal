@@ -46,6 +46,57 @@ export interface GroupSummary {
   grossReturn: number;
 }
 
+export interface StreakAnalysis {
+  maxWinStreak: number;
+  maxLossStreak: number;
+  currentStreak: {
+    type: 'win' | 'loss' | 'breakeven' | 'none';
+    count: number;
+  };
+  avgWinStreak: number;
+  avgLossStreak: number;
+  streakRatio: number;
+}
+
+export interface PeriodInsight {
+  id: string;
+  type: 'positive' | 'negative' | 'info' | 'highlight';
+  text: string;
+}
+
+export interface InstrumentSummary {
+  symbol: string;
+  trades: number;
+  winRate: number;
+  netPnl: number;
+  avgPnl: number;
+  sharePercent: number;
+  sparkline: number[];
+}
+
+export interface MonthlyReturnItem {
+  month: number;
+  pnl: number;
+  trades: number;
+  winRate: number;
+}
+
+export interface YearMonthlyReturns {
+  year: number;
+  months: Record<number, MonthlyReturnItem>;
+  totalPnl: number;
+  totalTrades: number;
+  winRate: number;
+}
+
+export type TimeframeOption = '1D' | '7D' | '30D' | 'WTD' | 'MTD' | 'YTD' | 'ALL' | 'CUSTOM';
+
+export interface TimeframeFilter {
+  mode: TimeframeOption;
+  startDate?: string;
+  endDate?: string;
+}
+
 export interface JournalAnalytics {
   totalTrades: number;
   winningTrades: number;
@@ -66,6 +117,10 @@ export interface JournalAnalytics {
     type: 'win' | 'loss' | 'breakeven' | 'none';
     count: number;
   };
+  streakAnalysis: StreakAnalysis;
+  insights: PeriodInsight[];
+  instrumentBreakdown: InstrumentSummary[];
+  monthlyReturns: YearMonthlyReturns[];
   bestInstrument: { symbol: string; pnl: number } | null;
   worstInstrument: { symbol: string; pnl: number } | null;
   dayOfWeekPerformance: Array<{ day: string; pnl: number; trades: number; winRate: number }>;
@@ -83,3 +138,4 @@ export interface EquityPoint {
   drawdownAmount: number;
   drawdownPercent: number;
 }
+

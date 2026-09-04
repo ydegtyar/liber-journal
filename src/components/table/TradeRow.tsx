@@ -2,9 +2,7 @@ import React from 'react';
 import {
   TableRow,
   TableCell,
-  Chip,
   Box,
-  Typography,
   Tooltip,
 } from '@mui/material';
 import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
@@ -58,32 +56,30 @@ export const TradeRow: React.FC<TradeRowProps> = ({
         },
       }}
     >
-      {/* Deal ID */}
-      <TableCell sx={{ whiteSpace: 'nowrap' }}>
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-          <Typography variant="body2" sx={{ fontFamily: "'JetBrains Mono', monospace", fontSize: '0.8rem' }}>
-            {trade.dealId || trade.id.substring(0, 10)}
-          </Typography>
-        </Box>
+      {/* 1. Date */}
+      <TableCell sx={{ color: 'text.secondary', fontSize: '0.75rem', whiteSpace: 'nowrap' }}>
+        {formatDate(trade.closedAt || trade.openedAt, locale)}
       </TableCell>
 
-      {/* Instrument with colored direction arrow */}
+      {/* 2. Instrument with colored direction arrow */}
       <TableCell sx={{ fontWeight: 600 }}>
-        <Box sx={{ display: 'inline-flex', alignItems: 'center', gap: 0.75 }}>
-          <Tooltip title={trade.direction === 'buy' ? t('table.buy') : t('table.sell')} arrow>
-            <Box
-              component="span"
-              sx={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                color: (theme) =>
-                  trade.direction === 'buy' ? theme.palette.trade.gain : theme.palette.trade.loss,
-              }}
-            >
+        <Box sx={{ display: 'inline-flex', alignItems: 'center', gap: 0.75, flexWrap: 'nowrap' }}>
+          <Tooltip title={trade.direction === 'buy' ? t('table.buy') : t('table.sell')} arrow placement="top">
+            <Box component="span" sx={{ display: 'inline-flex', alignItems: 'center' }}>
               {trade.direction === 'buy' ? (
-                <ArrowUpwardIcon sx={{ fontSize: 18 }} />
+                <ArrowUpwardIcon
+                  sx={{
+                    fontSize: 16,
+                    color: (theme) => theme.palette.trade.gain,
+                  }}
+                />
               ) : (
-                <ArrowDownwardIcon sx={{ fontSize: 18 }} />
+                <ArrowDownwardIcon
+                  sx={{
+                    fontSize: 16,
+                    color: (theme) => theme.palette.trade.loss,
+                  }}
+                />
               )}
             </Box>
           </Tooltip>
@@ -91,12 +87,7 @@ export const TradeRow: React.FC<TradeRowProps> = ({
         </Box>
       </TableCell>
 
-      {/* Date */}
-      <TableCell sx={{ color: 'text.secondary', fontSize: '0.75rem', whiteSpace: 'nowrap' }}>
-        {formatDate(trade.closedAt || trade.openedAt, locale)}
-      </TableCell>
-
-      {/* Duration with Tooltip */}
+      {/* 3. Duration with Tooltip */}
       <TableCell sx={{ color: 'text.secondary', fontSize: '0.75rem', whiteSpace: 'nowrap' }}>
         <Tooltip
           arrow
@@ -129,32 +120,32 @@ export const TradeRow: React.FC<TradeRowProps> = ({
         </Tooltip>
       </TableCell>
 
-      {/* Open Price */}
+      {/* 4. Open Price */}
       <TableCell sx={{ textAlign: 'right' }}>
         {formatPrice(trade.openPrice, numberFormat, locale)}
       </TableCell>
 
-      {/* Close Price */}
+      {/* 5. Close Price */}
       <TableCell sx={{ textAlign: 'right' }}>
         {formatPrice(trade.closePrice, numberFormat, locale)}
       </TableCell>
 
-      {/* Margin */}
+      {/* 6. Margin */}
       <TableCell sx={{ textAlign: 'right' }}>
         {formatCurrency(trade.margin, currency, numberFormat, locale)}
       </TableCell>
 
-      {/* Leverage */}
+      {/* 7. Leverage */}
       <TableCell sx={{ textAlign: 'center' }}>
         {`x${trade.leverage}`}
       </TableCell>
 
-      {/* Gross Return */}
+      {/* 8. Gross Return */}
       <TableCell sx={{ textAlign: 'right', color: 'text.secondary' }}>
         {formatCurrency(trade.grossReturn, currency, numberFormat, locale)}
       </TableCell>
 
-      {/* Net P&L (Accessible styling: red border, tinted background, sign/icon) */}
+      {/* 9. Net P&L (Accessible styling: red border, tinted background, sign/icon) */}
       <TableCell
         sx={{
           textAlign: 'right',
@@ -172,20 +163,6 @@ export const TradeRow: React.FC<TradeRowProps> = ({
           {pnlData.isBreakeven && <RemoveIcon sx={{ fontSize: 14 }} />}
           <span>{pnlData.text}</span>
         </Box>
-      </TableCell>
-
-      {/* Tag */}
-      <TableCell>
-        {trade.tag ? (
-          <Chip label={trade.tag} size="small" variant="outlined" sx={{ height: 20, fontSize: '0.7rem' }} />
-        ) : (
-          '-'
-        )}
-      </TableCell>
-
-      {/* Notes */}
-      <TableCell sx={{ maxWidth: 200, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-        {trade.note || '-'}
       </TableCell>
     </TableRow>
   );

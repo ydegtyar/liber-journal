@@ -74,24 +74,24 @@ describe('Daily Orders Matrix Export Format & Copying Logic', () => {
     const cells: string[] = [
       displayDate,
       String(orderCount),
+      dailyPnl.toFixed(2),
       ...dayTrades.map((t) => t.pnl.toFixed(2)),
     ];
-    while (cells.length < 2 + colsCount) {
+    while (cells.length < 3 + colsCount) {
       cells.push('');
     }
-    cells.push(dailyPnl.toFixed(2));
 
     const tsvString = cells.join('\t');
     const parsedCells = tsvString.split('\t');
 
-    // Expected: 02.09.2026 \t 2 \t 2.50 \t -1.20 \t [empty] \t [empty] \t 1.30
+    // Expected: 02.09.2026 \t 2 \t 1.30 \t 2.50 \t -1.20 \t [empty] \t [empty]
     expect(parsedCells[0]).toBe('02.09.2026');
     expect(parsedCells[1]).toBe('2');
-    expect(parsedCells[2]).toBe('2.50');
-    expect(parsedCells[3]).toBe('-1.20');
-    expect(parsedCells[4]).toBe('');
+    expect(parsedCells[2]).toBe('1.30');
+    expect(parsedCells[3]).toBe('2.50');
+    expect(parsedCells[4]).toBe('-1.20');
     expect(parsedCells[5]).toBe('');
-    expect(parsedCells[6]).toBe('1.30');
+    expect(parsedCells[6]).toBe('');
   });
 
   it('formats single day row for clipboard pasting with European comma decimal', () => {
@@ -105,11 +105,11 @@ describe('Daily Orders Matrix Export Format & Copying Logic', () => {
     const cells: string[] = [
       displayDate,
       String(orderCount),
+      formatComma(dailyPnl),
       ...dayTrades.map((t) => formatComma(t.pnl)),
     ];
-    cells.push(formatComma(dailyPnl));
 
     const tsvString = cells.join('\t');
-    expect(tsvString).toBe('02.09.2026\t2\t2,50\t-1,20\t1,30');
+    expect(tsvString).toBe('02.09.2026\t2\t1,30\t2,50\t-1,20');
   });
 });
