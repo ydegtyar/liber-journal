@@ -185,7 +185,7 @@ export const TradesTable: React.FC<TradesTableProps> = ({
   const endCount = pageSize === 'all' ? totalTrades : Math.min(page * pageSize, totalTrades);
 
   return (
-    <Box>
+    <div>
       <TableContainer component={Paper} sx={{ maxHeight: 680, overflowY: 'auto' }}>
         <Table stickyHeader size="small" aria-label="Trades ledger table">
           <TableHead>
@@ -360,6 +360,6 @@ export const TradesTable: React.FC<TradesTableProps> = ({
           )}
         </Box>
       )}
-    </Box>
+    </div>
   );
 };

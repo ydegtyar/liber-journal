@@ -29,7 +29,7 @@ import { useTranslation } from 'react-i18next';
 import { Trade } from '../../types/trade';
 import { NumberFormatOption } from '../../types/preferences';
 import { formatCurrency } from '../../lib/formatters';
-import { getTradeDateKey, formatDisplayDate } from '../../lib/xlsxTemplate';
+import { getTradeDateKey, formatDisplayDate } from '../../lib/dateUtils';
 
 interface DailyOrdersMatrixTableProps {
   trades: Trade[];
@@ -258,7 +258,7 @@ export const DailyOrdersMatrixTable: React.FC<DailyOrdersMatrixTableProps> = ({
           backgroundColor: (theme) => theme.palette.background.paper,
         }}
       >
-        <Box>
+        <div>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
             <TableViewIcon sx={{ color: 'primary.main', fontSize: 20 }} />
             <Typography variant="subtitle1" sx={{ fontWeight: 700 }}>
@@ -268,7 +268,7 @@ export const DailyOrdersMatrixTable: React.FC<DailyOrdersMatrixTableProps> = ({
           <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mt: 0.25 }}>
             {t('dailyMatrix.subtitle')}
           </Typography>
-        </Box>
+        </div>
 
         {/* Summary Badges & Table Level Actions */}
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, flexWrap: 'wrap' }}>

@@ -47,11 +47,11 @@ export const StreakAnalysisSection: React.FC<StreakAnalysisSectionProps> = ({ st
       title: t('streaks.currentStreak', { defaultValue: 'Поточна серія' }),
       value: streakAnalysis.currentStreak.count,
       icon: isCurrentWin ? (
-        <TrendingUpIcon sx={{ color: 'trade.gain', fontSize: 18 }} />
+        <TrendingUpIcon sx={{ color: 'trade.gain', fontSize: 20 }} />
       ) : isCurrentLoss ? (
-        <TrendingDownIcon sx={{ color: 'trade.loss', fontSize: 18 }} />
+        <TrendingDownIcon sx={{ color: 'trade.loss', fontSize: 20 }} />
       ) : (
-        <RemoveIcon sx={{ color: 'text.secondary', fontSize: 16 }} />
+        <RemoveIcon sx={{ color: 'text.secondary', fontSize: 18 }} />
       ),
       color: (theme: any) =>
         isCurrentWin
@@ -94,8 +94,7 @@ export const StreakAnalysisSection: React.FC<StreakAnalysisSectionProps> = ({ st
     <Paper
       elevation={0}
       sx={{
-        py: 1.5,
-        px: 2,
+        p: 2,
         mb: 2,
         borderRadius: 2,
         border: (theme) => `1px solid ${theme.palette.divider}`,
@@ -103,29 +102,27 @@ export const StreakAnalysisSection: React.FC<StreakAnalysisSectionProps> = ({ st
       }}
     >
       {/* Header */}
-      <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.75, mb: 1.25 }}>
-        <TimelineIcon sx={{ fontSize: 18, color: 'primary.main' }} />
+      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1.5 }}>
+        <TimelineIcon sx={{ fontSize: 20, color: 'primary.main' }} />
         <Typography
-          variant="subtitle2"
+          variant="subtitle1"
           sx={{
             fontWeight: 700,
-            textTransform: 'uppercase',
-            letterSpacing: '0.04em',
-            fontSize: '0.78rem',
-            color: 'text.secondary',
+            fontSize: '0.9rem',
+            color: 'text.primary',
           }}
         >
           {t('streaks.title', { defaultValue: 'Аналіз серій угод' })}
         </Typography>
       </Box>
 
-      {/* 6 Cards Grid - condensed into a single row on md+ */}
-      <Grid container spacing={1.25}>
+      {/* 6 Cards Grid */}
+      <Grid container spacing={1.5}>
         {cards.map((card) => (
-          <Grid key={card.id} size={{ xs: 6, sm: 4, md: 2 }}>
+          <Grid key={card.id} size={{ xs: 6, sm: 4, md: 4, lg: 2 }}>
             <Box
               sx={{
-                p: 1.25,
+                p: 1.5,
                 borderRadius: 1.5,
                 border: (theme) => `1px solid ${theme.palette.divider}`,
                 backgroundColor: (theme) => theme.palette.background.default,
@@ -137,29 +134,31 @@ export const StreakAnalysisSection: React.FC<StreakAnalysisSectionProps> = ({ st
             >
               <Typography
                 variant="caption"
-                color="text.secondary"
                 sx={{
                   fontWeight: 600,
-                  fontSize: '0.72rem',
-                  lineHeight: 1.25,
-                  whiteSpace: 'nowrap',
+                  fontSize: '0.78rem',
+                  lineHeight: 1.3,
+                  color: 'text.secondary',
+                  minHeight: '2.6em',
+                  display: '-webkit-box',
+                  WebkitLineClamp: 2,
+                  WebkitBoxOrient: 'vertical',
                   overflow: 'hidden',
-                  textOverflow: 'ellipsis',
                 }}
-                title={card.title}
               >
                 {card.title}
               </Typography>
 
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, my: 0.25 }}>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.75, my: 0.5 }}>
                 {card.icon}
                 <Typography
                   variant="h6"
                   sx={{
-                    fontWeight: 700,
-                    fontSize: '1.2rem',
+                    fontWeight: 800,
+                    fontSize: '1.35rem',
                     lineHeight: 1.2,
                     fontFamily: "'JetBrains Mono', monospace",
+                    fontVariantNumeric: 'tabular-nums',
                     color: card.color,
                   }}
                 >
@@ -169,16 +168,16 @@ export const StreakAnalysisSection: React.FC<StreakAnalysisSectionProps> = ({ st
 
               <Typography
                 variant="caption"
-                color="text.secondary"
                 sx={{
-                  fontSize: '0.68rem',
-                  lineHeight: 1.2,
-                  whiteSpace: 'nowrap',
+                  fontSize: '0.72rem',
+                  lineHeight: 1.3,
+                  color: 'text.secondary',
+                  minHeight: '2.6em',
+                  display: '-webkit-box',
+                  WebkitLineClamp: 2,
+                  WebkitBoxOrient: 'vertical',
                   overflow: 'hidden',
-                  textOverflow: 'ellipsis',
-                  opacity: 0.85,
                 }}
-                title={card.subtitle}
               >
                 {card.subtitle}
               </Typography>

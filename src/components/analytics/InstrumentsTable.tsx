@@ -74,7 +74,7 @@ export const InstrumentsTable: React.FC<InstrumentsTableProps> = ({
       }}
     >
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1.5, flexWrap: 'wrap', gap: 1 }}>
-        <Box>
+        <div>
           <Typography variant="subtitle1" sx={{ fontWeight: 800, fontSize: '0.95rem' }}>
             {t('instruments.title', { defaultValue: 'Інструменти' })}
           </Typography>
@@ -83,7 +83,7 @@ export const InstrumentsTable: React.FC<InstrumentsTableProps> = ({
               defaultValue: 'Клік по ряду — фільтр за інструментом · «Деталі» — список угод',
             })}
           </Typography>
-        </Box>
+        </div>
       </Box>
 
       <Box sx={{ overflowX: 'auto' }}>

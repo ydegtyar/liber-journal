@@ -80,6 +80,8 @@
     "dayOfWeek": "Performance by Day of Week",
     "drawdown": "Drawdown Underwater Curve",
     "instruments": "Performance by Instrument",
+    "activityCalendar": "Activity Calendar",
+    "hourlyHeatmap": "Time & Day Heatmap",
     "equity": "Equity",
     "pnl": "P&L",
     "drawdownPct": "Drawdown %",
@@ -174,5 +176,38 @@
     "noData": "No data available for heatmap.",
     "year": "Year",
     "totalYear": "Total"
+  },
+  "calendar": {
+    "title": "Daily Activity & P&L Calendar",
+    "subtitle": "GitHub-style contribution grid of trading consistency and daily profitability",
+    "activeDays": "Trading Days",
+    "winDays": "Win Days",
+    "lossDays": "Loss Days",
+    "breakevenDays": "BE Days",
+    "bestDay": "Best Day",
+    "worstDay": "Worst Day",
+    "longestStreak": "Best Daily Streak",
+    "days": "days",
+    "noTrades": "No trades",
+    "trades": "trades",
+    "winRate": "Win Rate",
+    "less": "Loss",
+    "more": "Profit"
+  },
+  "heatmap": {
+    "title": "Hourly & Weekday Performance Heatmap",
+    "subtitle": "Analyze profitability, win rate, and trade density across market sessions",
+    "metricPnl": "Net P&L",
+    "metricWinRate": "Win Rate %",
+    "metricTrades": "Trade Count",
+    "goldenSlot": "Golden Slot",
+    "riskSlot": "Risk Slot",
+    "asianSession": "Asian Session (00:00 - 08:00 UTC)",
+    "londonSession": "London Session (08:00 - 16:00 UTC)",
+    "nySession": "NY Session (13:00 - 21:00 UTC)",
+    "hour": "Hour",
+    "day": "Day",
+    "total": "Total",
+    "noTradesInSlot": "No trades executed in this hour slot"
   }
 }

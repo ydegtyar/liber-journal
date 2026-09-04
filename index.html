@@ -6,17 +6,230 @@
     <link rel="apple-touch-icon" href="/apple-touch-icon-180x180.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="theme-color" content="#0D1117" />
-    <meta name="description" content="Privacy-first trading journal with real-time analytics, continuous ledger, and live-formula Excel exports" />
+    <title>Liber Journal — Institutional Trading Journal &amp; Performance Terminal</title>
+    <meta name="description" content="Privacy-first trading journal with real-time analytics, continuous ledger, Sharpe ratio calculations, and live-formula Excel exports." />
+    <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
+    <link rel="canonical" href="https://liber-journal.vercel.app/" />
+
+    <!-- Multilingual Hreflang Tags for International SEO -->
+    <link rel="alternate" hreflang="en" href="https://liber-journal.vercel.app/?lang=en" />
+    <link rel="alternate" hreflang="uk" href="https://liber-journal.vercel.app/?lang=uk" />
+    <link rel="alternate" hreflang="ru" href="https://liber-journal.vercel.app/?lang=ru" />
+    <link rel="alternate" hreflang="x-default" href="https://liber-journal.vercel.app/" />
+
+    <!-- Open Graph / Social Media -->
+    <meta property="og:site_name" content="Liber Journal" />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://liber-journal.vercel.app/" />
+    <meta property="og:title" content="Liber Journal — Institutional Trading Journal &amp; Performance Terminal" />
+    <meta property="og:description" content="Privacy-first trading journal with real-time analytics, continuous ledger, Sharpe ratio calculations, and live-formula Excel exports." />
+    <meta property="og:image" content="https://liber-journal.vercel.app/pwa-512x512.png" />
+    <meta property="og:image:width" content="512" />
+    <meta property="og:image:height" content="512" />
+    <meta property="og:locale" content="en_US" />
+    <meta property="og:locale:alternate" content="uk_UA" />
+    <meta property="og:locale:alternate" content="ru_RU" />
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:url" content="https://liber-journal.vercel.app/" />
+    <meta name="twitter:title" content="Liber Journal — Institutional Trading Journal &amp; Performance Terminal" />
+    <meta name="twitter:description" content="Privacy-first trading journal with real-time analytics, continuous ledger, and live-formula Excel exports." />
+    <meta name="twitter:image" content="https://liber-journal.vercel.app/pwa-512x512.png" />
+
+    <!-- PWA & Mobile Web App Meta -->
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-    <meta name="apple-mobile-web-app-title" content="Trading Journal" />
-    <title>Trading Journal</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <meta name="apple-mobile-web-app-title" content="Liber Journal" />
+
+    <!-- Preconnect & Non-blocking Font Loading for Core Web Vitals -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap"
+      media="print"
+      onload="this.media='all'"
+    />
+    <noscript>
+      <link
+        rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap"
+      />
+    </noscript>
+
+    <!-- Schema.org JSON-LD for Generative Engine Optimization (GEO) & Search Engines -->
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@graph": [
+          {
+            "@type": "WebApplication",
+            "@id": "https://liber-journal.vercel.app/#webapp",
+            "name": "Liber Journal",
+            "url": "https://liber-journal.vercel.app/",
+            "applicationCategory": "FinanceApplication",
+            "operatingSystem": "All modern browsers (Web Standards)",
+            "description": "Institutional-grade client-side trading journal terminal with real-time analytics, Sharpe ratio, continuous ledger, and live-formula Excel exports.",
+            "inLanguage": ["en", "uk", "ru"],
+            "browserRequirements": "Requires JavaScript and IndexedDB support",
+            "offers": {
+              "@type": "Offer",
+              "price": "0",
+              "priceCurrency": "USD"
+            },
+            "featureList": [
+              "Client-side zero-knowledge privacy with Dexie.js and IndexedDB",
+              "Multi-broker CSV import (MT4/5, Interactive Brokers, Binance, Bybit)",
+              "Real-time calculation of Win Rate, Profit Factor, Sharpe Ratio, and Drawdowns",
+              "Dynamic Recharts equity curve and daily PnL distribution",
+              "Institutional ExcelJS live-formula workbooks with dynamic monthly sheets"
+            ]
+          },
+          {
+            "@type": "FAQPage",
+            "@id": "https://liber-journal.vercel.app/#faq",
+            "mainEntity": [
+              {
+                "@type": "Question",
+                "name": "Is my trading data uploaded to external servers?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "No. Liber Journal is a 100% client-side, zero-knowledge terminal. Your trade records, execution history, and portfolio balances are stored locally in your browser via IndexedDB."
+                }
+              },
+              {
+                "@type": "Question",
+                "name": "Which broker CSV export formats are supported?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "Liber Journal supports trade exports from MetaTrader 4, MetaTrader 5, Interactive Brokers, Binance, Bybit, and generic customizable CSV schemas."
+                }
+              },
+              {
+                "@type": "Question",
+                "name": "Does the Excel export support live dynamic formulas?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "Yes. Spreadsheets exported from Liber Journal use native ExcelJS formulas (SUM, AVERAGE, IF), allowing dynamic auditing directly in Excel or Google Sheets."
+                }
+              }
+            ]
+          }
+        ]
+      }
+    </script>
   </head>
-  <body>
-    <div id="root"></div>
+  <body style="margin: 0; background-color: #0D1117; color: #E6EDF3; font-family: 'Geist', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">
+    <div id="root">
+      <!-- Semantic Static Fallback & Topic-Related Pre-Hydration Loader -->
+      <header style="padding: 1rem 1.5rem; border-bottom: 1px solid #21262d; background-color: #161b22; display: flex; align-items: center; justify-content: space-between;">
+        <div style="display: flex; align-items: center; gap: 0.75rem;">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#2ea043" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="22 7 13.5 15.5 8.5 10.5 2 17"></polyline>
+            <polyline points="16 7 22 7 22 13"></polyline>
+          </svg>
+          <div>
+            <h1 style="font-size: 1.1rem; font-weight: 700; margin: 0; line-height: 1.2; color: #f0f6fc;">
+              Liber Journal — Institutional Performance Terminal
+            </h1>
+            <p style="font-size: 0.75rem; color: #8b949e; margin: 0;">
+              Privacy-first trading journal with real-time analytics &amp; continuous ledger
+            </p>
+          </div>
+        </div>
+      </header>
+
+      <main style="max-width: 1280px; margin: 0 auto; padding: 2rem 1.5rem;">
+        <!-- Pre-hydration Fancy Candlestick Terminal Loader -->
+        <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 320px; background: radial-gradient(ellipse at center, #161b22 0%, #0d1117 100%); border: 1px solid #30363d; border-radius: 8px; margin-bottom: 2rem; position: relative; overflow: hidden; padding: 2.5rem 1rem;">
+          <style>
+            @keyframes preCandlePulse {
+              0%, 100% { transform: scaleY(0.4); opacity: 0.5; }
+              50% { transform: scaleY(1); opacity: 1; }
+            }
+            @keyframes preScan {
+              0% { transform: translateX(-100%); opacity: 0; }
+              50% { opacity: 0.8; }
+              100% { transform: translateX(100%); opacity: 0; }
+            }
+            @keyframes preBlink {
+              0%, 100% { opacity: 0.3; transform: scale(0.8); }
+              50% { opacity: 1; transform: scale(1.3); }
+            }
+            .pre-wick { width: 2px; border-radius: 1px; transform-origin: center center; animation: preCandlePulse 1.6s infinite ease-in-out; position: absolute; }
+            .pre-body { width: 10px; border-radius: 2px; transform-origin: center center; animation: preCandlePulse 1.6s infinite ease-in-out; position: relative; }
+          </style>
+
+          <div style="display: flex; align-items: center; justify-content: center; gap: 14px; height: 60px; position: relative; margin-bottom: 1.5rem;">
+            <!-- Candle 1 -->
+            <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; height: 100%;">
+              <div class="pre-wick" style="height: 38px; background: #2ea043; animation-delay: 0s;"></div>
+              <div class="pre-body" style="height: 24px; background: #2ea043; box-shadow: 0 0 8px rgba(46,160,67,0.5); animation-delay: 0s;"></div>
+            </div>
+            <!-- Candle 2 -->
+            <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; height: 100%;">
+              <div class="pre-wick" style="height: 30px; background: #f85149; animation-delay: 0.2s;"></div>
+              <div class="pre-body" style="height: 16px; background: #f85149; box-shadow: 0 0 8px rgba(248,81,73,0.5); animation-delay: 0.2s;"></div>
+            </div>
+            <!-- Candle 3 -->
+            <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; height: 100%;">
+              <div class="pre-wick" style="height: 46px; background: #2ea043; animation-delay: 0.4s;"></div>
+              <div class="pre-body" style="height: 30px; background: #2ea043; box-shadow: 0 0 8px rgba(46,160,67,0.5); animation-delay: 0.4s;"></div>
+            </div>
+            <!-- Candle 4 -->
+            <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; height: 100%;">
+              <div class="pre-wick" style="height: 34px; background: #f85149; animation-delay: 0.6s;"></div>
+              <div class="pre-body" style="height: 20px; background: #f85149; box-shadow: 0 0 8px rgba(248,81,73,0.5); animation-delay: 0.6s;"></div>
+            </div>
+            <!-- Candle 5 -->
+            <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; height: 100%;">
+              <div class="pre-wick" style="height: 52px; background: #2ea043; animation-delay: 0.8s;"></div>
+              <div class="pre-body" style="height: 36px; background: #2ea043; box-shadow: 0 0 8px rgba(46,160,67,0.5); animation-delay: 0.8s;"></div>
+            </div>
+            <!-- Candle 6 -->
+            <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; height: 100%;">
+              <div class="pre-wick" style="height: 28px; background: #f85149; animation-delay: 1s;"></div>
+              <div class="pre-body" style="height: 14px; background: #f85149; box-shadow: 0 0 8px rgba(248,81,73,0.5); animation-delay: 1s;"></div>
+            </div>
+            <!-- Candle 7 -->
+            <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; height: 100%;">
+              <div class="pre-wick" style="height: 42px; background: #2ea043; animation-delay: 1.2s;"></div>
+              <div class="pre-body" style="height: 26px; background: #2ea043; box-shadow: 0 0 8px rgba(46,160,67,0.5); animation-delay: 1.2s;"></div>
+            </div>
+            <!-- Price Scan Line -->
+            <div style="position: absolute; bottom: 12px; left: -20px; right: -20px; height: 1px; background: linear-gradient(90deg, transparent, #58a6ff, transparent); animation: preScan 2.2s infinite cubic-bezier(0.4, 0, 0.2, 1);"></div>
+          </div>
+
+          <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 48px; height: 48px; text-align: center; flex-shrink: 0;">
+            <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 4px;">
+              <div style="width: 8px; height: 8px; border-radius: 50%; background-color: #2ea043; box-shadow: 0 0 8px #2ea043; animation: preBlink 1.2s infinite ease-in-out;"></div>
+              <span style="font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; font-weight: 700; letter-spacing: 0.08em; color: #f0f6fc;">
+                INITIALIZING TRADING TERMINAL...
+              </span>
+            </div>
+            <span style="font-family: 'JetBrains Mono', monospace; font-size: 0.68rem; color: #8b949e; letter-spacing: 0.05em;">
+              DECRYPTING LOCAL INDEXEDDB LEDGER
+            </span>
+          </div>
+        </div>
+
+        <!-- Crawler Semantic Overview for AI Engines & Traditional Bots -->
+        <section aria-label="Terminal Overview" style="line-height: 1.6; color: #8b949e; font-size: 0.95rem;">
+          <h2 style="font-size: 1.25rem; color: #f0f6fc; margin-top: 0;">Institutional Trading Journal Features &amp; Capabilities</h2>
+          <p>
+            Liber Journal is an open-source, privacy-first web terminal designed for professional traders, proprietary funds, and retail investors. Built with client-side cryptography and local IndexedDB database persistence, no trade information or financial records ever leave your computer.
+          </p>
+          <ul style="padding-left: 1.25rem; margin-top: 0.75rem;">
+            <li><strong>Continuous Ledger:</strong> Comprehensive trade journal supporting multiple executions, commissions, swap, and automated R:R calculation.</li>
+            <li><strong>Quantitative Risk Metrics:</strong> Automated computation of Expectancy, Sharpe Ratio, Profit Factor, Win/Loss Streaks, and Max Drawdown.</li>
+            <li><strong>Interactive Visualizations:</strong> Recharts equity curves, monthly PnL heatmaps, and weekday distribution analysis.</li>
+            <li><strong>Multi-Broker CSV Import:</strong> Direct parsing for MetaTrader 4, MetaTrader 5, Interactive Brokers, Binance, and Bybit.</li>
+            <li><strong>Dynamic ExcelJS Export:</strong> Multi-tab Excel workbook with live dynamic formulas for institutional audit trails.</li>
+          </ul>
+        </section>
+      </main>
+    </div>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>

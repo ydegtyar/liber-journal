@@ -113,7 +113,7 @@ export const TimeframeHeaderBanner: React.FC<TimeframeHeaderBannerProps> = ({
       }}
     >
       {/* Left: Overall PnL & Stats */}
-      <Box>
+      <div>
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 0.5, flexWrap: 'wrap' }}>
           <Typography
             variant="caption"
@@ -225,7 +225,7 @@ export const TimeframeHeaderBanner: React.FC<TimeframeHeaderBannerProps> = ({
             </Button>
           )}
         </Box>
-      </Box>
+      </div>
 
       {/* Right: Quick Timeframe Pills & Custom Range */}
       <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, flexWrap: 'wrap' }}>

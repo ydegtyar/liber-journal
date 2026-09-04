@@ -1,6 +1,4 @@
 import { useState } from 'react';
-import { saveAs } from 'file-saver';
-import { generateXlsxWorkbook } from '../lib/xlsxTemplate';
 import { Trade } from '../types/trade';
 import { JournalSettings, Locale } from '../types/preferences';
 import { useAppPreferences } from './useAppPreferences';
@@ -23,6 +21,10 @@ export function useXlsxExport() {
         : loc?.startsWith('ru')
           ? 'ru'
           : 'en';
+      const [{ generateXlsxWorkbook }, { saveAs }] = await Promise.all([
+        import('../lib/xlsxTemplate'),
+        import('file-saver'),
+      ]);
       const blob = await generateXlsxWorkbook(trades, settings, activeLocale);
       const dateStr = new Date().toISOString().split('T')[0];
       saveAs(blob, `trading_journal_${dateStr}.xlsx`);

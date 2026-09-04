@@ -70,14 +70,14 @@ export const EquityCurveChart: React.FC<EquityCurveChartProps> = ({
           gap: 1,
         }}
       >
-        <Box>
+        <div>
           <Typography variant="subtitle2" sx={{ fontWeight: 700 }}>
             {t('charts.equityCurve')}
           </Typography>
           <Typography variant="caption" color="text.secondary">
             {t('charts.zoomHint', { defaultValue: 'slider знизу для масштабування діапазону' })}
           </Typography>
-        </Box>
+        </div>
 
         {/* View Mode Toggle: By dates vs By trades */}
         <ButtonGroup size="small" variant="outlined">

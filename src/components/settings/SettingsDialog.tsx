@@ -87,7 +87,7 @@ export const SettingsDialog: React.FC<SettingsDialogProps> = ({
           <Divider sx={{ my: 1 }} />
 
           {/* Danger Zone */}
-          <Box>
+          <div>
             <Typography variant="subtitle2" color="error.main" sx={{ fontWeight: 700, mb: 0.5 }}>
               {t('settingsModal.dangerZone')}
             </Typography>
@@ -115,7 +115,7 @@ export const SettingsDialog: React.FC<SettingsDialogProps> = ({
                 </Button>
               </Box>
             )}
-          </Box>
+          </div>
         </Box>
       </DialogContent>
       <DialogActions>
