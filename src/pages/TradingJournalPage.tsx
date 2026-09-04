@@ -54,8 +54,6 @@ export const TradingJournalPage: React.FC = () => {
   const {
     trades,
     isLoading: isTradesLoading,
-    updateTrade,
-    deleteTrade,
     clearAll,
   } = useTradesStore();
 
@@ -280,8 +278,7 @@ export const TradingJournalPage: React.FC = () => {
                   trades={trades}
                   settings={settings}
                   numberFormat={numberFormat}
-                  onUpdateTrade={updateTrade}
-                  onDeleteTrade={deleteTrade}
+                  onToggleSort={toggleSortOrder}
                 />
               </Box>
             ) : (

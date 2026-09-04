@@ -7,6 +7,8 @@ import {
   TableCell,
   TableBody,
   Paper,
+  TableSortLabel,
+  Tooltip,
 } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { Trade } from '../../types/trade';
@@ -19,25 +21,23 @@ interface TradesTableProps {
   trades: Trade[];
   settings: JournalSettings;
   numberFormat: NumberFormatOption;
-  onUpdateTrade: (trade: Trade) => void;
-  onDeleteTrade: (id: string) => void;
+  onToggleSort?: () => void;
 }
 
 export const TradesTable: React.FC<TradesTableProps> = ({
   trades,
   settings,
   numberFormat,
-  onUpdateTrade,
-  onDeleteTrade,
+  onToggleSort,
 }) => {
   const { t, i18n } = useTranslation();
   const currentLang = i18n.language || 'en-US';
 
-  // 1. Sort trades
+  // 1. Sort trades by closedAt / openedAt timestamp
   const sortedTrades = useMemo(() => {
     return [...trades].sort((a, b) => {
-      const timeA = new Date(a.closedAt).getTime() || 0;
-      const timeB = new Date(b.closedAt).getTime() || 0;
+      const timeA = new Date(a.closedAt || a.openedAt).getTime() || 0;
+      const timeB = new Date(b.closedAt || b.openedAt).getTime() || 0;
       return settings.sortOrder === 'asc' ? timeA - timeB : timeB - timeA;
     });
   }, [trades, settings.sortOrder]);
@@ -58,7 +58,7 @@ export const TradesTable: React.FC<TradesTableProps> = ({
     const map: Record<string, Trade[]> = {};
 
     for (const trade of sortedTrades) {
-      const key = getGroupKey(trade.closedAt, settings.groupBy);
+      const key = getGroupKey(trade.closedAt || trade.openedAt, settings.groupBy);
       if (!map[key]) {
         map[key] = [];
         sections.push({ key, trades: map[key] });
@@ -76,9 +76,19 @@ export const TradesTable: React.FC<TradesTableProps> = ({
       <Table stickyHeader size="small" aria-label="Trades ledger table">
         <TableHead>
           <TableRow>
-            <TableCell sx={{ width: 90 }}>{t('table.actions')}</TableCell>
             <TableCell>{t('table.dealId')}</TableCell>
             <TableCell>{t('table.instrument')}</TableCell>
+            <TableCell sortDirection={settings.sortOrder}>
+              <Tooltip title={settings.sortOrder === 'asc' ? t('table.sortOldestFirst') : t('table.sortNewestFirst')}>
+                <TableSortLabel
+                  active={true}
+                  direction={settings.sortOrder}
+                  onClick={onToggleSort}
+                >
+                  {t('table.date')}
+                </TableSortLabel>
+              </Tooltip>
+            </TableCell>
             <TableCell>{t('table.duration')}</TableCell>
             <TableCell sx={{ textAlign: 'right' }}>{t('table.openPrice')}</TableCell>
             <TableCell sx={{ textAlign: 'right' }}>{t('table.closePrice')}</TableCell>
@@ -112,8 +122,6 @@ export const TradesTable: React.FC<TradesTableProps> = ({
                   currency={settings.currency}
                   numberFormat={numberFormat}
                   locale={currentLang}
-                  onUpdate={onUpdateTrade}
-                  onDelete={onDeleteTrade}
                 />
               ))}
             </React.Fragment>
