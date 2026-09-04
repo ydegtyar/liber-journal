@@ -147,7 +147,11 @@ export function formatPercent(
 /**
  * Formats ISO date string for display.
  */
-export function formatDate(isoStr: string | undefined | null, locale = 'en-US'): string {
+export function formatDate(
+  isoStr: string | undefined | null,
+  locale = 'en-US',
+  includeSeconds = false
+): string {
   if (!isoStr) return '-';
   const date = new Date(isoStr);
   if (isNaN(date.getTime())) return isoStr;
@@ -158,5 +162,65 @@ export function formatDate(isoStr: string | undefined | null, locale = 'en-US'):
     day: 'numeric',
     hour: '2-digit',
     minute: '2-digit',
+    ...(includeSeconds ? { second: '2-digit' } : {}),
   }).format(date);
 }
+
+/**
+ * Formats duration between two ISO date strings concisely (e.g., '45s', '15m', '2h 15m', '3d 4h').
+ */
+export function formatDuration(
+  openedAt: string | undefined | null,
+  closedAt: string | undefined | null
+): string {
+  if (!openedAt || !closedAt) return '-';
+  const start = new Date(openedAt).getTime();
+  const end = new Date(closedAt).getTime();
+  if (isNaN(start) || isNaN(end) || end < start) return '-';
+
+  const totalSeconds = Math.round((end - start) / 1000);
+  if (totalSeconds < 60) {
+    return `${totalSeconds}s`;
+  }
+
+  const days = Math.floor(totalSeconds / 86400);
+  const hours = Math.floor((totalSeconds % 86400) / 3600);
+  const minutes = Math.floor((totalSeconds % 3600) / 60);
+  const seconds = totalSeconds % 60;
+
+  if (days > 0) {
+    return hours > 0 ? `${days}d ${hours}h` : `${days}d`;
+  }
+  if (hours > 0) {
+    return minutes > 0 ? `${hours}h ${minutes}m` : `${hours}h`;
+  }
+  return seconds > 0 ? `${minutes}m ${seconds}s` : `${minutes}m`;
+}
+
+/**
+ * Formats duration between two ISO date strings with detailed breakdown (e.g., '1d 4h 15m 30s').
+ */
+export function formatDetailedDuration(
+  openedAt: string | undefined | null,
+  closedAt: string | undefined | null
+): string {
+  if (!openedAt || !closedAt) return '-';
+  const start = new Date(openedAt).getTime();
+  const end = new Date(closedAt).getTime();
+  if (isNaN(start) || isNaN(end) || end < start) return '-';
+
+  const totalSeconds = Math.round((end - start) / 1000);
+  const days = Math.floor(totalSeconds / 86400);
+  const hours = Math.floor((totalSeconds % 86400) / 3600);
+  const minutes = Math.floor((totalSeconds % 3600) / 60);
+  const seconds = totalSeconds % 60;
+
+  const parts: string[] = [];
+  if (days > 0) parts.push(`${days}d`);
+  if (hours > 0) parts.push(`${hours}h`);
+  if (minutes > 0) parts.push(`${minutes}m`);
+  if (seconds > 0 || parts.length === 0) parts.push(`${seconds}s`);
+
+  return parts.join(' ');
+}
+

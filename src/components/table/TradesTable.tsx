@@ -69,7 +69,7 @@ export const TradesTable: React.FC<TradesTableProps> = ({
     return sections;
   }, [sortedTrades, settings.groupBy]);
 
-  const columnCount = 13;
+  const columnCount = 12;
 
   return (
     <TableContainer component={Paper} sx={{ maxHeight: 680, overflowY: 'auto' }}>
@@ -79,8 +79,7 @@ export const TradesTable: React.FC<TradesTableProps> = ({
             <TableCell sx={{ width: 90 }}>{t('table.actions')}</TableCell>
             <TableCell>{t('table.dealId')}</TableCell>
             <TableCell>{t('table.instrument')}</TableCell>
-            <TableCell>{t('table.openedAt')}</TableCell>
-            <TableCell>{t('table.closedAt')}</TableCell>
+            <TableCell>{t('table.duration')}</TableCell>
             <TableCell sx={{ textAlign: 'right' }}>{t('table.openPrice')}</TableCell>
             <TableCell sx={{ textAlign: 'right' }}>{t('table.closePrice')}</TableCell>
             <TableCell sx={{ textAlign: 'right' }}>{t('table.margin')}</TableCell>

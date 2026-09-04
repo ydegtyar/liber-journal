@@ -19,7 +19,7 @@ export function getColumnLetter(colIndex: number): string {
 /**
  * Helper to get date string in YYYY-MM-DD from ISO string.
  */
-function getTradeDateKey(isoString: string): string {
+export function getTradeDateKey(isoString: string): string {
   if (!isoString) return 'Unknown';
   const d = new Date(isoString);
   if (isNaN(d.getTime())) return 'Unknown';
@@ -32,7 +32,7 @@ function getTradeDateKey(isoString: string): string {
 /**
  * Formats YYYY-MM-DD to DD.MM.YYYY
  */
-function formatDisplayDate(dateKey: string): string {
+export function formatDisplayDate(dateKey: string): string {
   const parts = dateKey.split('-');
   if (parts.length === 3) {
     return `${parts[2]}.${parts[1]}.${parts[0]}`;

@@ -5,7 +5,7 @@
 [![TypeScript](https://img.shields.io/badge/TypeScript-Strict-blue?style=flat-square&logo=typescript)](https://www.typescriptlang.org/)
 [![Vite](https://img.shields.io/badge/Vite-6.x-646CFF?style=flat-square&logo=vite)](https://vitejs.dev/)
 [![React](https://img.shields.io/badge/React-19.x-61DAFB?style=flat-square&logo=react)](https://react.dev/)
-[![Tests](https://img.shields.io/badge/Vitest-27%20passed-success?style=flat-square&logo=vitest)](https://vitest.dev/)
+[![Tests](https://img.shields.io/badge/Vitest-37%20passed-success?style=flat-square&logo=vitest)](https://vitest.dev/)
 
 A high-performance, privacy-first, zero-backend trading journal web terminal built with **React**, **TypeScript**, **TanStack Table**, **MUI v6**, **Recharts**, **PapaParse**, **ExcelJS**, and **Dexie.js (IndexedDB)**.
 
@@ -46,6 +46,11 @@ Designed to replace fragile, multi-tab spreadsheets with a continuous ledger, re
   - **Sortable Chronology**: Fast toggle between `Oldest First` and `Newest First`.
   - **Accessible Loss Highlighting**: Tinted row background, colored metric value, and directional trend icon.
   - **Inline Editing**: Edit trade values with live real-time PnL recalculation.
+- **Daily Orders Matrix (Export Format UI & Row Copy)**:
+  - Direct UI representation of the exported `Daily Journal` matrix: date, closed order count, sequential trade P&L columns (`1`, `2`, `3`, ..., `N`), and daily net P&L.
+  - **1-Click Row Copy**: Each row features a copy button to copy the day's record in tab-separated values (TSV) format, ready for direct copy-pasting into existing Excel or Google Sheets workbooks.
+  - **Flexible Copy Modes**: Copy full row (date, count, trades, total) or trades-only (for pasting from column C onwards).
+  - Respects active number formatting (comma `,` vs dot `.`) to match European and standard Excel locales without decimal parse errors.
 - **Dynamic Excel (XLSX) Export**:
   - Powered by **ExcelJS** to write **real Excel formulas**, named range `InitialDeposit`, and multi-sheet workbooks.
   - **`Daily Journal` Sheet**: Features a Daily Order Matrix with trade count per day (`=COUNT(...)`), individual order P&L columns (`1`, `2`, `3`, ...), daily P&L totals (`=SUM(...)`), Monthly & Weekly P&L cards with bilingual Ukrainian/English explanatory notes, and live account ROI%.

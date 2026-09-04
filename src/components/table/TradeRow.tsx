@@ -23,6 +23,8 @@ import {
   formatPrice,
   formatSignedPnl,
   formatDate,
+  formatDuration,
+  formatDetailedDuration,
 } from '../../lib/formatters';
 
 interface TradeRowProps {
@@ -191,14 +193,37 @@ export const TradeRow: React.FC<TradeRowProps> = ({
         )}
       </TableCell>
 
-      {/* Opened At */}
-      <TableCell sx={{ color: 'text.secondary', fontSize: '0.75rem' }}>
-        {formatDate(trade.openedAt, locale)}
-      </TableCell>
-
-      {/* Closed At */}
-      <TableCell sx={{ color: 'text.secondary', fontSize: '0.75rem' }}>
-        {formatDate(trade.closedAt, locale)}
+      {/* Duration with Tooltip */}
+      <TableCell sx={{ color: 'text.secondary', fontSize: '0.75rem', whiteSpace: 'nowrap' }}>
+        <Tooltip
+          arrow
+          placement="top"
+          title={
+            <Box sx={{ p: 0.5, lineHeight: 1.6, fontSize: '0.75rem' }}>
+              <div>
+                <strong>{t('table.openedAt')}:</strong> {formatDate(trade.openedAt, locale, true)}
+              </div>
+              <div>
+                <strong>{t('table.closedAt')}:</strong> {formatDate(trade.closedAt, locale, true)}
+              </div>
+              <div style={{ marginTop: 4, paddingTop: 4, borderTop: '1px solid rgba(128, 128, 128, 0.3)' }}>
+                <strong>{t('table.duration')}:</strong> {formatDetailedDuration(trade.openedAt, trade.closedAt)}
+              </div>
+            </Box>
+          }
+        >
+          <Box
+            component="span"
+            sx={{
+              cursor: 'help',
+              borderBottom: '1px dotted',
+              borderColor: 'text.secondary',
+              display: 'inline-block',
+            }}
+          >
+            {formatDuration(trade.openedAt, trade.closedAt)}
+          </Box>
+        </Tooltip>
       </TableCell>
 
       {/* Open Price */}

@@ -14,6 +14,8 @@ import BarChartIcon from '@mui/icons-material/BarChart';
 import DateRangeIcon from '@mui/icons-material/DateRange';
 import LayersIcon from '@mui/icons-material/Layers';
 import PieChartIcon from '@mui/icons-material/PieChart';
+import ReceiptLongIcon from '@mui/icons-material/ReceiptLong';
+import CalendarViewMonthIcon from '@mui/icons-material/CalendarViewMonth';
 import { useTranslation } from 'react-i18next';
 import { useTradesStore } from '../hooks/useTradesStore';
 import { useJournalSettings } from '../hooks/useJournalSettings';
@@ -38,6 +40,7 @@ import { DrawdownChart } from '../components/analytics/DrawdownChart';
 import { InstrumentChart } from '../components/analytics/InstrumentChart';
 import { TradesTableToolbar } from '../components/table/TradesTableToolbar';
 import { TradesTable } from '../components/table/TradesTable';
+import { DailyOrdersMatrixTable } from '../components/matrix/DailyOrdersMatrixTable';
 
 export const TradingJournalPage: React.FC = () => {
   const { t } = useTranslation();
@@ -76,6 +79,7 @@ export const TradingJournalPage: React.FC = () => {
 
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [activeChartTab, setActiveChartTab] = useState(0);
+  const [tableViewMode, setTableViewMode] = useState<'ledger' | 'matrix'>('ledger');
 
   // Compute analytics from current trades and initial deposit
   const analytics = useMemo(() => {
@@ -226,29 +230,69 @@ export const TradingJournalPage: React.FC = () => {
               )}
             </Box>
 
-            {/* 3. Trades Ledger Table & Toolbar */}
-            <Box sx={{ borderRadius: 1, overflow: 'hidden', border: (theme) => `1px solid ${theme.palette.divider}` }}>
-              <TradesTableToolbar
-                settings={settings}
-                tradeCount={trades.length}
-                isExporting={isExporting}
-                isImporting={isImporting}
-                onUpdateDeposit={updateInitialDeposit}
-                onSetGroupBy={setGroupBy}
-                onToggleSort={toggleSortOrder}
-                onExportXlsx={() => exportJournal(trades, settings)}
-                onUploadFile={handleFileImport}
-                onOpenSettings={() => setSettingsOpen(true)}
-              />
-
-              <TradesTable
-                trades={trades}
-                settings={settings}
-                numberFormat={numberFormat}
-                onUpdateTrade={updateTrade}
-                onDeleteTrade={deleteTrade}
-              />
+            {/* 3. Trades Ledger & Daily Orders Matrix Views */}
+            <Box sx={{ mb: 1.5, display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 1 }}>
+              <Tabs
+                value={tableViewMode}
+                onChange={(_e, val) => setTableViewMode(val)}
+                sx={{
+                  minHeight: 38,
+                  '& .MuiTab-root': {
+                    minHeight: 38,
+                    py: 0.5,
+                    px: 1.5,
+                    fontSize: '0.8rem',
+                    fontWeight: 700,
+                  },
+                }}
+              >
+                <Tab
+                  value="ledger"
+                  icon={<ReceiptLongIcon sx={{ fontSize: 18 }} />}
+                  iconPosition="start"
+                  label={`${t('dailyMatrix.tabLedger')} (${trades.length})`}
+                />
+                <Tab
+                  value="matrix"
+                  icon={<CalendarViewMonthIcon sx={{ fontSize: 18 }} />}
+                  iconPosition="start"
+                  label={t('dailyMatrix.tabMatrix')}
+                />
+              </Tabs>
             </Box>
+
+            {tableViewMode === 'ledger' ? (
+              <Box sx={{ borderRadius: 1, overflow: 'hidden', border: (theme) => `1px solid ${theme.palette.divider}` }}>
+                <TradesTableToolbar
+                  settings={settings}
+                  tradeCount={trades.length}
+                  isExporting={isExporting}
+                  isImporting={isImporting}
+                  onUpdateDeposit={updateInitialDeposit}
+                  onSetGroupBy={setGroupBy}
+                  onToggleSort={toggleSortOrder}
+                  onExportXlsx={() => exportJournal(trades, settings)}
+                  onUploadFile={handleFileImport}
+                  onOpenSettings={() => setSettingsOpen(true)}
+                />
+
+                <TradesTable
+                  trades={trades}
+                  settings={settings}
+                  numberFormat={numberFormat}
+                  onUpdateTrade={updateTrade}
+                  onDeleteTrade={deleteTrade}
+                />
+              </Box>
+            ) : (
+              <DailyOrdersMatrixTable
+                trades={trades}
+                currency={settings.currency}
+                numberFormat={numberFormat}
+                onExportXlsx={() => exportJournal(trades, settings)}
+                isExporting={isExporting}
+              />
+            )}
           </>
         )}
       </Container>

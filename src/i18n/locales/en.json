@@ -46,6 +46,7 @@
     "sell": "SELL",
     "openedAt": "Opened",
     "closedAt": "Closed",
+    "duration": "Duration",
     "openPrice": "Open Price",
     "closePrice": "Close Price",
     "margin": "Margin",
@@ -90,5 +91,25 @@
     "formatComma": "European Comma (1.234,56)",
     "dangerZone": "Danger Zone",
     "resetDescription": "Erase all trades and local database cache"
+  },
+  "dailyMatrix": {
+    "title": "Daily Orders Matrix (Export Format)",
+    "subtitle": "Layout identical to 'Daily Journal' sheet in exported XLSX. Click 'Copy' to paste any row directly into Excel/Google Sheets.",
+    "tabLedger": "Trade Ledger",
+    "tabMatrix": "Daily Orders Matrix",
+    "copyRow": "Copy row for Excel",
+    "copyRowTooltip": "Copy row in spreadsheet TSV format (ready to paste)",
+    "copyTradesOnly": "Copy trades only",
+    "copyAll": "Copy All Rows",
+    "copied": "Copied to clipboard! Ready to paste into Excel",
+    "date": "Date",
+    "closedOrders": "Orders",
+    "order": "Trade",
+    "dailyPnl": "Daily P&L",
+    "total": "Total",
+    "activeDays": "Active Days",
+    "monthlyPnl": "Monthly P&L",
+    "totalOrders": "Total Orders",
+    "noTrades": "No trades recorded"
   }
 }
