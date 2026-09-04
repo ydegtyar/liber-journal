@@ -107,12 +107,25 @@ npm run build
 ```
 Production assets are generated in the `dist/` directory.
 
-### Deploy to Vercel
-Deploy to production using the Vercel CLI:
+### Automatic Deployment on Push
+
+#### Option A: Native Vercel Git Integration (Recommended)
+1. Go to your project's [Vercel Git Settings](https://vercel.com/yuriy-degtyars-projects-0321a19b/liber-journal/settings/git).
+2. Click **Connect Git Repository** and select `ydegtyar/liber-journal`.
+3. Every `git push` to `main` will automatically build and deploy the production site with live URL previews on PRs.
+
+#### Option B: GitHub Actions CI/CD (`.github/workflows/deploy.yml`)
+1. On every push and pull request to `main`, GitHub Actions automatically runs:
+   - Vitest test suite (`npm test`)
+   - Production type-checking and PWA build (`npm run build`)
+2. To enable automated deployment via GitHub Actions:
+   - Add a `VERCEL_TOKEN` secret to your GitHub repository ([GitHub Repo Secrets Settings](https://github.com/ydegtyar/liber-journal/settings/secrets/actions)).
+   - `VERCEL_ORG_ID` and `VERCEL_PROJECT_ID` are already pre-configured as repository variables.
+
+#### Manual CLI Deployment
 ```bash
 npm run deploy
 ```
-Or link the GitHub repository directly in your [Vercel Dashboard](https://vercel.com/new).
 
 ---
 
