@@ -17,7 +17,6 @@ describe('Daily Orders Matrix Export Format & Copying Logic', () => {
       leverage: 20,
       grossReturn: 2.5,
       pnl: 2.5,
-      isBreakeven: false,
     },
     {
       id: 't2',
@@ -32,7 +31,6 @@ describe('Daily Orders Matrix Export Format & Copying Logic', () => {
       leverage: 20,
       grossReturn: -1.2,
       pnl: -1.2,
-      isBreakeven: false,
     },
     {
       id: 't3',
@@ -47,7 +45,6 @@ describe('Daily Orders Matrix Export Format & Copying Logic', () => {
       leverage: 10,
       grossReturn: 3.1,
       pnl: 3.1,
-      isBreakeven: false,
     },
   ];
 
