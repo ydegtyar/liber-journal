@@ -46,35 +46,60 @@ export const ThemeSwitcher: React.FC<ThemeSwitcherProps> = ({ currentMode, onCha
         },
       }}
     >
-      <Tooltip title={t('theme.light')}>
-        <ToggleButton value="light" aria-label="Light mode">
+      <ToggleButton
+        value="light"
+        aria-label="Light mode"
+        selected={currentMode === 'light'}
+        onClick={() => onChange('light')}
+      >
+        <Tooltip title={t('theme.light')} arrow>
           <LightModeIcon sx={{ fontSize: 16 }} />
-        </ToggleButton>
-      </Tooltip>
+        </Tooltip>
+      </ToggleButton>
 
-      <Tooltip title={t('theme.dark')}>
-        <ToggleButton value="dark" aria-label="Dark mode">
+      <ToggleButton
+        value="dark"
+        aria-label="Dark mode"
+        selected={currentMode === 'dark'}
+        onClick={() => onChange('dark')}
+      >
+        <Tooltip title={t('theme.dark')} arrow>
           <DarkModeIcon sx={{ fontSize: 16 }} />
-        </ToggleButton>
-      </Tooltip>
+        </Tooltip>
+      </ToggleButton>
 
-      <Tooltip title={t('theme.midnight')}>
-        <ToggleButton value="midnight" aria-label="Dark Midnight mode">
+      <ToggleButton
+        value="midnight"
+        aria-label="Dark Midnight mode"
+        selected={currentMode === 'midnight'}
+        onClick={() => onChange('midnight')}
+      >
+        <Tooltip title={t('theme.midnight')} arrow>
           <NightsStayIcon sx={{ fontSize: 16 }} />
-        </ToggleButton>
-      </Tooltip>
+        </Tooltip>
+      </ToggleButton>
 
-      <Tooltip title={t('theme.unicorn')}>
-        <ToggleButton value="unicorn" aria-label="Unicorn mode">
+      <ToggleButton
+        value="unicorn"
+        aria-label="Unicorn mode"
+        selected={currentMode === 'unicorn'}
+        onClick={() => onChange('unicorn')}
+      >
+        <Tooltip title={t('theme.unicorn')} arrow>
           <AutoAwesomeIcon sx={{ fontSize: 16 }} />
-        </ToggleButton>
-      </Tooltip>
+        </Tooltip>
+      </ToggleButton>
 
-      <Tooltip title={t('theme.system')}>
-        <ToggleButton value="system" aria-label="System mode">
+      <ToggleButton
+        value="system"
+        aria-label="System mode"
+        selected={currentMode === 'system'}
+        onClick={() => onChange('system')}
+      >
+        <Tooltip title={t('theme.system')} arrow>
           <SettingsBrightnessIcon sx={{ fontSize: 16 }} />
-        </ToggleButton>
-      </Tooltip>
+        </Tooltip>
+      </ToggleButton>
     </ToggleButtonGroup>
   );
 };

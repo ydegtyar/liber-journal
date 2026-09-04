@@ -5,7 +5,7 @@
 [![TypeScript](https://img.shields.io/badge/TypeScript-Strict-blue?style=flat-square&logo=typescript)](https://www.typescriptlang.org/)
 [![Vite](https://img.shields.io/badge/Vite-6.x-646CFF?style=flat-square&logo=vite)](https://vitejs.dev/)
 [![React](https://img.shields.io/badge/React-19.x-61DAFB?style=flat-square&logo=react)](https://react.dev/)
-[![Tests](https://img.shields.io/badge/Vitest-20%20passed-success?style=flat-square&logo=vitest)](https://vitest.dev/)
+[![Tests](https://img.shields.io/badge/Vitest-27%20passed-success?style=flat-square&logo=vitest)](https://vitest.dev/)
 
 A high-performance, privacy-first, zero-backend trading journal web terminal built with **React**, **TypeScript**, **TanStack Table**, **MUI v6**, **Recharts**, **PapaParse**, **ExcelJS**, and **Dexie.js (IndexedDB)**.
 
