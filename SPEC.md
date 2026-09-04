@@ -99,7 +99,6 @@ export interface Trade {
   session?: TradingSession;         // Auto-derived or manual session
   note?: string;                    // Freeform reflection / execution notes
   plannedRisk?: number;             // Optional planned risk ($) for R-multiple
-  isDraft?: boolean;                // Flag for duplicated / unsaved rows
 }
 
 export interface JournalSettings {
@@ -332,8 +331,8 @@ The Excel export is built via **ExcelJS** to generate a native, multi-sheet, liv
    - Losing trades (e.g. USD/PLN at `-0.21`) display a red border, tinted row background, and explicit minus sign.
    - Breakeven trades display neutral styling.
 5. **Grouped Hierarchy:** With `groupBy: 'day'`, daily aggregate headers appear above child trades showing count, daily P&L, and win rate.
-6. **Row Duplication:** Clicking "Duplicate" creates an inline editable draft row. Modifying prices and saving persists the trade to IndexedDB and triggers immediate stats recalculation.
-7. **Persistence:** Reloading the browser preserves all trades, draft edits, initial deposit, sort order, theme, and language.
+6. **Inline Trade Editing:** Clicking "Edit" enables inline editing of trade parameters with automatic PnL recalculation upon price or margin changes, persisted directly to IndexedDB.
+7. **Persistence:** Reloading the browser preserves all trades, initial deposit, sort order, theme, and language.
 8. **Excel Recalculation:** Opening the exported `.xlsx` file in Excel or LibreOffice and changing a trade P&L automatically updates total balance, ROI%, and win rate via Excel formulas.
 9. **5-Theme System:** Instant switching between Light, Dark, Midnight, Unicorn, and System, respecting reduced motion and keeping focus rings visible.
 10. **Rich Analytics Visualizations:** Recharts renders responsive Equity Curve, Periodic P&L, Day-of-Week distribution, Drawdown underwater chart, and Instrument breakdown.

@@ -44,8 +44,8 @@ Designed to replace fragile, multi-tab spreadsheets with a continuous ledger, re
 - **Interactive High-Density Table**:
   - **Inverted Aggregation**: Daily, weekly, or monthly summary headers sit **above** child trades showing subtotal margin, win rate, and net P&L.
   - **Sortable Chronology**: Fast toggle between `Oldest First` and `Newest First`.
-  - **Accessible Loss Highlighting**: Red left border accent, tinted row background, and directional trend icon.
-  - **Row Duplication & Inline Drafts**: Duplicate any trade to log similar entries with real-time PnL recalculation.
+  - **Accessible Loss Highlighting**: Tinted row background, colored metric value, and directional trend icon.
+  - **Inline Editing**: Edit trade values with live real-time PnL recalculation.
 - **Dynamic Excel (XLSX) Export**:
   - Powered by **ExcelJS** to write **real Excel formulas**, named range `InitialDeposit`, and multi-sheet workbooks.
   - **`Daily Journal` Sheet**: Features a Daily Order Matrix with trade count per day (`=COUNT(...)`), individual order P&L columns (`1`, `2`, `3`, ...), daily P&L totals (`=SUM(...)`), Monthly & Weekly P&L cards with bilingual Ukrainian/English explanatory notes, and live account ROI%.
@@ -56,7 +56,7 @@ Designed to replace fragile, multi-tab spreadsheets with a continuous ledger, re
   - **Light**: Crisp institutional terminal palette.
   - **Dark**: Refined charcoal.
   - **Dark Midnight**: Pitch-black `#000000` OLED terminal.
-  - **Unicorn**: Vibrant cyberpunk/synthwave iridescent palette (deep purple surfaces with neon cyan and magenta accents).
+  - **Unicorn**: Vibrant high-contrast terminal palette (deep slate-obsidian surfaces with neon cyan and sky accents).
   - **System**: Live listener tracking OS `prefers-color-scheme`.
   - Global `disableRipple` and visible keyboard focus rings.
 - **Internationalization (i18n)**:
