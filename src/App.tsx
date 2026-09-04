@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react';
 import { ThemeProvider, CssBaseline } from '@mui/material';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { useAppPreferences } from './hooks/useAppPreferences';
+import { PreferencesProvider, useAppPreferences } from './hooks/useAppPreferences';
 import { buildAppTheme } from './theme/theme';
 import { TradingJournalPage } from './pages/TradingJournalPage';
 
@@ -13,7 +13,7 @@ const queryClient = new QueryClient({
   },
 });
 
-export const App: React.FC = () => {
+const AppContent: React.FC = () => {
   const { themeMode, systemColor } = useAppPreferences();
 
   const theme = useMemo(() => {
@@ -21,11 +21,19 @@ export const App: React.FC = () => {
   }, [themeMode, systemColor]);
 
   return (
+    <ThemeProvider theme={theme}>
+      <CssBaseline />
+      <TradingJournalPage />
+    </ThemeProvider>
+  );
+};
+
+export const App: React.FC = () => {
+  return (
     <QueryClientProvider client={queryClient}>
-      <ThemeProvider theme={theme}>
-        <CssBaseline />
-        <TradingJournalPage />
-      </ThemeProvider>
+      <PreferencesProvider>
+        <AppContent />
+      </PreferencesProvider>
     </QueryClientProvider>
   );
 };
