@@ -231,7 +231,7 @@ export const GithubActivityCalendar: React.FC<GithubActivityCalendarProps> = ({
       maxDailyWin: maxWin || 1,
       maxDailyLoss: maxLoss || 1,
     };
-  }, [selectedYear, dailyMap, allDailyStats]);
+  }, [selectedYear, allDailyStats]);
 
   // Color generator for cell
   const getCellColor = (stats: DailyStats | undefined, inYear: boolean) => {
@@ -298,9 +298,6 @@ export const GithubActivityCalendar: React.FC<GithubActivityCalendarProps> = ({
           <Box>
             <Typography variant="subtitle1" sx={{ fontWeight: 800, fontSize: '0.95rem', lineHeight: 1.2 }}>
               {t('calendar.title')}
-            </Typography>
-            <Typography variant="caption" color="text.secondary">
-              {t('calendar.subtitle')}
             </Typography>
           </Box>
         </Box>

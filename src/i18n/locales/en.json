@@ -179,7 +179,6 @@
   },
   "calendar": {
     "title": "Daily Activity & P&L Calendar",
-    "subtitle": "GitHub-style contribution grid of trading consistency and daily profitability",
     "activeDays": "Trading Days",
     "winDays": "Win Days",
     "lossDays": "Loss Days",

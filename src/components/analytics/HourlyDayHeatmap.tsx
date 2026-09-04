@@ -274,9 +274,6 @@ export const HourlyDayHeatmap: React.FC<HourlyDayHeatmapProps> = ({
             <Typography variant="subtitle1" sx={{ fontWeight: 800, fontSize: '0.95rem', lineHeight: 1.2 }}>
               {t('heatmap.title')}
             </Typography>
-            <Typography variant="caption" color="text.secondary">
-              {t('heatmap.subtitle')}
-            </Typography>
           </Box>
         </Box>
 
