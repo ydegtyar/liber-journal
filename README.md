@@ -5,7 +5,7 @@
 [![TypeScript](https://img.shields.io/badge/TypeScript-Strict-blue?style=flat-square&logo=typescript)](https://www.typescriptlang.org/)
 [![Vite](https://img.shields.io/badge/Vite-6.x-646CFF?style=flat-square&logo=vite)](https://vitejs.dev/)
 [![React](https://img.shields.io/badge/React-19.x-61DAFB?style=flat-square&logo=react)](https://react.dev/)
-[![Tests](https://img.shields.io/badge/Vitest-19%20passed-success?style=flat-square&logo=vitest)](https://vitest.dev/)
+[![Tests](https://img.shields.io/badge/Vitest-20%20passed-success?style=flat-square&logo=vitest)](https://vitest.dev/)
 
 A high-performance, privacy-first, zero-backend trading journal web terminal built with **React**, **TypeScript**, **TanStack Table**, **MUI v6**, **Recharts**, **PapaParse**, **ExcelJS**, and **Dexie.js (IndexedDB)**.
 
@@ -47,8 +47,11 @@ Designed to replace fragile, multi-tab spreadsheets with a continuous ledger, re
   - **Accessible Loss Highlighting**: Red left border accent, tinted row background, and directional trend icon.
   - **Row Duplication & Inline Drafts**: Duplicate any trade to log similar entries with real-time PnL recalculation.
 - **Dynamic Excel (XLSX) Export**:
-  - Powered by **ExcelJS** to write **real Excel formulas** (`=InitialDeposit + SUM(Trades!K:K)`), named range `InitialDeposit`, and structured Excel Tables.
-  - Editing any trade cell in Excel updates account balance, ROI%, and win rate automatically.
+  - Powered by **ExcelJS** to write **real Excel formulas**, named range `InitialDeposit`, and multi-sheet workbooks.
+  - **`Daily Journal` Sheet**: Features a Daily Order Matrix with trade count per day (`=COUNT(...)`), individual order P&L columns (`1`, `2`, `3`, ...), daily P&L totals (`=SUM(...)`), Monthly & Weekly P&L cards with bilingual Ukrainian/English explanatory notes, and live account ROI%.
+  - **`Trades` Sheet**: Full 13-column ledger of all raw trades with structured Excel Table formatting (`TradesTable`).
+  - **`Analytics` Sheet**: Institutional metrics summary (Win Rate, Profit Factor, Expectancy, Max Drawdown).
+  - Editing any trade cell in Excel dynamically updates daily totals, monthly net P&L, balance, and ROI% automatically.
 - **5 Terminal Themes**:
   - **Light**: Crisp institutional terminal palette.
   - **Dark**: Refined charcoal.

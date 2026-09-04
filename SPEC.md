@@ -288,24 +288,36 @@ src/
 
 ## 8. XLSX Export Engine & Formula Specifications
 
-The Excel export is built via **ExcelJS** to generate a native, live-updating spreadsheet:
+The Excel export is built via **ExcelJS** to generate a native, multi-sheet, live-updating spreadsheet:
 
-1. **Named Ranges:**
-   - `InitialDeposit`: Defined globally pointing to the dedicated deposit cell (e.g. `Summary!$B$2`).
-2. **Excel Table Object (`Trades`):**
-   - Structured Excel Table named `Trades`.
-   - Columns: `DealID`, `Instrument`, `Direction`, `OpenedAt`, `ClosedAt`, `OpenPrice`, `ClosePrice`, `Margin`, `Leverage`, `GrossReturn`, `PnL`, `Tag`, `Notes`.
-3. **Structured Live Formulas:**
-   - Account Balance: `=InitialDeposit + SUM(Trades[PnL])`
-   - Total Return (ROI %): `=(SUM(Trades[PnL]) / InitialDeposit) * 100`
-   - Total Trades: `=COUNTA(Trades[PnL])`
-   - Breakeven Trades: `=COUNTIF(Trades[PnL], "=0")`
-   - Winning Trades: `=COUNTIF(Trades[PnL], ">0")`
-   - Losing Trades: `=COUNTIF(Trades[PnL], "<0")`
-   - Win Rate % (Excluding BE): `=IF((COUNTIF(Trades[PnL],">0")+COUNTIF(Trades[PnL],"<0"))=0, 0, COUNTIF(Trades[PnL],">0") / (COUNTIF(Trades[PnL],">0") + COUNTIF(Trades[PnL],"<0")) * 100)`
-   - Profit Factor: `=IF(SUMIF(Trades[PnL],"<0")=0, "N/A", SUMIF(Trades[PnL],">0") / ABS(SUMIF(Trades[PnL],"<0")))`
-4. **Leftmost Inverted Aggregation:**
-   - Daily/Weekly summary tables place summary aggregation columns (Date, Trade Count, Net P&L, Win Rate) at the **left**, matching the UI inverted hierarchy.
+1. **Multi-Sheet Architecture:**
+   - **`Daily Journal`**: The primary operational dashboard featuring the Daily Order Matrix, Account KPIs, Monthly Summary, and Weekly Breakdown.
+   - **`Trades`**: Full 13-column detailed ledger of all broker trades formatted as an Excel Table (`DealID`, `Instrument`, `Direction`, `OpenedAt`, `ClosedAt`, `OpenPrice`, `ClosePrice`, `Margin`, `Leverage`, `GrossReturn`, `PnL`, `Tag`, `Notes`).
+   - **`Analytics`**: Institutional performance table summarizing Win Rate, Profit Factor, Mathematical Expectancy, and Max Drawdown.
+
+2. **Daily Journal — Layout & Structured Live Formulas:**
+   - **Account Statistics Card (`A1:C5`):**
+     - Initial Deposit (`B2`): Named range `InitialDeposit`.
+     - Current Deposit (`B3`): Live formula `=InitialDeposit + B5`.
+     - Profit % (`B4`): Live formula `=(B5/InitialDeposit)*100`.
+     - Total Profit (`B5`): Live formula `=F2` (referencing Monthly Net P&L).
+   - **Monthly Summary (`E1:G5`):**
+     - Net P&L (`F2`): Live formula summing daily P&L values (`=SUM(...)`).
+     - Closed Orders (`F3`): Live formula summing daily closed order counts (`=SUM(...)`).
+     - Explanations (`E4:G5`): Clear bilingual explanatory guidance in Ukrainian and English (*"Сумарний чистий прибуток/збиток та загальна кількість закритих угод за місяць"* / *"Total net profit/loss and total closed orders for the month"*).
+   - **Weekly Breakdown (`I1:L...`):**
+     - Chronological breakdown for each calendar week (Week number, Date range, Weekly Orders `=SUM(...)`, Weekly P&L `=SUM(...)`).
+     - Bilingual explanation notes describing the weekly aggregation logic.
+   - **Daily Order Matrix (`Row 10+`):**
+     - Header: `Дата (Date)`, `Закритих угод (Closed Orders)`, dynamic trade columns (`1`, `2`, `3` ... `N`), and `Денний P&L (Daily P&L)`.
+     - For each trading day:
+       - Closed Orders: Live Excel formula `=COUNT(C{row}:{lastTradeCol}{row})`.
+       - Trade columns: Individual order P&Ls ordered chronologically by close time, styled in soft green for wins and soft red for losses.
+       - Daily P&L: Live Excel formula `=SUM(C{row}:{lastTradeCol}{row})`.
+     - **Totals Row:** Live `=SUM(...)` formulas for both total closed orders and cumulative P&L across all trade columns.
+
+3. **Recalculation:**
+   - Modifying any trade P&L in either the Daily Journal matrix or the Trades sheet triggers automatic recalculation of daily totals, weekly totals, monthly net P&L, account balance, and ROI% in Microsoft Excel, LibreOffice, and Google Sheets.
 
 ---
 
