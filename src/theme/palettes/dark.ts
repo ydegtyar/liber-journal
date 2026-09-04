@@ -5,7 +5,7 @@ export const darkPalette = {
     contrastText: '#0D1117',
   },
   secondary: {
-    main: '#8B949E',
+    main: '#9BA3AF',
   },
   background: {
     default: '#0D1117',
@@ -13,7 +13,7 @@ export const darkPalette = {
   },
   text: {
     primary: '#E6EDF3',
-    secondary: '#8B949E',
+    secondary: '#9BA3AF',
   },
   divider: '#30363D',
   trade: {

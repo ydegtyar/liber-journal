@@ -7,7 +7,6 @@
     "save": "Save",
     "cancel": "Cancel",
     "delete": "Delete",
-    "duplicate": "Duplicate",
     "edit": "Edit",
     "close": "Close",
     "clear": "Clear",
@@ -63,8 +62,7 @@
     "groupMonth": "Month",
     "sortOldestFirst": "Oldest First",
     "sortNewestFirst": "Newest First",
-    "initialDeposit": "Initial Deposit",
-    "draft": "Draft"
+    "initialDeposit": "Initial Deposit"
   },
   "charts": {
     "equityCurve": "Cumulative Equity Curve",

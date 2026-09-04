@@ -23,7 +23,6 @@ export interface Trade {
   session?: TradingSession;         // Auto-derived or manual session
   note?: string;                    // Freeform reflection / execution notes
   plannedRisk?: number;             // Optional planned risk ($) for R-multiple
-  isDraft?: boolean;                // Flag for duplicated / unsaved rows
 }
 
 export interface AccountMetadata {

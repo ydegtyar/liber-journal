@@ -19,22 +19,6 @@ export function useTradesStore() {
     await db.trades.delete(id);
   };
 
-  /**
-   * Duplicates a trade and marks it as draft for inline editing.
-   */
-  const duplicateTrade = async (sourceTrade: Trade) => {
-    const newTrade: Trade = {
-      ...sourceTrade,
-      id: `draft-${Date.now()}`,
-      dealId: sourceTrade.dealId ? `${sourceTrade.dealId}-copy` : undefined,
-      openedAt: new Date().toISOString(),
-      closedAt: new Date().toISOString(),
-      isDraft: true,
-    };
-    await db.trades.add(newTrade);
-    return newTrade;
-  };
-
   const clearAll = async () => {
     await clearAllTrades();
   };
@@ -45,7 +29,6 @@ export function useTradesStore() {
     addTrade,
     updateTrade,
     deleteTrade,
-    duplicateTrade,
     clearAll,
   };
 }

@@ -26,12 +26,6 @@ export const StatCard: React.FC<StatCardProps> = ({
         height: '100%',
         position: 'relative',
         overflow: 'hidden',
-        borderLeft: (theme) => {
-          if (sentiment === 'positive') return `3px solid ${theme.palette.trade.gain}`;
-          if (sentiment === 'negative') return `3px solid ${theme.palette.trade.loss}`;
-          if (sentiment === 'accent') return `3px solid ${theme.palette.primary.main}`;
-          return `1px solid ${theme.palette.divider}`;
-        },
       }}
     >
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 0.5 }}>
@@ -39,15 +33,14 @@ export const StatCard: React.FC<StatCardProps> = ({
           variant="caption"
           sx={{
             color: 'text.secondary',
-            fontWeight: 600,
-            textTransform: 'uppercase',
-            letterSpacing: '0.04em',
-            fontSize: '0.7rem',
+            fontWeight: 500,
+            fontSize: '0.75rem',
+            lineHeight: 1.3,
           }}
         >
           {title}
         </Typography>
-        {icon && <Box sx={{ color: 'text.secondary', opacity: 0.7 }}>{icon}</Box>}
+        {icon && <Box sx={{ color: 'text.secondary', opacity: 0.5, display: 'flex' }}>{icon}</Box>}
       </Box>
 
       <Typography

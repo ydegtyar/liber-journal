@@ -51,7 +51,7 @@ export function buildAppTheme(mode: ThemeMode, systemMode: 'light' | 'dark' = 'd
     palette: activePalette,
     typography: {
       fontFamily: [
-        'Inter',
+        'Geist',
         '-apple-system',
         'BlinkMacSystemFont',
         '"Segoe UI"',
@@ -111,11 +111,10 @@ export function buildAppTheme(mode: ThemeMode, systemMode: 'light' | 'dark' = 'd
             borderBottom: `1px solid ${activePalette.divider}`,
           },
           head: {
-            fontFamily: "'Inter', sans-serif",
+            fontFamily: "'Geist', sans-serif",
             fontWeight: 600,
             fontSize: '0.75rem',
-            textTransform: 'uppercase',
-            letterSpacing: '0.04em',
+            textTransform: 'none',
             color: activePalette.text.secondary,
             backgroundColor: activePalette.background.paper,
           },

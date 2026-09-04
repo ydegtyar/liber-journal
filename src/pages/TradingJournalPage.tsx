@@ -53,7 +53,6 @@ export const TradingJournalPage: React.FC = () => {
     isLoading: isTradesLoading,
     updateTrade,
     deleteTrade,
-    duplicateTrade,
     clearAll,
   } = useTradesStore();
 
@@ -116,21 +115,16 @@ export const TradingJournalPage: React.FC = () => {
           {/* Logo & Title */}
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
             <Box
+              component="img"
+              src="/favicon.svg"
+              alt="Trading Journal Logo"
               sx={{
-                width: 24,
-                height: 24,
-                borderRadius: 0.5,
-                backgroundColor: 'primary.main',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                color: 'background.default',
-                fontWeight: 900,
-                fontSize: 14,
+                width: 28,
+                height: 28,
+                display: 'block',
+                flexShrink: 0,
               }}
-            >
-              LJ
-            </Box>
+            />
             <Box>
               <Typography variant="subtitle1" sx={{ fontWeight: 800, lineHeight: 1.1 }}>
                 {t('app.title')}
@@ -252,7 +246,6 @@ export const TradingJournalPage: React.FC = () => {
                 settings={settings}
                 numberFormat={numberFormat}
                 onUpdateTrade={updateTrade}
-                onDuplicateTrade={duplicateTrade}
                 onDeleteTrade={deleteTrade}
               />
             </Box>

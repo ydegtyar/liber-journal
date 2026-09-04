@@ -7,7 +7,6 @@
     "save": "Сохранить",
     "cancel": "Отмена",
     "delete": "Удалить",
-    "duplicate": "Дублировать",
     "edit": "Редактировать",
     "close": "Закрыть",
     "clear": "Очистить",
@@ -63,8 +62,7 @@
     "groupMonth": "Месяц",
     "sortOldestFirst": "Сначала старые",
     "sortNewestFirst": "Сначала новые",
-    "initialDeposit": "Начальный депозит",
-    "draft": "Черновик"
+    "initialDeposit": "Начальный депозит"
   },
   "charts": {
     "equityCurve": "Кривая доходности (Equity)",

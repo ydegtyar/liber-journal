@@ -7,7 +7,6 @@
     "save": "Зберегти",
     "cancel": "Скасувати",
     "delete": "Видалити",
-    "duplicate": "Дублювати",
     "edit": "Редагувати",
     "close": "Закрити",
     "clear": "Очистити",
@@ -63,8 +62,7 @@
     "groupMonth": "Місяць",
     "sortOldestFirst": "Спочатку старі",
     "sortNewestFirst": "Спочатку нові",
-    "initialDeposit": "Початковий депозит",
-    "draft": "Чернетка"
+    "initialDeposit": "Початковий депозит"
   },
   "charts": {
     "equityCurve": "Крива прибутковості (Equity)",

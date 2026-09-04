@@ -5,7 +5,7 @@ export const midnightPalette = {
     contrastText: '#000000',
   },
   secondary: {
-    main: '#7D8590',
+    main: '#9CA3AF',
   },
   background: {
     default: '#000000',
@@ -13,7 +13,7 @@ export const midnightPalette = {
   },
   text: {
     primary: '#FFFFFF',
-    secondary: '#8B949E',
+    secondary: '#9CA3AF',
   },
   divider: '#1A1D24',
   trade: {

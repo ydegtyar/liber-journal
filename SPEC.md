@@ -188,7 +188,7 @@ The interface provides high-density trading terminal aesthetics with 5 distinct 
 1. **Dark Midnight:** Pure `#000000` pitch-black OLED background, `#1A1D24` borders, high-contrast `#E6EDF3` typography.
 2. **Dark:** Refined charcoal dark surface (`#0D1117` / `#161B22`), soft contrast for long sessions.
 3. **Light:** Crisp, clean neutral institutional terminal palette (`#F6F8FA` background, `#FFFFFF` panels, `#1F2328` text).
-4. **Unicorn:** Extra vibrant cyberpunk/synthwave iridescent terminal palette: deep purple-indigo surfaces (`#120E24`, `#1D1739`), neon cyan (`#00F5D4`), hot magenta (`#F72585`), neon amber (`#FFE600`), and luminescent gain/loss accents (`#00F5D4` / `#FF0055`).
+4. **Unicorn:** Extra vibrant high-contrast terminal palette: deep slate-obsidian surfaces (`#0B0F19`, `#111827`), sky accent (`#38BDF8`), and luminescent turquoise accents (`#00F5D4`).
 5. **System:** Automatically tracks browser/OS `prefers-color-scheme` in real time, resolving to **Light** or **Dark**.
 
 ### 5.2 Number & Date Formatting with Settings Override

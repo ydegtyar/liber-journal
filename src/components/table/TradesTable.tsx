@@ -20,7 +20,6 @@ interface TradesTableProps {
   settings: JournalSettings;
   numberFormat: NumberFormatOption;
   onUpdateTrade: (trade: Trade) => void;
-  onDuplicateTrade: (trade: Trade) => void;
   onDeleteTrade: (id: string) => void;
 }
 
@@ -29,7 +28,6 @@ export const TradesTable: React.FC<TradesTableProps> = ({
   settings,
   numberFormat,
   onUpdateTrade,
-  onDuplicateTrade,
   onDeleteTrade,
 }) => {
   const { t, i18n } = useTranslation();
@@ -71,7 +69,7 @@ export const TradesTable: React.FC<TradesTableProps> = ({
     return sections;
   }, [sortedTrades, settings.groupBy]);
 
-  const columnCount = 14;
+  const columnCount = 13;
 
   return (
     <TableContainer component={Paper} sx={{ maxHeight: 680, overflowY: 'auto' }}>
@@ -81,7 +79,6 @@ export const TradesTable: React.FC<TradesTableProps> = ({
             <TableCell sx={{ width: 90 }}>{t('table.actions')}</TableCell>
             <TableCell>{t('table.dealId')}</TableCell>
             <TableCell>{t('table.instrument')}</TableCell>
-            <TableCell>{t('table.direction')}</TableCell>
             <TableCell>{t('table.openedAt')}</TableCell>
             <TableCell>{t('table.closedAt')}</TableCell>
             <TableCell sx={{ textAlign: 'right' }}>{t('table.openPrice')}</TableCell>
@@ -117,7 +114,6 @@ export const TradesTable: React.FC<TradesTableProps> = ({
                   numberFormat={numberFormat}
                   locale={currentLang}
                   onUpdate={onUpdateTrade}
-                  onDuplicate={onDuplicateTrade}
                   onDelete={onDeleteTrade}
                 />
               ))}

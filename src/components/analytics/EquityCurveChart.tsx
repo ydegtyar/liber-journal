@@ -36,7 +36,7 @@ export const EquityCurveChart: React.FC<EquityCurveChartProps> = ({
   return (
     <Paper sx={{ p: 2, height: 320, display: 'flex', flexDirection: 'column' }}>
       <Box sx={{ mb: 1, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <Typography variant="subtitle2" sx={{ fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+        <Typography variant="subtitle2" sx={{ fontWeight: 600 }}>
           {t('charts.equityCurve')}
         </Typography>
       </Box>

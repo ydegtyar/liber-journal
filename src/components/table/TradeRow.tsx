@@ -6,12 +6,16 @@ import {
   Chip,
   Box,
   Typography,
+  Tooltip,
+  IconButton,
 } from '@mui/material';
+import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
+import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
 import TrendingUpIcon from '@mui/icons-material/TrendingUp';
 import TrendingDownIcon from '@mui/icons-material/TrendingDown';
 import RemoveIcon from '@mui/icons-material/Remove';
 import { useTranslation } from 'react-i18next';
-import { Trade } from '../../types/trade';
+import { Trade, Direction } from '../../types/trade';
 import { NumberFormatOption } from '../../types/preferences';
 import { TradeRowActions } from './TradeRowActions';
 import {
@@ -27,7 +31,6 @@ interface TradeRowProps {
   numberFormat: NumberFormatOption;
   locale?: string;
   onUpdate: (updatedTrade: Trade) => void;
-  onDuplicate: (trade: Trade) => void;
   onDelete: (id: string) => void;
 }
 
@@ -37,11 +40,10 @@ export const TradeRow: React.FC<TradeRowProps> = ({
   numberFormat,
   locale = 'en-US',
   onUpdate,
-  onDuplicate,
   onDelete,
 }) => {
   const { t } = useTranslation();
-  const [isEditing, setIsEditing] = useState(Boolean(trade.isDraft));
+  const [isEditing, setIsEditing] = useState(false);
   const [editState, setEditState] = useState<Trade>({ ...trade });
 
   useEffect(() => {
@@ -54,12 +56,8 @@ export const TradeRow: React.FC<TradeRowProps> = ({
   };
 
   const handleCancelEdit = () => {
-    if (trade.isDraft) {
-      onDelete(trade.id);
-    } else {
-      setEditState({ ...trade });
-      setIsEditing(false);
-    }
+    setEditState({ ...trade });
+    setIsEditing(false);
   };
 
   const handlePriceOrMarginChange = (field: 'openPrice' | 'closePrice' | 'margin' | 'leverage', value: number) => {
@@ -77,11 +75,23 @@ export const TradeRow: React.FC<TradeRowProps> = ({
     setEditState(nextState);
   };
 
+  const handleToggleDirection = () => {
+    const nextDirection: Direction = editState.direction === 'buy' ? 'sell' : 'buy';
+    const nextState = { ...editState, direction: nextDirection };
+    if (nextState.openPrice > 0 && nextState.closePrice > 0 && nextState.margin > 0) {
+      const priceDiff =
+        nextState.direction === 'buy'
+          ? (nextState.closePrice - nextState.openPrice) / nextState.openPrice
+          : (nextState.openPrice - nextState.closePrice) / nextState.openPrice;
+      const computedPnl = Math.round((nextState.margin * nextState.leverage * priceDiff) * 100) / 100;
+      nextState.pnl = computedPnl;
+      nextState.grossReturn = Math.round((nextState.margin + computedPnl) * 100) / 100;
+    }
+    setEditState(nextState);
+  };
+
   const handleSaveEdit = () => {
-    onUpdate({
-      ...editState,
-      isDraft: false,
-    });
+    onUpdate(editState);
     setIsEditing(false);
   };
 
@@ -92,15 +102,9 @@ export const TradeRow: React.FC<TradeRowProps> = ({
       hover
       sx={{
         backgroundColor: (theme) => {
-          if (trade.isDraft) return theme.palette.action.selected;
           if (pnlData.isNegative) return theme.palette.trade.lossBg;
           if (pnlData.isPositive) return theme.palette.trade.gainBg;
           return 'inherit';
-        },
-        borderLeft: (theme) => {
-          if (pnlData.isNegative) return `3px solid ${theme.palette.trade.loss}`;
-          if (pnlData.isPositive) return `3px solid ${theme.palette.trade.gain}`;
-          return `3px solid ${theme.palette.trade.breakeven}`;
         },
         '&:hover': {
           backgroundColor: (theme) => {
@@ -116,7 +120,6 @@ export const TradeRow: React.FC<TradeRowProps> = ({
         <TradeRowActions
           trade={trade}
           isEditing={isEditing}
-          onDuplicate={onDuplicate}
           onStartEdit={handleStartEdit}
           onSaveEdit={handleSaveEdit}
           onCancelEdit={handleCancelEdit}
@@ -130,49 +133,62 @@ export const TradeRow: React.FC<TradeRowProps> = ({
           <Typography variant="body2" sx={{ fontFamily: "'JetBrains Mono', monospace", fontSize: '0.8rem' }}>
             {trade.dealId || trade.id.substring(0, 10)}
           </Typography>
-          {trade.isDraft && (
-            <Chip
-              label={t('table.draft')}
-              size="small"
-              color="warning"
-              sx={{ height: 18, fontSize: '0.65rem', fontWeight: 700 }}
-            />
-          )}
         </Box>
       </TableCell>
 
-      {/* Instrument */}
+      {/* Instrument with colored direction arrow */}
       <TableCell sx={{ fontWeight: 600 }}>
         {isEditing ? (
-          <TextField
-            size="small"
-            value={editState.instrument}
-            onChange={(e) => setEditState({ ...editState, instrument: e.target.value })}
-            sx={{ width: 110, '& input': { p: 0.5, fontSize: '0.8rem' } }}
-          />
+          <Box sx={{ display: 'inline-flex', alignItems: 'center', gap: 0.5 }}>
+            <Tooltip
+              title={`${editState.direction === 'buy' ? t('table.buy') : t('table.sell')} (${t('table.clickToToggle', { defaultValue: 'Click to toggle direction' })})`}
+              arrow
+            >
+              <IconButton
+                size="small"
+                onClick={handleToggleDirection}
+                sx={{
+                  p: 0.25,
+                  color: (theme) =>
+                    editState.direction === 'buy' ? theme.palette.trade.gain : theme.palette.trade.loss,
+                }}
+              >
+                {editState.direction === 'buy' ? (
+                  <ArrowUpwardIcon sx={{ fontSize: 18 }} />
+                ) : (
+                  <ArrowDownwardIcon sx={{ fontSize: 18 }} />
+                )}
+              </IconButton>
+            </Tooltip>
+            <TextField
+              size="small"
+              value={editState.instrument}
+              onChange={(e) => setEditState({ ...editState, instrument: e.target.value })}
+              sx={{ width: 100, '& input': { p: 0.5, fontSize: '0.8rem' } }}
+            />
+          </Box>
         ) : (
-          trade.instrument
+          <Box sx={{ display: 'inline-flex', alignItems: 'center', gap: 0.75 }}>
+            <Tooltip title={trade.direction === 'buy' ? t('table.buy') : t('table.sell')} arrow>
+              <Box
+                component="span"
+                sx={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  color: (theme) =>
+                    trade.direction === 'buy' ? theme.palette.trade.gain : theme.palette.trade.loss,
+                }}
+              >
+                {trade.direction === 'buy' ? (
+                  <ArrowUpwardIcon sx={{ fontSize: 18 }} />
+                ) : (
+                  <ArrowDownwardIcon sx={{ fontSize: 18 }} />
+                )}
+              </Box>
+            </Tooltip>
+            <span>{trade.instrument}</span>
+          </Box>
         )}
-      </TableCell>
-
-      {/* Direction */}
-      <TableCell>
-        <Chip
-          label={trade.direction === 'buy' ? t('table.buy') : t('table.sell')}
-          size="small"
-          sx={{
-            height: 20,
-            fontSize: '0.7rem',
-            fontWeight: 700,
-            fontFamily: "'JetBrains Mono', monospace",
-            backgroundColor: (theme) =>
-              trade.direction === 'buy' ? theme.palette.trade.gainBg : theme.palette.trade.lossBg,
-            color: (theme) =>
-              trade.direction === 'buy' ? theme.palette.trade.gain : theme.palette.trade.loss,
-            border: (theme) =>
-              `1px solid ${trade.direction === 'buy' ? theme.palette.trade.gainBorder : theme.palette.trade.lossBorder}`,
-          }}
-        />
       </TableCell>
 
       {/* Opened At */}

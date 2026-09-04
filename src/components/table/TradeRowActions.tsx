@@ -1,6 +1,5 @@
 import React from 'react';
 import { Box, IconButton, Tooltip } from '@mui/material';
-import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 import CheckIcon from '@mui/icons-material/Check';
@@ -11,7 +10,6 @@ import { Trade } from '../../types/trade';
 interface TradeRowActionsProps {
   trade: Trade;
   isEditing: boolean;
-  onDuplicate: (trade: Trade) => void;
   onStartEdit: (trade: Trade) => void;
   onSaveEdit: () => void;
   onCancelEdit: () => void;
@@ -21,7 +19,6 @@ interface TradeRowActionsProps {
 export const TradeRowActions: React.FC<TradeRowActionsProps> = ({
   trade,
   isEditing,
-  onDuplicate,
   onStartEdit,
   onSaveEdit,
   onCancelEdit,
@@ -48,11 +45,6 @@ export const TradeRowActions: React.FC<TradeRowActionsProps> = ({
 
   return (
     <Box sx={{ display: 'flex', gap: 0.5 }}>
-      <Tooltip title={t('common.duplicate')}>
-        <IconButton size="small" onClick={() => onDuplicate(trade)} sx={{ p: 0.5 }}>
-          <ContentCopyIcon sx={{ fontSize: 15 }} />
-        </IconButton>
-      </Tooltip>
       <Tooltip title={t('common.edit')}>
         <IconButton size="small" onClick={() => onStartEdit(trade)} sx={{ p: 0.5 }}>
           <EditIcon sx={{ fontSize: 15 }} />
