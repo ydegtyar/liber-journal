@@ -314,8 +314,13 @@ export async function generateXlsxWorkbook(
 
   // ----------------------------------------------------------------------
   // MONTHLY SHEETS (Each Month on a Separate Sheet)
+  // Sheets are added in reverse-chronological order so the latest month is
+  // the first (active) sheet when the XLSX file is opened. Business logic
+  // (InitialDeposit, cross-month balance chain, Total P&L formula) still uses
+  // the chronological index (mIdx) derived from sortedMonthKeys.
   // ----------------------------------------------------------------------
-  sortedMonthKeys.forEach((monthKey, mIdx) => {
+  [...sortedMonthKeys].reverse().forEach((monthKey) => {
+    const mIdx = sortedMonthKeys.indexOf(monthKey);
     const monthTrades = monthGroups[monthKey] || [];
     const sheetName = formatMonthSheetName(monthKey, locale);
     const stats = monthStats[monthKey];

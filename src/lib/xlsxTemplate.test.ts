@@ -258,7 +258,7 @@ describe('XLSX Template Generator', () => {
     await workbook.xlsx.load(arrayBuffer);
 
     const sheetNames = workbook.worksheets.map((w) => w.name);
-    expect(sheetNames).toEqual(['August 2026', 'September 2026', 'Trades', 'Analytics']);
+    expect(sheetNames).toEqual(['September 2026', 'August 2026', 'Trades', 'Analytics']);
 
     const augSheet = workbook.getWorksheet('August 2026')!;
     // Month 1 (earliest month):
