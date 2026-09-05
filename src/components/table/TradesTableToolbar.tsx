@@ -147,7 +147,7 @@ const TradesTableToolbarComponent: React.FC<TradesTableToolbarProps> = ({
             }
             sx={{ height: 32, px: 1.2, fontSize: '0.75rem' }}
           >
-            {settings.sortOrder === 'asc' ? 'Oldest' : 'Newest'}
+            {settings.sortOrder === 'asc' ? t('table.sortOldestFirst') : t('table.sortNewestFirst')}
           </Button>
         </Tooltip>
 

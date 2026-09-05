@@ -69,7 +69,7 @@ export const StatsCardGrid: React.FC<StatsCardGridProps> = React.memo(
       analytics.currentStreak.count > 0 ? `${analytics.currentStreak.count} ${streakNoun}` : '-';
 
     return (
-      <Grid container spacing={1.5} sx={{ mb: 2.5 }}>
+      <Grid container spacing={1.5}>
         {/* Current Balance */}
         <Grid size={{ xs: 12, sm: 6, md: 3, lg: 2 }}>
           <StatCard

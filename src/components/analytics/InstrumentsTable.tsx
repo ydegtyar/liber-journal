@@ -67,7 +67,6 @@ export const InstrumentsTable: React.FC<InstrumentsTableProps> = React.memo(
         elevation={0}
         sx={{
           p: 2,
-          mb: 2.5,
           borderRadius: 2,
           border: (theme) => `1px solid ${theme.palette.divider}`,
           backgroundColor: (theme) => theme.palette.background.paper,

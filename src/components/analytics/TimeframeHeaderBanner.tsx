@@ -141,7 +141,6 @@ export const TimeframeHeaderBanner: React.FC<TimeframeHeaderBannerProps> = React
         elevation={0}
         sx={{
           p: { xs: 2, md: 2.5 },
-          mb: 2.5,
           borderRadius: 2,
           border: (theme) => `1px solid ${theme.palette.divider}`,
           backgroundColor: (theme) => theme.palette.background.paper,

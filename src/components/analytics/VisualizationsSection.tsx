@@ -1,5 +1,5 @@
-import React, { useState, useMemo, useCallback, useTransition, Suspense, lazy } from 'react';
-import { Box, Tabs, Tab } from '@mui/material';
+import React, { lazy, Suspense, useCallback, useMemo, useState, useTransition } from 'react';
+import { Tab, Tabs } from '@mui/material';
 import ShowChartIcon from '@mui/icons-material/ShowChart';
 import BarChartIcon from '@mui/icons-material/BarChart';
 import DateRangeIcon from '@mui/icons-material/DateRange';
@@ -8,7 +8,7 @@ import PieChartIcon from '@mui/icons-material/PieChart';
 import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import { useTranslation } from 'react-i18next';
-import { Trade, EquityPoint } from '../../types/trade';
+import { EquityPoint, Trade } from '../../types/trade';
 import { NumberFormatOption } from '../../types/preferences';
 import { calculateInstrumentPerformance } from '../../lib/calculations';
 import { TradingTerminalLoader } from '../common/TradingTerminalLoader';
@@ -85,7 +85,7 @@ const VisualizationsSectionComponent: React.FC<VisualizationsSectionProps> = ({
   }, [filteredTrades]);
 
   return (
-    <Box component="section" aria-label="Visual Analytics and Charts" sx={{ mb: 2.5 }}>
+    <section aria-label="Visual Analytics and Charts">
       <Tabs
         value={activeChartTab}
         onChange={handleTabChange}
@@ -186,7 +186,7 @@ const VisualizationsSectionComponent: React.FC<VisualizationsSectionProps> = ({
           />
         )}
       </Suspense>
-    </Box>
+    </section>
   );
 };
 

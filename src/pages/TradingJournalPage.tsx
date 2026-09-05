@@ -24,6 +24,7 @@ import { TradesViewSection } from '../components/table/TradesViewSection';
 import { SEOHead } from '../components/seo/SEOHead';
 import { TradingTerminalLoader } from '../components/common/TradingTerminalLoader';
 import { PageBlockId, DEFAULT_PAGE_BLOCK_ORDER } from '../types/preferences';
+import { Footer } from '../components/layout/Footer.tsx';
 
 export const TradingJournalPage: React.FC = () => {
   const { t } = useTranslation();
@@ -126,11 +127,7 @@ export const TradingJournalPage: React.FC = () => {
       switch (blockId) {
         case 'timeframeBanner':
           return (
-            <Box
-              key="timeframeBanner"
-              component="section"
-              aria-label="Timeframe and Performance Summary"
-            >
+            <section key="timeframeBanner" aria-label="Timeframe and Performance Summary">
               <TimeframeHeaderBanner
                 netPnl={analytics.netPnl}
                 roiPercent={analytics.roiPercent}
@@ -150,7 +147,7 @@ export const TradingJournalPage: React.FC = () => {
                 initialDeposit={settings.initialDeposit}
                 onUpdateDeposit={updateInitialDeposit}
               />
-            </Box>
+            </section>
           );
         case 'statsGrid':
           return (
@@ -177,21 +174,13 @@ export const TradingJournalPage: React.FC = () => {
           );
         case 'streakAnalysis':
           return (
-            <Box
-              key="streakAnalysis"
-              component="section"
-              aria-label="Winning and Losing Streak Analysis"
-            >
+            <section key="streakAnalysis" aria-label="Winning and Losing Streak Analysis">
               <StreakAnalysisSection streakAnalysis={analytics.streakAnalysis} />
-            </Box>
+            </section>
           );
         case 'instrumentsTable':
           return (
-            <Box
-              key="instrumentsTable"
-              component="section"
-              aria-label="Instruments Performance Breakdown"
-            >
+            <section key="instrumentsTable" aria-label="Instruments Performance Breakdown">
               <InstrumentsTable
                 data={analytics.instrumentBreakdown}
                 currency={settings.currency}
@@ -199,17 +188,17 @@ export const TradingJournalPage: React.FC = () => {
                 selectedInstrument={selectedInstrument}
                 onSelectInstrument={handleSelectInstrument}
               />
-            </Box>
+            </section>
           );
         case 'monthlyReturns':
           return (
-            <Box key="monthlyReturns" component="section" aria-label="Monthly Returns Matrix">
+            <section key="monthlyReturns" aria-label="Monthly Returns Matrix">
               <MonthlyReturnsHeatmap
                 data={analytics.monthlyReturns}
                 currency={settings.currency}
                 numberFormat={numberFormat}
               />
-            </Box>
+            </section>
           );
         case 'tradesView':
           return (
@@ -363,6 +352,8 @@ export const TradingJournalPage: React.FC = () => {
 
       {/* CSV Diagnostics / Error Modal */}
       <ParseErrorSummary open={showErrorModal} onClose={closeErrorModal} result={lastResult} />
+
+      <Footer />
     </Box>
   );
 };

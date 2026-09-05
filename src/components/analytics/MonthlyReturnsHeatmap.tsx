@@ -69,7 +69,6 @@ export const MonthlyReturnsHeatmap: React.FC<MonthlyReturnsHeatmapProps> = React
         elevation={0}
         sx={{
           p: 2,
-          mb: 2.5,
           borderRadius: 2,
           border: (theme) => `1px solid ${theme.palette.divider}`,
           backgroundColor: (theme) => theme.palette.background.paper,

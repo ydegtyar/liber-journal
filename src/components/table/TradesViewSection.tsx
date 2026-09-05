@@ -50,7 +50,7 @@ const TradesViewSectionComponent: React.FC<TradesViewSectionProps> = ({
   }, [filteredTrades, tableSearchQuery]);
 
   return (
-    <Box component="section" aria-label="Continuous Trade Ledger and Daily Orders" sx={{ mb: 2.5 }}>
+    <section aria-label="Continuous Trade Ledger and Daily Orders">
       <Box
         sx={{
           mb: 1.5,
@@ -130,7 +130,7 @@ const TradesViewSectionComponent: React.FC<TradesViewSectionProps> = ({
           columnOrder={settings.matrixColumnOrder}
         />
       )}
-    </Box>
+    </section>
   );
 };
 

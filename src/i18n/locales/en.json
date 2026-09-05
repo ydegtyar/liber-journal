@@ -271,5 +271,14 @@
         "description": "Interactive trade ledger table and spreadsheet daily export matrix"
       }
     }
+  },
+  "legal": {
+    "privacyLink": "Privacy Policy",
+    "termsLink": "Terms of Service",
+    "privacyTitle": "Privacy Policy",
+    "termsTitle": "Terms of Service",
+    "close": "Close",
+    "privacy": "We collect and store your data to provide the service. Your data is never shared with third parties without your consent. You may request deletion at any time. All data is public and can be gathered by third parties.",
+    "terms": "By using this service you agree to the terms outlined herein. You must not misuse the service, and you are responsible for your data. The service is provided as-is without warranties."
   }
 }
