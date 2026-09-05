@@ -6,6 +6,36 @@ export type ThemeMode = 'light' | 'dark' | 'midnight' | 'unicorn' | 'system';
 
 export type NumberFormatOption = 'locale' | 'dot' | 'comma';
 
+export type MatrixColumnBlockId = 'date' | 'ordersCount' | 'dailyPnl' | 'orders';
+
+export const DEFAULT_MATRIX_COLUMN_ORDER: MatrixColumnBlockId[] = [
+  'date',
+  'ordersCount',
+  'dailyPnl',
+  'orders',
+];
+
+export type PageBlockId =
+  | 'timeframeBanner'
+  | 'statsGrid'
+  | 'periodInsights'
+  | 'visualizations'
+  | 'streakAnalysis'
+  | 'instrumentsTable'
+  | 'monthlyReturns'
+  | 'tradesView';
+
+export const DEFAULT_PAGE_BLOCK_ORDER: PageBlockId[] = [
+  'timeframeBanner',
+  'statsGrid',
+  'periodInsights',
+  'visualizations',
+  'streakAnalysis',
+  'instrumentsTable',
+  'monthlyReturns',
+  'tradesView',
+];
+
 export interface JournalSettings {
   initialDeposit: number;
   depositAsOf: string;
@@ -14,11 +44,9 @@ export interface JournalSettings {
   groupBy: GroupByOption;
   numberFormat: NumberFormatOption;
   monthlyGoal?: number;
-}
-
-export interface AppPreferences {
-  locale: Locale;
-  themeMode: ThemeMode;
+  matrixColumnOrder?: MatrixColumnBlockId[];
+  pageBlockOrder?: PageBlockId[];
+  hiddenPageBlocks?: PageBlockId[];
 }
 
 export const DEFAULT_JOURNAL_SETTINGS: JournalSettings = {
@@ -29,9 +57,7 @@ export const DEFAULT_JOURNAL_SETTINGS: JournalSettings = {
   groupBy: 'none',
   numberFormat: 'locale',
   monthlyGoal: 0,
-};
-
-export const DEFAULT_APP_PREFERENCES: AppPreferences = {
-  locale: 'en',
-  themeMode: 'dark',
+  matrixColumnOrder: DEFAULT_MATRIX_COLUMN_ORDER,
+  pageBlockOrder: DEFAULT_PAGE_BLOCK_ORDER,
+  hiddenPageBlocks: [],
 };

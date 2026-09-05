@@ -1,8 +1,13 @@
 import Dexie, { Table } from 'dexie';
 import { Trade } from '../types/trade';
-import { JournalSettings, DEFAULT_JOURNAL_SETTINGS } from '../types/preferences';
+import {
+  JournalSettings,
+  DEFAULT_JOURNAL_SETTINGS,
+  MatrixColumnBlockId,
+  DEFAULT_MATRIX_COLUMN_ORDER,
+} from '../types/preferences';
 
-export class TradingJournalDatabase extends Dexie {
+class TradingJournalDatabase extends Dexie {
   trades!: Table<Trade, string>;
   settings!: Table<{ key: string; value: unknown }, string>;
 
@@ -21,7 +26,7 @@ export const db = new TradingJournalDatabase();
 /**
  * Initializes settings with defaults if not present.
  */
-export async function getStoredJournalSettings(): Promise<JournalSettings> {
+async function getStoredJournalSettings(): Promise<JournalSettings> {
   const record = await db.settings.get('journalSettings');
   if (record && record.value) {
     return { ...DEFAULT_JOURNAL_SETTINGS, ...(record.value as Partial<JournalSettings>) };
@@ -38,10 +43,43 @@ export async function saveJournalSettings(settings: JournalSettings): Promise<vo
 }
 
 /**
+ * Retrieves the stored matrix column block order from IndexedDB.
+ */
+export async function getStoredMatrixColumnOrder(): Promise<MatrixColumnBlockId[]> {
+  const record = await db.settings.get('matrixColumnOrder');
+  if (record && Array.isArray(record.value) && record.value.length > 0) {
+    return record.value as MatrixColumnBlockId[];
+  }
+  // Fallback to journalSettings.matrixColumnOrder
+  const settingsRecord = await db.settings.get('journalSettings');
+  const js = settingsRecord?.value as Partial<JournalSettings> | undefined;
+  if (
+    js?.matrixColumnOrder &&
+    Array.isArray(js.matrixColumnOrder) &&
+    js.matrixColumnOrder.length > 0
+  ) {
+    return js.matrixColumnOrder;
+  }
+  return DEFAULT_MATRIX_COLUMN_ORDER;
+}
+
+/**
+ * Saves the matrix column block order to IndexedDB.
+ */
+export async function saveMatrixColumnOrder(order: MatrixColumnBlockId[]): Promise<void> {
+  await db.settings.put({ key: 'matrixColumnOrder', value: order });
+  // Also update inside journalSettings if present
+  const currentSettings = await getStoredJournalSettings();
+  await saveJournalSettings({ ...currentSettings, matrixColumnOrder: order });
+}
+
+/**
  * De-duplicates and saves trades into IndexedDB.
  * Updates existing trades with matching IDs, adds new ones.
  */
-export async function importTrades(newTrades: Trade[]): Promise<{ importedCount: number; updatedCount: number }> {
+export async function importTrades(
+  newTrades: Trade[]
+): Promise<{ importedCount: number; updatedCount: number }> {
   let importedCount = 0;
   let updatedCount = 0;
 

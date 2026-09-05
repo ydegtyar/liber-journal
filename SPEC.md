@@ -6,7 +6,7 @@
 **Visualization Engine:** Recharts (Interactive Equity curves, P&L bar charts, analytics heatmaps & distributions)  
 **State & Data Engine:** TanStack Table v8 + TanStack Query v5 + Dexie.js (IndexedDB)  
 **File Generation & Ingestion:** PapaParse (CSV / TSV) + ExcelJS (Formula-rich XLSX export)  
-**Internationalization:** i18next + react-i18next + i18next-browser-languagedetector  
+**Internationalization:** i18next + react-i18next + i18next-browser-languagedetector
 
 ---
 
@@ -20,6 +20,7 @@ Retail traders frequently track their closed positions using ad-hoc, multi-tab s
 4. **Siloed Time Horizons:** Each month was an isolated silo without a continuous equity curve spanning the lifetime of the trading account.
 
 ### Solution Vision
+
 A dedicated, privacy-focused, zero-backend trading terminal web application. The application operates entirely inside the trader's browser (storing data in IndexedDB and preferences in `localStorage`). It parses broker CSV/TSV exports (such as Libertex), deduplicates trades into a unified continuous ledger, computes institutional trading metrics and data-analytics heatmaps/charts, and provides dynamic formula-driven XLSX exports.
 
 ---
@@ -27,6 +28,7 @@ A dedicated, privacy-focused, zero-backend trading terminal web application. The
 ## 2. Ingest Architecture & Broker CSV Handling
 
 ### 2.1 File Characteristics & Quirks
+
 - **Character Encoding:** UTF-8 with optional Byte Order Mark (`\uFEFF`).
 - **Line Endings:** Windows CRLF (`\r\n`) or Unix LF (`\n`).
 - **Delimiter:** Auto-detected Tab-delimited (`\t`) or Comma-delimited (`,`).
@@ -45,21 +47,22 @@ A dedicated, privacy-focused, zero-backend trading terminal web application. The
 
 The parser extracts header metadata and maps each trade row to the canonical internal schema via preconfigured, extensible mappings (`csvColumnMap.ts`):
 
-| Libertex UA Source | Canonical Field | Type | Transformation / Normalization |
-|---|---|---|---|
-| `Інструмент` | `instrument` | `string` | Trimmed symbol name (e.g. `EUR/USD`, `Natural Gas Cash`) |
-| `Номер угоди` | `dealId` | `string` | Unique broker deal identifier (e.g. `EURUSD-144189148`) |
-| `Напрямок` | `direction` | `'buy' \| 'sell'` | `'Купити'` / `'Buy'` → `'buy'`, `'Продати'` / `'Sell'` → `'sell'` |
-| `Дата відкриття` | `openedAt` | `string` (ISO 8601) | Parsed from `d/M/yyyy H:mm` format |
-| `Ціна відкриття` | `openPrice` | `number` | Float conversion, localized/dot normalization |
-| `Дата закриття` | `closedAt` | `string` (ISO 8601) | Parsed from `d/M/yyyy H:mm` format |
-| `Ціна закриття` | `closePrice` | `number` | Float conversion, localized/dot normalization |
-| `Сума ($)` | `margin` | `number` | Committed collateral/margin (not full notional) |
-| `Коефіцієнт` | `leverage` | `number` | Strips leading `x` (e.g. `'x55'` → `55`) |
-| `Результат ($)` | `grossReturn` | `number` | Float conversion (`margin + pnl`) |
-| `Прибуток ($)` | `pnl` | `number` | Signed net profit/loss float (positive, negative, or 0) |
+| Libertex UA Source | Canonical Field | Type                | Transformation / Normalization                                    |
+| ------------------ | --------------- | ------------------- | ----------------------------------------------------------------- |
+| `Інструмент`       | `instrument`    | `string`            | Trimmed symbol name (e.g. `EUR/USD`, `Natural Gas Cash`)          |
+| `Номер угоди`      | `dealId`        | `string`            | Unique broker deal identifier (e.g. `EURUSD-144189148`)           |
+| `Напрямок`         | `direction`     | `'buy' \| 'sell'`   | `'Купити'` / `'Buy'` → `'buy'`, `'Продати'` / `'Sell'` → `'sell'` |
+| `Дата відкриття`   | `openedAt`      | `string` (ISO 8601) | Parsed from `d/M/yyyy H:mm` format                                |
+| `Ціна відкриття`   | `openPrice`     | `number`            | Float conversion, localized/dot normalization                     |
+| `Дата закриття`    | `closedAt`      | `string` (ISO 8601) | Parsed from `d/M/yyyy H:mm` format                                |
+| `Ціна закриття`    | `closePrice`    | `number`            | Float conversion, localized/dot normalization                     |
+| `Сума ($)`         | `margin`        | `number`            | Committed collateral/margin (not full notional)                   |
+| `Коефіцієнт`       | `leverage`      | `number`            | Strips leading `x` (e.g. `'x55'` → `55`)                          |
+| `Результат ($)`    | `grossReturn`   | `number`            | Float conversion (`margin + pnl`)                                 |
+| `Прибуток ($)`     | `pnl`           | `number`            | Signed net profit/loss float (positive, negative, or 0)           |
 
 ### 2.3 Scope of File Ingestion
+
 - **Input:** Only broker CSV / TSV exports are ingested. (Exported `.xlsx` files do not need to be re-imported).
 - **Validation:** Net P&L row sum is checked against the broker summary footer row (`Обсяг`) within `±0.01` tolerance.
 
@@ -83,47 +86,47 @@ export type NumberFormatOption = 'locale' | 'dot' | 'comma';
 export type ThemeMode = 'light' | 'dark' | 'midnight' | 'unicorn' | 'system';
 
 export interface Trade {
-  id: string;                       // Unique internal ID (dealId or uuid v4)
-  dealId?: string;                  // Original broker deal ID
-  instrument: string;               // e.g. "EUR/USD", "Natural Gas Cash"
-  direction: Direction;             // "buy" | "sell"
-  openedAt: string;                 // ISO 8601 string
-  closedAt: string;                 // ISO 8601 string
+  id: string; // Unique internal ID (dealId or uuid v4)
+  dealId?: string; // Original broker deal ID
+  instrument: string; // e.g. "EUR/USD", "Natural Gas Cash"
+  direction: Direction; // "buy" | "sell"
+  openedAt: string; // ISO 8601 string
+  closedAt: string; // ISO 8601 string
   openPrice: number;
   closePrice: number;
-  margin: number;                   // Collateral / trade size in currency
-  leverage: number;                 // Numeric multiplier (e.g. 50)
-  grossReturn: number;              // Returned funds (margin + pnl)
-  pnl: number;                      // Signed net profit/loss
-  tag?: string;                     // Setup / strategy label (e.g. "Breakout", "Pullback")
-  session?: TradingSession;         // Auto-derived or manual session
-  note?: string;                    // Freeform reflection / execution notes
-  plannedRisk?: number;             // Optional planned risk ($) for R-multiple
+  margin: number; // Collateral / trade size in currency
+  leverage: number; // Numeric multiplier (e.g. 50)
+  grossReturn: number; // Returned funds (margin + pnl)
+  pnl: number; // Signed net profit/loss
+  tag?: string; // Setup / strategy label (e.g. "Breakout", "Pullback")
+  session?: TradingSession; // Auto-derived or manual session
+  note?: string; // Freeform reflection / execution notes
+  plannedRisk?: number; // Optional planned risk ($) for R-multiple
 }
 
 export interface JournalSettings {
-  initialDeposit: number;           // Starting capital baseline
-  depositAsOf: string;              // ISO date when deposit was recorded
-  currency: string;                 // Active display currency (default: "USD")
-  sortOrder: SortOrder;             // Chronological sort ('asc' oldest first, 'desc' newest first)
-  groupBy: GroupByOption;           // Table grouping mode
+  initialDeposit: number; // Starting capital baseline
+  depositAsOf: string; // ISO date when deposit was recorded
+  currency: string; // Active display currency (default: "USD")
+  sortOrder: SortOrder; // Chronological sort ('asc' oldest first, 'desc' newest first)
+  groupBy: GroupByOption; // Table grouping mode
   numberFormat: NumberFormatOption; // 'locale' (browser default), 'dot' (1,234.56), 'comma' (1.234,56)
 }
 
 export interface AppPreferences {
-  locale: Locale;                   // Active language
-  themeMode: ThemeMode;             // 'light' | 'dark' | 'midnight' | 'unicorn' | 'system'
+  locale: Locale; // Active language
+  themeMode: ThemeMode; // 'light' | 'dark' | 'midnight' | 'unicorn' | 'system'
 }
 
 export interface GroupSummary {
-  groupKey: string;                 // Formatted date / week / month label
+  groupKey: string; // Formatted date / week / month label
   tradeCount: number;
   netPnl: number;
   winCount: number;
   lossCount: number;
   breakevenCount: number;
-  winRate: number;                  // Excludes BE: winCount / (winCount + lossCount) * 100
-  breakevenRate: number;            // breakevenCount / tradeCount * 100
+  winRate: number; // Excludes BE: winCount / (winCount + lossCount) * 100
+  breakevenRate: number; // breakevenCount / tradeCount * 100
   profitFactor: number;
   totalMargin: number;
   grossReturn: number;
@@ -133,18 +136,18 @@ export interface JournalAnalytics {
   totalTrades: number;
   winningTrades: number;
   losingTrades: number;
-  breakevenTrades: number;          // Explicit BE count
-  breakevenRate: number;            // BE % of total trades
+  breakevenTrades: number; // Explicit BE count
+  breakevenRate: number; // BE % of total trades
   netPnl: number;
   currentDeposit: number;
   roiPercent: number;
-  winRate: number;                  // Excludes BE from denominator: wins / (wins + losses) * 100
-  profitFactor: number;             // Ratio: sum(wins) / abs(sum(losses))
+  winRate: number; // Excludes BE from denominator: wins / (wins + losses) * 100
+  profitFactor: number; // Ratio: sum(wins) / abs(sum(losses))
   avgWin: number;
   avgLoss: number;
-  expectancy: number;               // Expected dollar return per decisive trade
-  maxDrawdownAmount: number;        // Peak-to-trough drop ($)
-  maxDrawdownPercent: number;       // Peak-to-trough drop (%)
+  expectancy: number; // Expected dollar return per decisive trade
+  maxDrawdownAmount: number; // Peak-to-trough drop ($)
+  maxDrawdownPercent: number; // Peak-to-trough drop (%)
   currentStreak: {
     type: 'win' | 'loss' | 'breakeven' | 'none';
     count: number;
@@ -162,20 +165,20 @@ export interface JournalAnalytics {
 
 All calculations reside in `src/lib/calculations.ts` as pure, side-effect-free, 100% unit-tested functions.
 
-| Metric | JavaScript Implementation | Excel Dynamic Equivalent |
-|---|---|---|
-| **Current Deposit** | `initialDeposit + sum(pnl)` | `=InitialDeposit + SUM(Trades[PnL])` |
-| **ROI %** | `(sum(pnl) / initialDeposit) * 100` | `=(SUM(Trades[PnL]) / InitialDeposit) * 100` |
-| **Breakeven (BE) Count** | `count(pnl === 0)` | `=COUNTIF(Trades[PnL], "=0")` |
-| **Breakeven Rate %** | `(count(pnl === 0) / count(all)) * 100` | `=(COUNTIF(Trades[PnL], "=0") / COUNTA(Trades[PnL])) * 100` |
-| **Win Rate % (Excluding BE)** | `count(pnl > 0) / (count(pnl > 0) + count(pnl < 0)) * 100` | `=IF((COUNTIF(Trades[PnL],">0")+COUNTIF(Trades[PnL],"<0"))=0, 0, COUNTIF(Trades[PnL],">0")/(COUNTIF(Trades[PnL],">0")+COUNTIF(Trades[PnL],"<0"))*100)` |
-| **Profit Factor** | `sum(pnl > 0) / abs(sum(pnl < 0))` (returns `Infinity` if no losses) | `=IF(SUMIF(Trades[PnL],"<0")=0, "N/A", SUMIF(Trades[PnL],">0") / ABS(SUMIF(Trades[PnL],"<0")))` |
-| **Avg Win** | `sum(pnl > 0) / count(pnl > 0)` | `=AVERAGEIF(Trades[PnL], ">0")` |
-| **Avg Loss** | `abs(sum(pnl < 0) / count(pnl < 0))` | `=ABS(AVERAGEIF(Trades[PnL], "<0"))` |
-| **Expectancy ($)** | `(winRateDec * avgWin) - ((1 - winRateDec) * avgLoss)` | `=(WinRate * AvgWin) - ((1 - WinRate) * AvgLoss)` |
-| **Max Drawdown ($)** | Peak-to-trough difference on running equity curve | Precomputed running equity column + `=MAX(RunningPeak - RunningEquity)` |
-| **Max Drawdown (%)** | Peak-to-trough percentage drop relative to running peak | Precomputed column + `=MAX((RunningPeak - RunningEquity) / RunningPeak) * 100` |
-| **Current Streak** | Consecutive winning, losing, or breakeven trades starting from latest closed trade | Computed sequentially on sorted trades |
+| Metric                        | JavaScript Implementation                                                          | Excel Dynamic Equivalent                                                                                                                               |
+| ----------------------------- | ---------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| **Current Deposit**           | `initialDeposit + sum(pnl)`                                                        | `=InitialDeposit + SUM(Trades[PnL])`                                                                                                                   |
+| **ROI %**                     | `(sum(pnl) / initialDeposit) * 100`                                                | `=(SUM(Trades[PnL]) / InitialDeposit) * 100`                                                                                                           |
+| **Breakeven (BE) Count**      | `count(pnl === 0)`                                                                 | `=COUNTIF(Trades[PnL], "=0")`                                                                                                                          |
+| **Breakeven Rate %**          | `(count(pnl === 0) / count(all)) * 100`                                            | `=(COUNTIF(Trades[PnL], "=0") / COUNTA(Trades[PnL])) * 100`                                                                                            |
+| **Win Rate % (Excluding BE)** | `count(pnl > 0) / (count(pnl > 0) + count(pnl < 0)) * 100`                         | `=IF((COUNTIF(Trades[PnL],">0")+COUNTIF(Trades[PnL],"<0"))=0, 0, COUNTIF(Trades[PnL],">0")/(COUNTIF(Trades[PnL],">0")+COUNTIF(Trades[PnL],"<0"))*100)` |
+| **Profit Factor**             | `sum(pnl > 0) / abs(sum(pnl < 0))` (returns `Infinity` if no losses)               | `=IF(SUMIF(Trades[PnL],"<0")=0, "N/A", SUMIF(Trades[PnL],">0") / ABS(SUMIF(Trades[PnL],"<0")))`                                                        |
+| **Avg Win**                   | `sum(pnl > 0) / count(pnl > 0)`                                                    | `=AVERAGEIF(Trades[PnL], ">0")`                                                                                                                        |
+| **Avg Loss**                  | `abs(sum(pnl < 0) / count(pnl < 0))`                                               | `=ABS(AVERAGEIF(Trades[PnL], "<0"))`                                                                                                                   |
+| **Expectancy ($)**            | `(winRateDec * avgWin) - ((1 - winRateDec) * avgLoss)`                             | `=(WinRate * AvgWin) - ((1 - WinRate) * AvgLoss)`                                                                                                      |
+| **Max Drawdown ($)**          | Peak-to-trough difference on running equity curve                                  | Precomputed running equity column + `=MAX(RunningPeak - RunningEquity)`                                                                                |
+| **Max Drawdown (%)**          | Peak-to-trough percentage drop relative to running peak                            | Precomputed column + `=MAX((RunningPeak - RunningEquity) / RunningPeak) * 100`                                                                         |
+| **Current Streak**            | Consecutive winning, losing, or breakeven trades starting from latest closed trade | Computed sequentially on sorted trades                                                                                                                 |
 
 ---
 
@@ -184,6 +187,7 @@ All calculations reside in `src/lib/calculations.ts` as pure, side-effect-free, 
 The interface provides high-density trading terminal aesthetics with 5 distinct themes, zero MUI button ripple, and high keyboard accessibility.
 
 ### 5.1 Five Theme Modes
+
 1. **Dark Midnight:** Pure `#000000` pitch-black OLED background, `#1A1D24` borders, high-contrast `#E6EDF3` typography.
 2. **Dark:** Refined charcoal dark surface (`#0D1117` / `#161B22`), soft contrast for long sessions.
 3. **Light:** Crisp, clean neutral institutional terminal palette (`#F6F8FA` background, `#FFFFFF` panels, `#1F2328` text).
@@ -191,6 +195,7 @@ The interface provides high-density trading terminal aesthetics with 5 distinct 
 5. **System:** Automatically tracks browser/OS `prefers-color-scheme` in real time, resolving to **Light** or **Dark**.
 
 ### 5.2 Number & Date Formatting with Settings Override
+
 - By default, uses standard browser locale formatting via `Intl.NumberFormat` and `Intl.DateTimeFormat`.
 - Settings allow explicit override:
   - Default / Browser Locale
@@ -302,7 +307,7 @@ The Excel export is built via **ExcelJS** to generate a native, multi-sheet, liv
    - **Monthly Summary (`E1:G5`):**
      - Net P&L (`F2`): Live formula summing daily P&L values (`=SUM(...)`).
      - Closed Orders (`F3`): Live formula summing daily closed order counts (`=SUM(...)`).
-     - Explanations (`E4:G5`): Clear bilingual explanatory guidance in Ukrainian and English (*"Сумарний чистий прибуток/збиток та загальна кількість закритих угод за місяць"* / *"Total net profit/loss and total closed orders for the month"*).
+     - Explanations (`E4:G5`): Clear bilingual explanatory guidance in Ukrainian and English (_"Сумарний чистий прибуток/збиток та загальна кількість закритих угод за місяць"_ / _"Total net profit/loss and total closed orders for the month"_).
    - **Weekly Breakdown (`I1:L...`):**
      - Chronological breakdown for each calendar week (Week number, Date range, Weekly Orders `=SUM(...)`, Weekly P&L `=SUM(...)`).
      - Bilingual explanation notes describing the weekly aggregation logic.
@@ -343,12 +348,14 @@ The Excel export is built via **ExcelJS** to generate a native, multi-sheet, liv
 The Trading Journal is configured as a fully compliant, installable Progressive Web App (PWA) with zero-backend offline capability.
 
 ### 10.1 Service Worker & Workbox Engine
+
 - **Tooling:** `vite-plugin-pwa` utilizing Workbox `generateSW` engine.
 - **Lifecycle:** `registerType: 'autoUpdate'`, ensuring seamless background asset updates with instant service worker activation.
 - **Cache Limit:** `workbox.maximumFileSizeToCacheInBytes` extended to 5 MiB to accommodate data processing and charting libraries.
 - **Precache Manifest:** Automatically precaches all entry points, code-split chunks, HTML, CSS, and static vector/raster icons (`dist/sw.js` and `dist/workbox-*.js`).
 
 ### 10.2 Web App Manifest (`manifest.webmanifest`)
+
 - **App Name:** `Trading Journal — Institutional Performance Terminal`
 - **Short Name:** `Trading Journal`
 - **Description:** `Privacy-first trading journal with real-time analytics, continuous ledger, and live-formula Excel exports`
@@ -366,6 +373,7 @@ The Trading Journal is configured as a fully compliant, installable Progressive 
   - `apple-touch-icon-180x180.png`: iOS home screen bookmark icon with `apple-mobile-web-app-capable` meta tags.
 
 ### 10.3 Workbox Runtime Caching
+
 1. **Google Fonts Stylesheets (`fonts.googleapis.com`):**
    - Strategy: `StaleWhileRevalidate`
    - Cache Name: `google-fonts-stylesheets`
@@ -375,5 +383,5 @@ The Trading Journal is configured as a fully compliant, installable Progressive 
    - Expiration: 1 year (`maxAgeSeconds: 31536000`), maximum 30 entries.
 
 ### 10.4 Offline Reliability Guarantee
-Because the entire application is architected without backend services (using client-side PapaParse for CSV parsing, pure JavaScript math functions in `calculations.ts`, Dexie.js for IndexedDB storage, and client-side ExcelJS for spreadsheet generation), the application operates with 100% feature parity when offline.
 
+Because the entire application is architected without backend services (using client-side PapaParse for CSV parsing, pure JavaScript math functions in `calculations.ts`, Dexie.js for IndexedDB storage, and client-side ExcelJS for spreadsheet generation), the application operates with 100% feature parity when offline.

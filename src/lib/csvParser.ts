@@ -18,7 +18,7 @@ export interface ParseResult {
 /**
  * Parses date string in format "d/M/yyyy H:mm", "dd.MM.yyyy HH:mm:ss", or ISO string.
  */
-export function parseBrokerDate(dateStr: string): string {
+function parseBrokerDate(dateStr: string): string {
   if (!dateStr) return new Date().toISOString();
   const trimmed = dateStr.trim();
 
@@ -29,7 +29,9 @@ export function parseBrokerDate(dateStr: string): string {
   }
 
   // Handle d/M/yyyy H:mm or dd/MM/yyyy HH:mm:ss
-  const slashMatch = trimmed.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})(?:\s+(\d{1,2}):(\d{2})(?::(\d{2}))?)?$/);
+  const slashMatch = trimmed.match(
+    /^(\d{1,2})\/(\d{1,2})\/(\d{4})(?:\s+(\d{1,2}):(\d{2})(?::(\d{2}))?)?$/
+  );
   if (slashMatch) {
     const day = parseInt(slashMatch[1], 10);
     const month = parseInt(slashMatch[2], 10) - 1; // 0-indexed
@@ -45,7 +47,9 @@ export function parseBrokerDate(dateStr: string): string {
   }
 
   // Handle dd.MM.yyyy HH:mm:ss or d.M.yyyy H:mm
-  const dotMatch = trimmed.match(/^(\d{1,2})\.(\d{1,2})\.(\d{4})(?:\s+(\d{1,2}):(\d{2})(?::(\d{2}))?)?$/);
+  const dotMatch = trimmed.match(
+    /^(\d{1,2})\.(\d{1,2})\.(\d{4})(?:\s+(\d{1,2}):(\d{2})(?::(\d{2}))?)?$/
+  );
   if (dotMatch) {
     const day = parseInt(dotMatch[1], 10);
     const month = parseInt(dotMatch[2], 10) - 1;
@@ -66,7 +70,7 @@ export function parseBrokerDate(dateStr: string): string {
 /**
  * Normalizes number string by handling commas, spaces, currency symbols, and multipliers.
  */
-export function parseBrokerNumber(val: unknown): number {
+function parseBrokerNumber(val: unknown): number {
   if (typeof val === 'number') return isNaN(val) ? 0 : val;
   if (!val) return 0;
 
@@ -83,7 +87,7 @@ export function parseBrokerNumber(val: unknown): number {
 /**
  * Normalizes trade direction (buy / sell).
  */
-export function parseDirection(val: string): Direction {
+function parseDirection(val: string): Direction {
   const norm = val.trim().toLowerCase();
   if (norm === 'продати' || norm === 'продать' || norm === 'sell' || norm === 'short') {
     return 'sell';
@@ -197,7 +201,11 @@ export function parseBrokerCsv(csvContent: string): ParseResult {
     const firstCell = (row[0] || '').trim().toLowerCase();
 
     // Check for footer / totals row (e.g. "Обсяг:", "Total:", "Итого:")
-    if (firstCell.startsWith('обсяг') || firstCell.startsWith('итого') || firstCell.startsWith('total')) {
+    if (
+      firstCell.startsWith('обсяг') ||
+      firstCell.startsWith('итого') ||
+      firstCell.startsWith('total')
+    ) {
       const numericCells = row
         .map((c) => parseBrokerNumber(c))
         .filter((n, idx) => idx > 0 && n !== 0);

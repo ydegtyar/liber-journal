@@ -1,46 +1,46 @@
 export type Direction = 'buy' | 'sell';
 
-export type TradingSession = 'asian' | 'london' | 'new_york' | 'other';
+type TradingSession = 'asian' | 'london' | 'new_york' | 'other';
 
 export type GroupByOption = 'none' | 'day' | 'week' | 'month';
 
 export type SortOrder = 'asc' | 'desc';
 
 export interface Trade {
-  id: string;                       // Unique internal ID (dealId or uuid v4)
-  dealId?: string;                  // Original broker deal ID
-  instrument: string;               // e.g. "EUR/USD", "Natural Gas Cash"
-  direction: Direction;             // "buy" | "sell"
-  openedAt: string;                 // ISO 8601 string
-  closedAt: string;                 // ISO 8601 string
+  id: string; // Unique internal ID (dealId or uuid v4)
+  dealId?: string; // Original broker deal ID
+  instrument: string; // e.g. "EUR/USD", "Natural Gas Cash"
+  direction: Direction; // "buy" | "sell"
+  openedAt: string; // ISO 8601 string
+  closedAt: string; // ISO 8601 string
   openPrice: number;
   closePrice: number;
-  margin: number;                   // Collateral / trade size in currency
-  leverage: number;                 // Numeric multiplier (e.g. 50)
-  grossReturn: number;              // Returned funds (margin + pnl)
-  pnl: number;                      // Signed net profit/loss
-  tag?: string;                     // Setup / strategy label (e.g. "Breakout", "Pullback")
-  session?: TradingSession;         // Auto-derived or manual session
-  note?: string;                    // Freeform reflection / execution notes
-  plannedRisk?: number;             // Optional planned risk ($) for R-multiple
+  margin: number; // Collateral / trade size in currency
+  leverage: number; // Numeric multiplier (e.g. 50)
+  grossReturn: number; // Returned funds (margin + pnl)
+  pnl: number; // Signed net profit/loss
+  tag?: string; // Setup / strategy label (e.g. "Breakout", "Pullback")
+  session?: TradingSession; // Auto-derived or manual session
+  note?: string; // Freeform reflection / execution notes
+  plannedRisk?: number; // Optional planned risk ($) for R-multiple
 }
 
 export interface AccountMetadata {
   accountNumber?: string;
   accountHolder?: string;
-  currency: string;                 // e.g. "USD", "EUR"
+  currency: string; // e.g. "USD", "EUR"
   reportDate?: string;
 }
 
 export interface GroupSummary {
-  groupKey: string;                 // Formatted date / week / month label
+  groupKey: string; // Formatted date / week / month label
   tradeCount: number;
   netPnl: number;
   winCount: number;
   lossCount: number;
   breakevenCount: number;
-  winRate: number;                  // Excludes BE: winCount / (winCount + lossCount) * 100
-  breakevenRate: number;            // breakevenCount / tradeCount * 100
+  winRate: number; // Excludes BE: winCount / (winCount + lossCount) * 100
+  breakevenRate: number; // breakevenCount / tradeCount * 100
   profitFactor: number;
   totalMargin: number;
   grossReturn: number;
@@ -91,28 +91,24 @@ export interface YearMonthlyReturns {
 
 export type TimeframeOption = '1D' | '7D' | '30D' | 'WTD' | 'MTD' | 'YTD' | 'ALL' | 'CUSTOM';
 
-export interface TimeframeFilter {
-  mode: TimeframeOption;
-  startDate?: string;
-  endDate?: string;
-}
-
 export interface JournalAnalytics {
   totalTrades: number;
   winningTrades: number;
   losingTrades: number;
-  breakevenTrades: number;          // Explicit BE count
-  breakevenRate: number;            // BE % of total trades
+  breakevenTrades: number; // Explicit BE count
+  breakevenRate: number; // BE % of total trades
   netPnl: number;
   currentDeposit: number;
   roiPercent: number;
-  winRate: number;                  // Excludes BE from denominator: wins / (wins + losses) * 100
-  profitFactor: number;             // Ratio: sum(wins) / abs(sum(losses))
+  winRate: number; // Excludes BE from denominator: wins / (wins + losses) * 100
+  profitFactor: number; // Ratio: sum(wins) / abs(sum(losses))
   avgWin: number;
   avgLoss: number;
-  expectancy: number;               // Expected dollar return per decisive trade
-  maxDrawdownAmount: number;        // Peak-to-trough drop ($)
-  maxDrawdownPercent: number;       // Peak-to-trough drop (%)
+  avgTradePnl: number; // Average net P&L across all closed trades
+  avgTradeDurationMs: number; // Average trade duration in milliseconds
+  expectancy: number; // Expected dollar return per decisive trade
+  maxDrawdownAmount: number; // Peak-to-trough drop ($)
+  maxDrawdownPercent: number; // Peak-to-trough drop (%)
   currentStreak: {
     type: 'win' | 'loss' | 'breakeven' | 'none';
     count: number;
@@ -138,4 +134,3 @@ export interface EquityPoint {
   drawdownAmount: number;
   drawdownPercent: number;
 }
-

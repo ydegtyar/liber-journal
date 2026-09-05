@@ -1,9 +1,8 @@
-import React, { useMemo } from 'react';
-import { ThemeProvider, CssBaseline } from '@mui/material';
+import React from 'react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { PreferencesProvider, useAppPreferences } from './hooks/useAppPreferences';
-import { buildAppTheme } from './theme/theme';
-import { TradingJournalPage } from './pages/TradingJournalPage';
+import { PreferencesProvider } from './hooks/useAppPreferences';
+import { AppContent } from './AppContent';
+import { Analytics } from '@vercel/analytics/react';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -13,29 +12,13 @@ const queryClient = new QueryClient({
   },
 });
 
-const AppContent: React.FC = () => {
-  const { themeMode, systemColor } = useAppPreferences();
-
-  const theme = useMemo(() => {
-    return buildAppTheme(themeMode, systemColor);
-  }, [themeMode, systemColor]);
-
-  return (
-    <ThemeProvider theme={theme}>
-      <CssBaseline />
-      <TradingJournalPage />
-    </ThemeProvider>
-  );
-};
-
 export const App: React.FC = () => {
   return (
     <QueryClientProvider client={queryClient}>
+      <Analytics />
       <PreferencesProvider>
         <AppContent />
       </PreferencesProvider>
     </QueryClientProvider>
   );
 };
-
-export default App;

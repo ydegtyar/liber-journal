@@ -3,7 +3,7 @@ import { NumberFormatOption } from '../types/preferences';
 /**
  * Formats a number according to the chosen number formatting mode.
  */
-export function formatNumber(
+function formatNumber(
   value: number | undefined | null,
   options: {
     minimumFractionDigits?: number;
@@ -103,7 +103,13 @@ export function formatSignedPnl(
   currency = 'USD',
   formatOption: NumberFormatOption = 'locale',
   locale = 'en-US'
-): { text: string; sign: '+' | '-' | ''; isPositive: boolean; isNegative: boolean; isBreakeven: boolean } {
+): {
+  text: string;
+  sign: '+' | '-' | '';
+  isPositive: boolean;
+  isNegative: boolean;
+  isBreakeven: boolean;
+} {
   const num = value || 0;
   const isPositive = num > 0.0001;
   const isNegative = num < -0.0001;
@@ -167,20 +173,45 @@ export function formatDate(
 }
 
 /**
- * Formats duration between two ISO date strings concisely (e.g., '45s', '15m', '2h 15m', '3d 4h').
+ * Duration unit abbreviations for different languages.
  */
-export function formatDuration(
-  openedAt: string | undefined | null,
-  closedAt: string | undefined | null
-): string {
-  if (!openedAt || !closedAt) return '-';
-  const start = new Date(openedAt).getTime();
-  const end = new Date(closedAt).getTime();
-  if (isNaN(start) || isNaN(end) || end < start) return '-';
+interface DurationUnits {
+  days: string;
+  hours: string;
+  minutes: string;
+  seconds: string;
+}
 
-  const totalSeconds = Math.round((end - start) / 1000);
+const DURATION_UNITS: Record<string, DurationUnits> = {
+  en: {
+    days: 'd',
+    hours: 'h',
+    minutes: 'm',
+    seconds: 's',
+  },
+  uk: {
+    days: 'д',
+    hours: 'год',
+    minutes: 'хв',
+    seconds: 'с',
+  },
+};
+
+function getDurationUnits(locale = 'en-US'): DurationUnits {
+  const lang = locale.toLowerCase().split(/[-_]/)[0];
+  return DURATION_UNITS[lang] || DURATION_UNITS.en;
+}
+
+/**
+ * Formats duration in milliseconds concisely (e.g., '45s', '15m', '2h 15m', '3d 4h').
+ */
+export function formatDurationMs(ms: number | undefined | null, locale = 'en-US'): string {
+  if (ms === undefined || ms === null || isNaN(ms) || ms < 0) return '-';
+
+  const units = getDurationUnits(locale);
+  const totalSeconds = Math.round(ms / 1000);
   if (totalSeconds < 60) {
-    return `${totalSeconds}s`;
+    return `${totalSeconds}${units.seconds}`;
   }
 
   const days = Math.floor(totalSeconds / 86400);
@@ -189,12 +220,54 @@ export function formatDuration(
   const seconds = totalSeconds % 60;
 
   if (days > 0) {
-    return hours > 0 ? `${days}d ${hours}h` : `${days}d`;
+    return hours > 0 ? `${days}${units.days} ${hours}${units.hours}` : `${days}${units.days}`;
   }
   if (hours > 0) {
-    return minutes > 0 ? `${hours}h ${minutes}m` : `${hours}h`;
+    return minutes > 0
+      ? `${hours}${units.hours} ${minutes}${units.minutes}`
+      : `${hours}${units.hours}`;
   }
-  return seconds > 0 ? `${minutes}m ${seconds}s` : `${minutes}m`;
+  return seconds > 0
+    ? `${minutes}${units.minutes} ${seconds}${units.seconds}`
+    : `${minutes}${units.minutes}`;
+}
+
+/**
+ * Formats duration in milliseconds with detailed breakdown (e.g., '1d 4h 15m 30s').
+ */
+export function formatDetailedDurationMs(ms: number | undefined | null, locale = 'en-US'): string {
+  if (ms === undefined || ms === null || isNaN(ms) || ms < 0) return '-';
+
+  const units = getDurationUnits(locale);
+  const totalSeconds = Math.round(ms / 1000);
+  const days = Math.floor(totalSeconds / 86400);
+  const hours = Math.floor((totalSeconds % 86400) / 3600);
+  const minutes = Math.floor((totalSeconds % 3600) / 60);
+  const seconds = totalSeconds % 60;
+
+  const parts: string[] = [];
+  if (days > 0) parts.push(`${days}${units.days}`);
+  if (hours > 0) parts.push(`${hours}${units.hours}`);
+  if (minutes > 0) parts.push(`${minutes}${units.minutes}`);
+  if (seconds > 0 || parts.length === 0) parts.push(`${seconds}${units.seconds}`);
+
+  return parts.join(' ');
+}
+
+/**
+ * Formats duration between two ISO date strings concisely (e.g., '45s', '15m', '2h 15m', '3d 4h').
+ */
+export function formatDuration(
+  openedAt: string | undefined | null,
+  closedAt: string | undefined | null,
+  locale = 'en-US'
+): string {
+  if (!openedAt || !closedAt) return '-';
+  const start = new Date(openedAt).getTime();
+  const end = new Date(closedAt).getTime();
+  if (isNaN(start) || isNaN(end) || end < start) return '-';
+
+  return formatDurationMs(end - start, locale);
 }
 
 /**
@@ -202,25 +275,13 @@ export function formatDuration(
  */
 export function formatDetailedDuration(
   openedAt: string | undefined | null,
-  closedAt: string | undefined | null
+  closedAt: string | undefined | null,
+  locale = 'en-US'
 ): string {
   if (!openedAt || !closedAt) return '-';
   const start = new Date(openedAt).getTime();
   const end = new Date(closedAt).getTime();
   if (isNaN(start) || isNaN(end) || end < start) return '-';
 
-  const totalSeconds = Math.round((end - start) / 1000);
-  const days = Math.floor(totalSeconds / 86400);
-  const hours = Math.floor((totalSeconds % 86400) / 3600);
-  const minutes = Math.floor((totalSeconds % 3600) / 60);
-  const seconds = totalSeconds % 60;
-
-  const parts: string[] = [];
-  if (days > 0) parts.push(`${days}d`);
-  if (hours > 0) parts.push(`${hours}h`);
-  if (minutes > 0) parts.push(`${minutes}m`);
-  if (seconds > 0 || parts.length === 0) parts.push(`${seconds}s`);
-
-  return parts.join(' ');
+  return formatDetailedDurationMs(end - start, locale);
 }
-

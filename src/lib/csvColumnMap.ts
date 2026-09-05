@@ -3,12 +3,12 @@
  * Easily extensible for new broker profiles or column formats.
  */
 
-export interface ColumnMappingProfile {
+interface ColumnMappingProfile {
   name: string;
   aliases: Record<string, string[]>;
 }
 
-export const LIBERTEX_PROFILE: ColumnMappingProfile = {
+const LIBERTEX_PROFILE: ColumnMappingProfile = {
   name: 'Libertex',
   aliases: {
     instrument: ['інструмент', 'инструмент', 'instrument', 'symbol', 'asset', 'pair'],
@@ -25,7 +25,7 @@ export const LIBERTEX_PROFILE: ColumnMappingProfile = {
   },
 };
 
-export const STANDARD_CANONICAL_PROFILE: ColumnMappingProfile = {
+const STANDARD_CANONICAL_PROFILE: ColumnMappingProfile = {
   name: 'Standard Canonical',
   aliases: {
     instrument: ['instrument', 'symbol'],
@@ -42,7 +42,7 @@ export const STANDARD_CANONICAL_PROFILE: ColumnMappingProfile = {
   },
 };
 
-export const PROFILES: ColumnMappingProfile[] = [LIBERTEX_PROFILE, STANDARD_CANONICAL_PROFILE];
+const PROFILES: ColumnMappingProfile[] = [LIBERTEX_PROFILE, STANDARD_CANONICAL_PROFILE];
 
 /**
  * Matches a raw header string to a canonical field name.

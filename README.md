@@ -81,10 +81,12 @@ Designed to replace fragile, multi-tab spreadsheets with a continuous ledger, re
 ## 🛠️ Development & Deployment Instructions
 
 ### Prerequisites
+
 - Node.js 18+ (tested on Node v20/v24)
 - npm or yarn
 
 ### Installation
+
 ```bash
 # Clone the repository
 git clone git@github.com:ydegtyar/liber-journal.git
@@ -95,12 +97,15 @@ npm install
 ```
 
 ### Local Development
+
 ```bash
 npm run dev
 ```
+
 Open [http://localhost:5173](http://localhost:5173) in your browser.
 
 ### Run Automated Tests
+
 ```bash
 # Run unit and integration tests
 npm test
@@ -110,19 +115,23 @@ npm run test:watch
 ```
 
 ### Build for Production
+
 ```bash
 npm run build
 ```
+
 Production assets are generated in the `dist/` directory.
 
 ### Automatic Deployment on Push
 
 #### Option A: Native Vercel Git Integration (Recommended)
+
 1. Go to your project's [Vercel Git Settings](https://vercel.com/yuriy-degtyars-projects-0321a19b/liber-journal/settings/git).
 2. Click **Connect Git Repository** and select `ydegtyar/liber-journal`.
 3. Every `git push` to `main` will automatically build and deploy the production site with live URL previews on PRs.
 
 #### Option B: GitHub Actions CI/CD (`.github/workflows/deploy.yml`)
+
 1. On every push and pull request to `main`, GitHub Actions automatically runs:
    - Vitest test suite (`npm test`)
    - Production type-checking and PWA build (`npm run build`)
@@ -131,6 +140,7 @@ Production assets are generated in the `dist/` directory.
    - `VERCEL_ORG_ID` and `VERCEL_PROJECT_ID` are already pre-configured as repository variables.
 
 #### Manual CLI Deployment
+
 ```bash
 npm run deploy
 ```
@@ -140,6 +150,7 @@ npm run deploy
 ## 📊 Sample Data Testing
 
 A verified Libertex test fixture is provided in [`sample_data/closed_deals_on_02_09_26.csv`](sample_data/closed_deals_on_02_09_26.csv). Drag and drop this file onto the web terminal to immediately verify:
+
 - Exactly 23 trades parsed.
 - Account `9990001122` (`DEMO TRADER`, `USD`).
 - Net P&L checksum matches `$65.09`.

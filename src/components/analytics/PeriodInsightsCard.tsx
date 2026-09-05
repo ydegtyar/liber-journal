@@ -9,7 +9,7 @@ interface PeriodInsightsCardProps {
   insights: PeriodInsight[];
 }
 
-export const PeriodInsightsCard: React.FC<PeriodInsightsCardProps> = ({ insights }) => {
+export const PeriodInsightsCard: React.FC<PeriodInsightsCardProps> = React.memo(({ insights }) => {
   const { t } = useTranslation();
 
   if (insights.length === 0) return null;
@@ -56,8 +56,8 @@ export const PeriodInsightsCard: React.FC<PeriodInsightsCardProps> = ({ insights
                 insight.type === 'positive' || insight.type === 'highlight'
                   ? theme.palette.trade.gainBg
                   : insight.type === 'negative'
-                  ? theme.palette.trade.lossBg
-                  : 'action.hover',
+                    ? theme.palette.trade.lossBg
+                    : 'action.hover',
             }}
           >
             <ArrowDropUpIcon
@@ -67,8 +67,8 @@ export const PeriodInsightsCard: React.FC<PeriodInsightsCardProps> = ({ insights
                   insight.type === 'positive' || insight.type === 'highlight'
                     ? theme.palette.trade.gain
                     : insight.type === 'negative'
-                    ? theme.palette.trade.loss
-                    : 'primary.main',
+                      ? theme.palette.trade.loss
+                      : 'primary.main',
                 transform: insight.type === 'negative' ? 'rotate(180deg)' : 'none',
               }}
             />
@@ -81,8 +81,8 @@ export const PeriodInsightsCard: React.FC<PeriodInsightsCardProps> = ({ insights
                   insight.type === 'positive' || insight.type === 'highlight'
                     ? theme.palette.trade.gain
                     : insight.type === 'negative'
-                    ? theme.palette.trade.loss
-                    : 'text.primary',
+                      ? theme.palette.trade.loss
+                      : 'text.primary',
               }}
             >
               {insight.text}
@@ -92,4 +92,6 @@ export const PeriodInsightsCard: React.FC<PeriodInsightsCardProps> = ({ insights
       </Box>
     </Paper>
   );
-};
+});
+
+PeriodInsightsCard.displayName = 'PeriodInsightsCard';

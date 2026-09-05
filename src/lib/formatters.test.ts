@@ -3,6 +3,8 @@ import {
   formatDate,
   formatDuration,
   formatDetailedDuration,
+  formatDurationMs,
+  formatDetailedDurationMs,
 } from './formatters';
 
 describe('formatDuration and formatDetailedDuration', () => {
@@ -16,6 +18,16 @@ describe('formatDuration and formatDetailedDuration', () => {
     expect(formatDetailedDuration(undefined, undefined)).toBe('-');
     expect(formatDetailedDuration('invalid', '2026-09-01T10:00:00Z')).toBe('-');
     expect(formatDetailedDuration('2026-09-01T12:00:00Z', '2026-09-01T10:00:00Z')).toBe('-');
+
+    expect(formatDurationMs(undefined)).toBe('-');
+    expect(formatDurationMs(null)).toBe('-');
+    expect(formatDurationMs(NaN)).toBe('-');
+    expect(formatDurationMs(-1000)).toBe('-');
+
+    expect(formatDetailedDurationMs(undefined)).toBe('-');
+    expect(formatDetailedDurationMs(null)).toBe('-');
+    expect(formatDetailedDurationMs(NaN)).toBe('-');
+    expect(formatDetailedDurationMs(-1000)).toBe('-');
   });
 
   it('formats seconds correctly', () => {
@@ -68,6 +80,46 @@ describe('formatDuration and formatDetailedDuration', () => {
 
     expect(formatDuration(start, endDaysAndHours)).toBe('2d 4h');
     expect(formatDetailedDuration(start, endDaysAndHours)).toBe('2d 4h 30m 15s');
+  });
+
+  it('formats ms directly using formatDurationMs and formatDetailedDurationMs', () => {
+    expect(formatDurationMs(0)).toBe('0s');
+    expect(formatDurationMs(45000)).toBe('45s');
+    expect(formatDurationMs(900000)).toBe('15m');
+    expect(formatDurationMs(4500000)).toBe('1h 15m');
+    expect(formatDurationMs(2 * 86400 * 1000 + 4 * 3600 * 1000)).toBe('2d 4h');
+
+    expect(formatDetailedDurationMs(0)).toBe('0s');
+    expect(formatDetailedDurationMs(45000)).toBe('45s');
+    expect(formatDetailedDurationMs(900000)).toBe('15m');
+    expect(formatDetailedDurationMs(4500000)).toBe('1h 15m');
+    expect(
+      formatDetailedDurationMs(2 * 86400 * 1000 + 4 * 3600 * 1000 + 30 * 60 * 1000 + 15 * 1000)
+    ).toBe('2d 4h 30m 15s');
+  });
+
+  it('formats localized durations for Ukrainian locale', () => {
+    expect(formatDurationMs(0, 'uk')).toBe('0с');
+    expect(formatDurationMs(45000, 'uk-UA')).toBe('45с');
+    expect(formatDurationMs(900000, 'uk')).toBe('15хв');
+    expect(formatDurationMs(4500000, 'uk')).toBe('1год 15хв');
+    expect(formatDurationMs(2 * 86400 * 1000 + 4 * 3600 * 1000, 'uk')).toBe('2д 4год');
+
+    expect(formatDetailedDurationMs(0, 'uk')).toBe('0с');
+    expect(formatDetailedDurationMs(45000, 'uk')).toBe('45с');
+    expect(formatDetailedDurationMs(900000, 'uk')).toBe('15хв');
+    expect(formatDetailedDurationMs(4500000, 'uk')).toBe('1год 15хв');
+    expect(
+      formatDetailedDurationMs(
+        2 * 86400 * 1000 + 4 * 3600 * 1000 + 30 * 60 * 1000 + 15 * 1000,
+        'uk'
+      )
+    ).toBe('2д 4год 30хв 15с');
+
+    const start = '2026-09-01T10:00:00.000Z';
+    const end = '2026-09-03T14:30:15.000Z';
+    expect(formatDuration(start, end, 'uk')).toBe('2д 4год');
+    expect(formatDetailedDuration(start, end, 'uk')).toBe('2д 4год 30хв 15с');
   });
 });
 

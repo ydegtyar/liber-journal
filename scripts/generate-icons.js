@@ -19,10 +19,7 @@ async function generate() {
 
   for (const item of sizes) {
     const outPath = path.resolve(__dirname, '../public', item.name);
-    await sharp(svgBuffer)
-      .resize(item.size, item.size)
-      .png()
-      .toFile(outPath);
+    await sharp(svgBuffer).resize(item.size, item.size).png().toFile(outPath);
     console.log(`Generated ${item.name} (${item.size}x${item.size})`);
   }
 }

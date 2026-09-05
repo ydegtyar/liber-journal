@@ -1,31 +1,10 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { ThemeMode, NumberFormatOption } from '../types/preferences';
 import { useTranslation } from 'react-i18next';
+import { PreferencesContext, PreferencesContextValue } from './preferencesContextInstance';
 
 const THEME_STORAGE_KEY = 'liber_journal_theme';
 const NUMBER_FORMAT_STORAGE_KEY = 'liber_journal_number_format';
-
-export interface PreferencesContextValue {
-  themeMode: ThemeMode;
-  setThemeMode: (mode: ThemeMode) => void;
-  systemColor: 'light' | 'dark';
-  numberFormat: NumberFormatOption;
-  setNumberFormat: (format: NumberFormatOption) => void;
-  currentLocale: string;
-  setLocale: (locale: string) => void;
-}
-
-const defaultPreferences: PreferencesContextValue = {
-  themeMode: 'dark',
-  setThemeMode: () => {},
-  systemColor: 'dark',
-  numberFormat: 'locale',
-  setNumberFormat: () => {},
-  currentLocale: 'en',
-  setLocale: () => {},
-};
-
-export const PreferencesContext = createContext<PreferencesContextValue>(defaultPreferences);
 
 export const PreferencesProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { i18n } = useTranslation();
@@ -64,45 +43,43 @@ export const PreferencesProvider: React.FC<{ children: React.ReactNode }> = ({ c
     return () => mediaQuery.removeEventListener('change', handler);
   }, []);
 
-  const setThemeMode = (mode: ThemeMode) => {
+  const setThemeMode = useCallback((mode: ThemeMode) => {
     setThemeModeState(mode);
     try {
       localStorage.setItem(THEME_STORAGE_KEY, mode);
     } catch {
       // ignore storage quota errors
     }
-  };
+  }, []);
 
-  const setNumberFormat = (format: NumberFormatOption) => {
+  const setNumberFormat = useCallback((format: NumberFormatOption) => {
     setNumberFormatState(format);
     try {
       localStorage.setItem(NUMBER_FORMAT_STORAGE_KEY, format);
     } catch {
       // ignore storage quota errors
     }
-  };
+  }, []);
 
-  const setLocale = (locale: string) => {
-    i18n.changeLanguage(locale);
-  };
-
-  const value: PreferencesContextValue = {
-    themeMode,
-    setThemeMode,
-    systemColor,
-    numberFormat,
-    setNumberFormat,
-    currentLocale: i18n.language || 'en',
-    setLocale,
-  };
-
-  return (
-    <PreferencesContext.Provider value={value}>
-      {children}
-    </PreferencesContext.Provider>
+  const setLocale = useCallback(
+    (locale: string) => {
+      i18n.changeLanguage(locale);
+    },
+    [i18n]
   );
-};
 
-export function useAppPreferences(): PreferencesContextValue {
-  return useContext(PreferencesContext);
-}
+  const value: PreferencesContextValue = useMemo(
+    () => ({
+      themeMode,
+      setThemeMode,
+      systemColor,
+      numberFormat,
+      setNumberFormat,
+      currentLocale: i18n.language || 'en',
+      setLocale,
+    }),
+    [themeMode, setThemeMode, systemColor, numberFormat, setNumberFormat, i18n.language, setLocale]
+  );
+
+  return <PreferencesContext.Provider value={value}>{children}</PreferencesContext.Provider>;
+};

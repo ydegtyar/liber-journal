@@ -2,7 +2,11 @@ import { describe, it, expect } from 'vitest';
 import * as fs from 'fs';
 import * as path from 'path';
 import { parseBrokerCsv } from './lib/csvParser';
-import { calculateAnalytics, calculateDrawdowns, calculateGroupSummaries } from './lib/calculations';
+import {
+  calculateAnalytics,
+  calculateDrawdowns,
+  calculateGroupSummaries,
+} from './lib/calculations';
 import { generateXlsxWorkbook } from './lib/xlsxTemplate';
 import { DEFAULT_JOURNAL_SETTINGS } from './types/preferences';
 
@@ -38,7 +42,10 @@ describe('Trading Journal End-to-End Integration', () => {
     expect(analytics.profitFactor).toBeGreaterThan(300);
 
     // Peak-to-Trough Drawdowns
-    const { maxDrawdownAmount, equityCurve } = calculateDrawdowns(initialDeposit, parseResult.trades);
+    const { maxDrawdownAmount, equityCurve } = calculateDrawdowns(
+      initialDeposit,
+      parseResult.trades
+    );
     expect(maxDrawdownAmount).toBe(0.21);
     expect(equityCurve.length).toBe(24);
 

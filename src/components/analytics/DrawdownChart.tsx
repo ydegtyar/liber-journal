@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { Paper, Typography, Box, useTheme } from '@mui/material';
 import {
   ResponsiveContainer,
@@ -19,19 +19,20 @@ interface DrawdownChartProps {
   numberFormat: NumberFormatOption;
 }
 
-export const DrawdownChart: React.FC<DrawdownChartProps> = ({
-  data,
-  numberFormat,
-}) => {
+export const DrawdownChart: React.FC<DrawdownChartProps> = React.memo(({ data, numberFormat }) => {
   const { t, i18n } = useTranslation();
   const theme = useTheme();
   const currentLang = i18n.language || 'en-US';
 
   // Transform to negative drawdown percentage for underwater look
-  const chartData = data.map((pt) => ({
-    ...pt,
-    drawdownUnderwater: -pt.drawdownPercent,
-  }));
+  const chartData = useMemo(
+    () =>
+      data.map((pt) => ({
+        ...pt,
+        drawdownUnderwater: -pt.drawdownPercent,
+      })),
+    [data]
+  );
 
   return (
     <Paper sx={{ p: 2, height: 320, display: 'flex', flexDirection: 'column' }}>
@@ -104,4 +105,6 @@ export const DrawdownChart: React.FC<DrawdownChartProps> = ({
       </Box>
     </Paper>
   );
-};
+});
+
+DrawdownChart.displayName = 'DrawdownChart';

@@ -1,4 +1,4 @@
-import React, { useMemo, useState, useEffect } from 'react';
+import React, { useMemo, useState, useCallback } from 'react';
 import {
   TableContainer,
   Table,
@@ -25,52 +25,7 @@ import { calculateGroupSummaries, getGroupKey } from '../../lib/calculations';
 import { TradeRow } from './TradeRow';
 import { GroupHeaderRow } from './GroupHeaderRow';
 
-export type SortColumn = 'date' | 'duration' | 'grossReturn' | 'pnl';
-
-export function getTradeDurationMs(openedAt?: string, closedAt?: string): number {
-  if (!openedAt || !closedAt) return 0;
-  const start = new Date(openedAt).getTime();
-  const end = new Date(closedAt).getTime();
-  if (isNaN(start) || isNaN(end) || end < start) return 0;
-  return end - start;
-}
-
-export function sortTrades(
-  trades: Trade[],
-  sortBy: SortColumn,
-  sortOrder: SortOrder
-): Trade[] {
-  return [...trades].sort((a, b) => {
-    let comparison = 0;
-    if (sortBy === 'date') {
-      const timeA = new Date(a.closedAt || a.openedAt).getTime() || 0;
-      const timeB = new Date(b.closedAt || b.openedAt).getTime() || 0;
-      comparison = timeA - timeB;
-    } else if (sortBy === 'duration') {
-      const durA = getTradeDurationMs(a.openedAt, a.closedAt);
-      const durB = getTradeDurationMs(b.openedAt, b.closedAt);
-      comparison = durA - durB;
-    } else if (sortBy === 'grossReturn') {
-      comparison = (a.grossReturn ?? 0) - (b.grossReturn ?? 0);
-    } else if (sortBy === 'pnl') {
-      comparison = (a.pnl ?? 0) - (b.pnl ?? 0);
-    }
-
-    if (comparison === 0) {
-      const timeA = new Date(a.closedAt || a.openedAt).getTime() || 0;
-      const timeB = new Date(b.closedAt || b.openedAt).getTime() || 0;
-      comparison = timeA - timeB;
-    }
-
-    return sortOrder === 'asc' ? comparison : -comparison;
-  });
-}
-
-export function filterTradesByInstrument(trades: Trade[], query?: string): Trade[] {
-  if (!query || !query.trim()) return trades;
-  const q = query.trim().toLowerCase();
-  return trades.filter((trade) => trade.instrument.toLowerCase().includes(q));
-}
+import { SortColumn, sortTrades, filterTradesByInstrument } from './tradesTableUtils';
 
 interface TradesTableProps {
   trades: Trade[];
@@ -83,7 +38,7 @@ interface TradesTableProps {
   onToggleSort?: () => void;
 }
 
-export const TradesTable: React.FC<TradesTableProps> = ({
+const TradesTableComponent: React.FC<TradesTableProps> = ({
   trades,
   settings,
   numberFormat,
@@ -100,37 +55,36 @@ export const TradesTable: React.FC<TradesTableProps> = ({
   const [pageSize, setPageSize] = useState<number | 'all'>(10);
 
   const [internalSortBy, setInternalSortBy] = useState<SortColumn>('date');
-  const [internalSortOrder, setInternalSortOrder] = useState<SortOrder>(settings.sortOrder || 'desc');
+  const [internalSortOrder, setInternalSortOrder] = useState<SortOrder>(
+    settings.sortOrder || 'desc'
+  );
 
   const activeSortBy = sortByProp ?? internalSortBy;
-  const activeSortOrder = sortOrderProp ?? (activeSortBy === 'date' ? settings.sortOrder : internalSortOrder);
+  const activeSortOrder =
+    sortOrderProp ?? (activeSortBy === 'date' ? settings.sortOrder : internalSortOrder);
 
-  // Sync internal sort order if settings.sortOrder changes and sortBy is date
-  useEffect(() => {
-    if (activeSortBy === 'date') {
-      setInternalSortOrder(settings.sortOrder);
-    }
-  }, [settings.sortOrder, activeSortBy]);
+  const handleRequestSort = useCallback(
+    (column: SortColumn) => {
+      let nextOrder: SortOrder = 'desc';
+      if (activeSortBy === column) {
+        nextOrder = activeSortOrder === 'asc' ? 'desc' : 'asc';
+      } else {
+        nextOrder = 'desc';
+      }
 
-  const handleRequestSort = (column: SortColumn) => {
-    let nextOrder: SortOrder = 'desc';
-    if (activeSortBy === column) {
-      nextOrder = activeSortOrder === 'asc' ? 'desc' : 'asc';
-    } else {
-      nextOrder = 'desc';
-    }
+      setInternalSortBy(column);
+      setInternalSortOrder(nextOrder);
 
-    setInternalSortBy(column);
-    setInternalSortOrder(nextOrder);
+      if (onSortChange) {
+        onSortChange(column, nextOrder);
+      }
 
-    if (onSortChange) {
-      onSortChange(column, nextOrder);
-    }
-
-    if (column === 'date' && onToggleSort) {
-      onToggleSort();
-    }
-  };
+      if (column === 'date' && onToggleSort) {
+        onToggleSort();
+      }
+    },
+    [onSortChange, onToggleSort]
+  );
 
   // 1. Filter trades by instrument search query
   const filteredTrades = useMemo(() => {
@@ -140,12 +94,11 @@ export const TradesTable: React.FC<TradesTableProps> = ({
   // 2. Sort trades by selected column & order
   const sortedTrades = useMemo(() => {
     return sortTrades(filteredTrades, activeSortBy, activeSortOrder);
-  }, [filteredTrades, activeSortBy, activeSortOrder]);
+  }, [filteredTrades]);
 
-  // Reset to page 1 if total trades changes
-  useEffect(() => {
-    setPage(1);
-  }, [sortedTrades.length, pageSize]);
+  const totalTrades = sortedTrades.length;
+  const totalPages = pageSize === 'all' ? 1 : Math.max(1, Math.ceil(totalTrades / pageSize));
+  const currentPage = Math.min(page, totalPages);
 
   // 3. Compute group summaries if grouping is active
   const groupSummaries = useMemo(() => {
@@ -159,7 +112,7 @@ export const TradesTable: React.FC<TradesTableProps> = ({
       const displayList =
         pageSize === 'all'
           ? sortedTrades
-          : sortedTrades.slice((page - 1) * pageSize, page * pageSize);
+          : sortedTrades.slice((currentPage - 1) * pageSize, currentPage * pageSize);
       return [{ key: 'all', trades: displayList }];
     }
 
@@ -176,13 +129,24 @@ export const TradesTable: React.FC<TradesTableProps> = ({
     }
 
     return sections;
-  }, [sortedTrades, settings.groupBy, page, pageSize]);
+  }, [sortedTrades, settings.groupBy, currentPage, pageSize]);
 
   const columnCount = 9;
-  const totalTrades = sortedTrades.length;
-  const totalPages = pageSize === 'all' ? 1 : Math.max(1, Math.ceil(totalTrades / pageSize));
-  const startCount = pageSize === 'all' ? 1 : (page - 1) * pageSize + 1;
-  const endCount = pageSize === 'all' ? totalTrades : Math.min(page * pageSize, totalTrades);
+  const startCount = pageSize === 'all' ? 1 : (currentPage - 1) * pageSize + 1;
+  const endCount = pageSize === 'all' ? totalTrades : Math.min(currentPage * pageSize, totalTrades);
+
+  const handlePageSizeChange = useCallback((e: any) => {
+    setPageSize(e.target.value as number | 'all');
+    setPage(1);
+  }, []);
+
+  const handlePagePrev = useCallback(() => {
+    setPage((p) => Math.max(Math.min(p, totalPages) - 1, 1));
+  }, [totalPages]);
+
+  const handlePageNext = useCallback(() => {
+    setPage((p) => Math.min(Math.min(p, totalPages) + 1, totalPages));
+  }, [totalPages]);
 
   return (
     <div>
@@ -192,7 +156,13 @@ export const TradesTable: React.FC<TradesTableProps> = ({
             <TableRow>
               {/* 1. Date */}
               <TableCell sortDirection={activeSortBy === 'date' ? activeSortOrder : false}>
-                <Tooltip title={activeSortBy === 'date' && activeSortOrder === 'asc' ? t('table.sortOldestFirst') : t('table.sortNewestFirst')}>
+                <Tooltip
+                  title={
+                    activeSortBy === 'date' && activeSortOrder === 'asc'
+                      ? t('table.sortOldestFirst')
+                      : t('table.sortNewestFirst')
+                  }
+                >
                   <TableSortLabel
                     active={activeSortBy === 'date'}
                     direction={activeSortBy === 'date' ? activeSortOrder : 'desc'}
@@ -261,7 +231,10 @@ export const TradesTable: React.FC<TradesTableProps> = ({
           <TableBody>
             {sortedTrades.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={columnCount} sx={{ textAlign: 'center', py: 4, color: 'text.secondary' }}>
+                <TableCell
+                  colSpan={columnCount}
+                  sx={{ textAlign: 'center', py: 4, color: 'text.secondary' }}
+                >
                   {t('table.noTradesFound', { defaultValue: 'No trades found' })}
                 </TableCell>
               </TableRow>
@@ -312,13 +285,15 @@ export const TradesTable: React.FC<TradesTableProps> = ({
         >
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
             <Typography variant="body2" color="text.secondary" sx={{ fontSize: '0.8rem' }}>
-              {t('table.showing', { defaultValue: 'Показано' })} {startCount}-{endCount} {t('table.of', { defaultValue: 'з' })} {totalTrades} {t('banner.tradesCount', { defaultValue: 'угод' })}
+              {t('table.showing', { defaultValue: 'Показано' })} {startCount}-{endCount}{' '}
+              {t('table.of', { defaultValue: 'з' })} {totalTrades}{' '}
+              {t('banner.tradesCount', { defaultValue: 'угод' })}
             </Typography>
 
             <FormControl size="small" sx={{ ml: 1 }}>
               <Select
                 value={pageSize}
-                onChange={(e) => setPageSize(e.target.value as number | 'all')}
+                onChange={handlePageSizeChange}
                 sx={{ height: 28, fontSize: '0.75rem' }}
               >
                 <MenuItem value={10}>10 / {t('table.page', { defaultValue: 'стор.' })}</MenuItem>
@@ -334,8 +309,8 @@ export const TradesTable: React.FC<TradesTableProps> = ({
               <Button
                 size="small"
                 variant="outlined"
-                disabled={page <= 1}
-                onClick={() => setPage((p) => Math.max(p - 1, 1))}
+                disabled={currentPage <= 1}
+                onClick={handlePagePrev}
                 startIcon={<NavigateBeforeIcon />}
                 sx={{ fontSize: '0.75rem', py: 0.25, px: 1 }}
               >
@@ -343,14 +318,15 @@ export const TradesTable: React.FC<TradesTableProps> = ({
               </Button>
 
               <Typography variant="caption" sx={{ fontWeight: 600, px: 0.5 }}>
-                {t('table.pageOf', { defaultValue: 'Сторінка' })} {page} {t('table.of', { defaultValue: 'з' })} {totalPages}
+                {t('table.pageOf', { defaultValue: 'Сторінка' })} {currentPage}{' '}
+                {t('table.of', { defaultValue: 'з' })} {totalPages}
               </Typography>
 
               <Button
                 size="small"
                 variant="outlined"
-                disabled={page >= totalPages}
-                onClick={() => setPage((p) => Math.min(p + 1, totalPages))}
+                disabled={currentPage >= totalPages}
+                onClick={handlePageNext}
                 endIcon={<NavigateNextIcon />}
                 sx={{ fontSize: '0.75rem', py: 0.25, px: 1 }}
               >
@@ -363,3 +339,5 @@ export const TradesTable: React.FC<TradesTableProps> = ({
     </div>
   );
 };
+
+export const TradesTable = React.memo(TradesTableComponent);

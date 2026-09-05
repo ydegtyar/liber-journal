@@ -101,7 +101,7 @@ export default defineConfig({
           'vendor-mui': ['@mui/material', '@mui/icons-material'],
           'vendor-charts': ['recharts'],
           'vendor-excel': ['exceljs'],
-          'vendor-tanstack': ['@tanstack/react-table', '@tanstack/react-query'],
+          'vendor-tanstack': ['@tanstack/react-query'],
         },
       },
     },

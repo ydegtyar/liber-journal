@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useCallback, useMemo } from 'react';
 import { parseBrokerCsv, ParseResult } from '../lib/csvParser';
 import { importTrades } from '../lib/db';
 import { useJournalSettings } from './useJournalSettings';
@@ -9,47 +9,57 @@ export function useCsvImport() {
   const [showErrorModal, setShowErrorModal] = useState(false);
   const { updateSettings } = useJournalSettings();
 
-  const handleFileImport = async (file: File) => {
-    setIsImporting(true);
-    try {
-      const text = await file.text();
-      const result = parseBrokerCsv(text);
-      setLastResult(result);
+  const handleFileImport = useCallback(
+    async (file: File) => {
+      setIsImporting(true);
+      try {
+        const text = await file.text();
+        const result = parseBrokerCsv(text);
+        setLastResult(result);
 
-      if (result.trades.length > 0) {
-        await importTrades(result.trades);
+        if (result.trades.length > 0) {
+          await importTrades(result.trades);
 
-        // Update currency if found
-        if (result.metadata.currency) {
-          await updateSettings({ currency: result.metadata.currency });
+          // Update currency if found
+          if (result.metadata.currency) {
+            await updateSettings({ currency: result.metadata.currency });
+          }
         }
-      }
 
-      if (result.errors.length > 0 || result.warnings.length > 0) {
+        if (result.errors.length > 0 || result.warnings.length > 0) {
+          setShowErrorModal(true);
+        }
+        return result;
+      } catch (err) {
+        const errorMsg = err instanceof Error ? err.message : 'Unknown parsing error';
+        setLastResult({
+          trades: [],
+          metadata: { currency: 'USD' },
+          checksumPassed: false,
+          errors: [errorMsg],
+          warnings: [],
+        });
         setShowErrorModal(true);
+        return null;
+      } finally {
+        setIsImporting(false);
       }
-      return result;
-    } catch (err) {
-      const errorMsg = err instanceof Error ? err.message : 'Unknown parsing error';
-      setLastResult({
-        trades: [],
-        metadata: { currency: 'USD' },
-        checksumPassed: false,
-        errors: [errorMsg],
-        warnings: [],
-      });
-      setShowErrorModal(true);
-      return null;
-    } finally {
-      setIsImporting(false);
-    }
-  };
+    },
+    [updateSettings]
+  );
 
-  return {
-    handleFileImport,
-    isImporting,
-    lastResult,
-    showErrorModal,
-    closeErrorModal: () => setShowErrorModal(false),
-  };
+  const closeErrorModal = useCallback(() => {
+    setShowErrorModal(false);
+  }, []);
+
+  return useMemo(
+    () => ({
+      handleFileImport,
+      isImporting,
+      lastResult,
+      showErrorModal,
+      closeErrorModal,
+    }),
+    [handleFileImport, isImporting, lastResult, showErrorModal, closeErrorModal]
+  );
 }

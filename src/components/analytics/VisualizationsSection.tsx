@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useTransition, Suspense, lazy } from 'react';
+import React, { useState, useMemo, useCallback, useTransition, Suspense, lazy } from 'react';
 import { Box, Tabs, Tab } from '@mui/material';
 import ShowChartIcon from '@mui/icons-material/ShowChart';
 import BarChartIcon from '@mui/icons-material/BarChart';
@@ -44,7 +44,7 @@ export interface VisualizationsSectionProps {
   numberFormat: NumberFormatOption;
 }
 
-export const VisualizationsSection: React.FC<VisualizationsSectionProps> = ({
+const VisualizationsSectionComponent: React.FC<VisualizationsSectionProps> = ({
   filteredTrades,
   equityCurve,
   dayOfWeekPerformance,
@@ -54,6 +54,10 @@ export const VisualizationsSection: React.FC<VisualizationsSectionProps> = ({
   const { t } = useTranslation();
   const [activeChartTab, setActiveChartTab] = useState(0);
   const [, startTransition] = useTransition();
+
+  const handleTabChange = useCallback((_e: any, val: number) => {
+    startTransition(() => setActiveChartTab(val));
+  }, []);
 
   // Aggregate daily P&L data for the periodic chart
   const dailyPnlData = useMemo(() => {
@@ -84,7 +88,7 @@ export const VisualizationsSection: React.FC<VisualizationsSectionProps> = ({
     <Box component="section" aria-label="Visual Analytics and Charts" sx={{ mb: 2.5 }}>
       <Tabs
         value={activeChartTab}
-        onChange={(_e, val) => startTransition(() => setActiveChartTab(val))}
+        onChange={handleTabChange}
         variant="scrollable"
         scrollButtons="auto"
         sx={{
@@ -99,13 +103,41 @@ export const VisualizationsSection: React.FC<VisualizationsSectionProps> = ({
           },
         }}
       >
-        <Tab icon={<ShowChartIcon sx={{ fontSize: 16 }} />} iconPosition="start" label={t('charts.equityCurve')} />
-        <Tab icon={<BarChartIcon sx={{ fontSize: 16 }} />} iconPosition="start" label={t('charts.periodicPnl')} />
-        <Tab icon={<DateRangeIcon sx={{ fontSize: 16 }} />} iconPosition="start" label={t('charts.dayOfWeek')} />
-        <Tab icon={<LayersIcon sx={{ fontSize: 16 }} />} iconPosition="start" label={t('charts.drawdown')} />
-        <Tab icon={<PieChartIcon sx={{ fontSize: 16 }} />} iconPosition="start" label={t('charts.instruments')} />
-        <Tab icon={<CalendarMonthIcon sx={{ fontSize: 16 }} />} iconPosition="start" label={t('charts.activityCalendar')} />
-        <Tab icon={<AccessTimeIcon sx={{ fontSize: 16 }} />} iconPosition="start" label={t('charts.hourlyHeatmap')} />
+        <Tab
+          icon={<ShowChartIcon sx={{ fontSize: 16 }} />}
+          iconPosition="start"
+          label={t('charts.equityCurve')}
+        />
+        <Tab
+          icon={<BarChartIcon sx={{ fontSize: 16 }} />}
+          iconPosition="start"
+          label={t('charts.periodicPnl')}
+        />
+        <Tab
+          icon={<DateRangeIcon sx={{ fontSize: 16 }} />}
+          iconPosition="start"
+          label={t('charts.dayOfWeek')}
+        />
+        <Tab
+          icon={<LayersIcon sx={{ fontSize: 16 }} />}
+          iconPosition="start"
+          label={t('charts.drawdown')}
+        />
+        <Tab
+          icon={<PieChartIcon sx={{ fontSize: 16 }} />}
+          iconPosition="start"
+          label={t('charts.instruments')}
+        />
+        <Tab
+          icon={<CalendarMonthIcon sx={{ fontSize: 16 }} />}
+          iconPosition="start"
+          label={t('charts.activityCalendar')}
+        />
+        <Tab
+          icon={<AccessTimeIcon sx={{ fontSize: 16 }} />}
+          iconPosition="start"
+          label={t('charts.hourlyHeatmap')}
+        />
       </Tabs>
 
       <Suspense
@@ -119,18 +151,10 @@ export const VisualizationsSection: React.FC<VisualizationsSectionProps> = ({
         }
       >
         {activeChartTab === 0 && (
-          <EquityCurveChart
-            data={equityCurve}
-            currency={currency}
-            numberFormat={numberFormat}
-          />
+          <EquityCurveChart data={equityCurve} currency={currency} numberFormat={numberFormat} />
         )}
         {activeChartTab === 1 && (
-          <DailyPnlChart
-            data={dailyPnlData}
-            currency={currency}
-            numberFormat={numberFormat}
-          />
+          <DailyPnlChart data={dailyPnlData} currency={currency} numberFormat={numberFormat} />
         )}
         {activeChartTab === 2 && (
           <DayOfWeekChart
@@ -139,12 +163,7 @@ export const VisualizationsSection: React.FC<VisualizationsSectionProps> = ({
             numberFormat={numberFormat}
           />
         )}
-        {activeChartTab === 3 && (
-          <DrawdownChart
-            data={equityCurve}
-            numberFormat={numberFormat}
-          />
-        )}
+        {activeChartTab === 3 && <DrawdownChart data={equityCurve} numberFormat={numberFormat} />}
         {activeChartTab === 4 && (
           <InstrumentChart
             data={instrumentPerformance}
@@ -170,3 +189,5 @@ export const VisualizationsSection: React.FC<VisualizationsSectionProps> = ({
     </Box>
   );
 };
+
+export const VisualizationsSection = React.memo(VisualizationsSectionComponent);

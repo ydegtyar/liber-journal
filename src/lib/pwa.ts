@@ -27,7 +27,9 @@ export function registerPwaVersionBuster(): void {
       console.log('[PWA] App is ready for offline use.');
     },
     onRegisteredSW(swUrl, registration) {
-      console.log(`[PWA] Service Worker registered: ${swUrl} (v${typeof __APP_VERSION__ !== 'undefined' ? __APP_VERSION__ : '1.0.0'} build:${typeof __APP_BUILD_TIME__ !== 'undefined' ? __APP_BUILD_TIME__ : 'dev'})`);
+      console.log(
+        `[PWA] Service Worker registered: ${swUrl} (v${typeof __APP_VERSION__ !== 'undefined' ? __APP_VERSION__ : '1.0.0'} build:${typeof __APP_BUILD_TIME__ !== 'undefined' ? __APP_BUILD_TIME__ : 'dev'})`
+      );
 
       if (!registration) return;
 

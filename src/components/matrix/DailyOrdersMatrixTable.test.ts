@@ -1,6 +1,9 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
 import { Trade } from '../../types/trade';
+import { MatrixColumnBlockId, DEFAULT_MATRIX_COLUMN_ORDER } from '../../types/preferences';
 import { getTradeDateKey, formatDisplayDate } from '../../lib/xlsxTemplate';
+import { db, getStoredMatrixColumnOrder, saveMatrixColumnOrder } from '../../lib/db';
+import { ColumnDragPreview } from './ColumnDragPreview.tsx';
 
 describe('Daily Orders Matrix Export Format & Copying Logic', () => {
   const sampleTrades: Trade[] = [
@@ -64,22 +67,25 @@ describe('Daily Orders Matrix Export Format & Copying Logic', () => {
     expect(formatDisplayDate('2026-09-03')).toBe('03.09.2026');
   });
 
-  it('formats single day row for clipboard pasting with standard dot decimal', () => {
+  it('formats single day row for clipboard pasting respecting default columnOrder', () => {
     const dayTrades = sampleTrades.filter((t) => getTradeDateKey(t.closedAt) === '2026-09-02');
     const displayDate = formatDisplayDate('2026-09-02');
     const orderCount = dayTrades.length;
     const dailyPnl = dayTrades.reduce((acc, t) => acc + t.pnl, 0);
 
     const colsCount = 4;
-    const cells: string[] = [
-      displayDate,
-      String(orderCount),
-      dailyPnl.toFixed(2),
-      ...dayTrades.map((t) => t.pnl.toFixed(2)),
-    ];
-    while (cells.length < 3 + colsCount) {
-      cells.push('');
-    }
+    const columnOrder: MatrixColumnBlockId[] = DEFAULT_MATRIX_COLUMN_ORDER;
+
+    const cells: string[] = [];
+    columnOrder.forEach((blockId) => {
+      if (blockId === 'date') cells.push(displayDate);
+      else if (blockId === 'ordersCount') cells.push(String(orderCount));
+      else if (blockId === 'dailyPnl') cells.push(dailyPnl.toFixed(2));
+      else if (blockId === 'orders') {
+        dayTrades.forEach((t) => cells.push(t.pnl.toFixed(2)));
+        for (let i = dayTrades.length; i < colsCount; i++) cells.push('');
+      }
+    });
 
     const tsvString = cells.join('\t');
     const parsedCells = tsvString.split('\t');
@@ -94,22 +100,75 @@ describe('Daily Orders Matrix Export Format & Copying Logic', () => {
     expect(parsedCells[6]).toBe('');
   });
 
-  it('formats single day row for clipboard pasting with European comma decimal', () => {
+  it('formats single day row for clipboard pasting respecting custom columnOrder', () => {
     const dayTrades = sampleTrades.filter((t) => getTradeDateKey(t.closedAt) === '2026-09-02');
     const displayDate = formatDisplayDate('2026-09-02');
     const orderCount = dayTrades.length;
     const dailyPnl = dayTrades.reduce((acc, t) => acc + t.pnl, 0);
 
-    const formatComma = (val: number) => val.toFixed(2).replace('.', ',');
+    const customOrder: MatrixColumnBlockId[] = ['dailyPnl', 'date', 'orders', 'ordersCount'];
 
-    const cells: string[] = [
-      displayDate,
-      String(orderCount),
-      formatComma(dailyPnl),
-      ...dayTrades.map((t) => formatComma(t.pnl)),
-    ];
+    const cells: string[] = [];
+    customOrder.forEach((blockId) => {
+      if (blockId === 'date') cells.push(displayDate);
+      else if (blockId === 'ordersCount') cells.push(String(orderCount));
+      else if (blockId === 'dailyPnl') cells.push(dailyPnl.toFixed(2));
+      else if (blockId === 'orders') {
+        dayTrades.forEach((t) => cells.push(t.pnl.toFixed(2)));
+      }
+    });
 
     const tsvString = cells.join('\t');
-    expect(tsvString).toBe('02.09.2026\t2\t1,30\t2,50\t-1,20');
+    const parsedCells = tsvString.split('\t');
+
+    // Custom: Daily P&L (1.30) \t Date (02.09.2026) \t Order 1 (2.50) \t Order 2 (-1.20) \t Orders Count (2)
+    expect(parsedCells[0]).toBe('1.30');
+    expect(parsedCells[1]).toBe('02.09.2026');
+    expect(parsedCells[2]).toBe('2.50');
+    expect(parsedCells[3]).toBe('-1.20');
+    expect(parsedCells[4]).toBe('2');
+  });
+
+  it('persists and retrieves column order in IndexedDB', async () => {
+    const memoryStore: Record<string, unknown> = {};
+    vi.spyOn(db.settings, 'get').mockImplementation((async (key: unknown) => {
+      const strKey = String(key);
+      if (memoryStore[strKey]) return { key: strKey, value: memoryStore[strKey] };
+      return undefined;
+    }) as any);
+    vi.spyOn(db.settings, 'put').mockImplementation((async (item: {
+      key: string;
+      value: unknown;
+    }) => {
+      memoryStore[item.key] = item.value;
+      return item.key;
+    }) as any);
+
+    const initial = await getStoredMatrixColumnOrder();
+    expect(initial).toEqual(DEFAULT_MATRIX_COLUMN_ORDER);
+
+    const reordered: MatrixColumnBlockId[] = ['dailyPnl', 'orders', 'date', 'ordersCount'];
+    await saveMatrixColumnOrder(reordered);
+
+    const retrieved = await getStoredMatrixColumnOrder();
+    expect(retrieved).toEqual(reordered);
+
+    // Reset back to default
+    await saveMatrixColumnOrder(DEFAULT_MATRIX_COLUMN_ORDER);
+    const reset = await getStoredMatrixColumnOrder();
+    expect(reset).toEqual(DEFAULT_MATRIX_COLUMN_ORDER);
+  });
+
+  it('exports ColumnDragPreview component for drag overlay rendering', () => {
+    expect(ColumnDragPreview).toBeDefined();
+    expect(['function', 'object']).toContain(typeof ColumnDragPreview);
+  });
+
+  it('provides plural orders translation strings in en and uk locales', async () => {
+    const enLocale = await import('../../i18n/locales/en.json');
+    const ukLocale = await import('../../i18n/locales/uk.json');
+
+    expect(enLocale.default.dailyMatrix.orders).toBe('Trades');
+    expect(ukLocale.default.dailyMatrix.orders).toBe('Угоди');
   });
 });

@@ -82,15 +82,39 @@ export function useTimeframeFilter(trades: Trade[]): UseTimeframeFilterResult {
       const monday = new Date(d.setDate(diff));
       monday.setHours(0, 0, 0, 0);
       startTimestamp = monday.getTime();
-      endTimestamp = new Date(ref.getFullYear(), ref.getMonth(), ref.getDate(), 23, 59, 59, 999).getTime();
+      endTimestamp = new Date(
+        ref.getFullYear(),
+        ref.getMonth(),
+        ref.getDate(),
+        23,
+        59,
+        59,
+        999
+      ).getTime();
     } else if (timeframe === 'MTD') {
       const monthStart = new Date(ref.getFullYear(), ref.getMonth(), 1, 0, 0, 0, 0);
       startTimestamp = monthStart.getTime();
-      endTimestamp = new Date(ref.getFullYear(), ref.getMonth(), ref.getDate(), 23, 59, 59, 999).getTime();
+      endTimestamp = new Date(
+        ref.getFullYear(),
+        ref.getMonth(),
+        ref.getDate(),
+        23,
+        59,
+        59,
+        999
+      ).getTime();
     } else if (timeframe === 'YTD') {
       const yearStart = new Date(ref.getFullYear(), 0, 1, 0, 0, 0, 0);
       startTimestamp = yearStart.getTime();
-      endTimestamp = new Date(ref.getFullYear(), ref.getMonth(), ref.getDate(), 23, 59, 59, 999).getTime();
+      endTimestamp = new Date(
+        ref.getFullYear(),
+        ref.getMonth(),
+        ref.getDate(),
+        23,
+        59,
+        59,
+        999
+      ).getTime();
     } else if (timeframe === 'CUSTOM') {
       if (customStartDate) {
         startTimestamp = new Date(customStartDate).getTime();
@@ -108,24 +132,40 @@ export function useTimeframeFilter(trades: Trade[]): UseTimeframeFilterResult {
     });
 
     const startStr = formatDateRangePart(new Date(startTimestamp).toISOString());
-    const endStr = formatDateRangePart(new Date(Math.min(endTimestamp, Date.now() + 86400000)).toISOString());
+    const effectiveEndTimestamp =
+      endTimestamp === Number.MAX_SAFE_INTEGER ? ref.getTime() : endTimestamp;
+    const endStr = formatDateRangePart(new Date(effectiveEndTimestamp).toISOString());
     const label = startStr === endStr ? startStr : `${startStr} – ${endStr}`;
 
     return { filteredTrades: filtered, dateRangeLabel: label };
   }, [trades, selectedInstrument, timeframe, latestTradeDate, customStartDate, customEndDate]);
 
-  return {
-    timeframe,
-    setTimeframe,
-    customStartDate,
-    setCustomStartDate,
-    customEndDate,
-    setCustomEndDate,
-    selectedInstrument,
-    setSelectedInstrument,
-    filteredTrades,
-    dateRangeLabel,
-  };
+  return useMemo(
+    () => ({
+      timeframe,
+      setTimeframe,
+      customStartDate,
+      setCustomStartDate,
+      customEndDate,
+      setCustomEndDate,
+      selectedInstrument,
+      setSelectedInstrument,
+      filteredTrades,
+      dateRangeLabel,
+    }),
+    [
+      timeframe,
+      setTimeframe,
+      customStartDate,
+      setCustomStartDate,
+      customEndDate,
+      setCustomEndDate,
+      selectedInstrument,
+      setSelectedInstrument,
+      filteredTrades,
+      dateRangeLabel,
+    ]
+  );
 }
 
 function formatDateRangePart(isoStr: string): string {

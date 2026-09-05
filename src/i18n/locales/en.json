@@ -28,6 +28,12 @@
     "breakevenTrades": "Breakeven Trades",
     "profitFactor": "Profit Factor",
     "avgWinLoss": "Avg Win / Avg Loss",
+    "avgTradePnl": "Avg Trade P&L",
+    "avgTradePnlSub": "Per closed trade",
+    "avgTradeDuration": "Avg Trade Duration",
+    "avgTradeDurationSub": "Avg holding time",
+    "ordersCount": "Orders Count",
+    "ordersCountSub": "Total closed trades",
     "expectancy": "Expectancy",
     "maxDrawdown": "Max Drawdown",
     "currentStreak": "Current Streak",
@@ -121,12 +127,17 @@
     "date": "Date",
     "closedOrders": "Orders",
     "order": "Trade",
+    "orders": "Trades",
+    "order_other": "Trades",
+    "ordersRange": "Trades (1 - {{count}})",
     "dailyPnl": "Daily P&L",
     "total": "Total",
     "activeDays": "Active Days",
     "monthlyPnl": "Monthly P&L",
     "totalOrders": "Total Orders",
-    "noTrades": "No trades recorded"
+    "noTrades": "No trades recorded",
+    "reorderTooltip": "Drag to reorder column block",
+    "resetColumns": "Reset Column Order"
   },
   "banner": {
     "totalProfit": "TOTAL PROFIT",
@@ -137,7 +148,8 @@
     "goalDescription": "Set a monthly target profit to track your milestone progress.",
     "customRange": "Custom Range",
     "startDate": "Start Date",
-    "endDate": "End Date"
+    "endDate": "End Date",
+    "initialDeposit": "Initial Deposit"
   },
   "insights": {
     "title": "Period Insights"
@@ -208,5 +220,56 @@
     "day": "Day",
     "total": "Total",
     "noTradesInSlot": "No trades executed in this hour slot"
+  },
+  "layoutSettings": {
+    "title": "Page Layout & Settings",
+    "subtitle": "Drag to rearrange sections or toggle visibility",
+    "tabLayout": "Page Blocks",
+    "tabPreferences": "Preferences",
+    "blocksCount": "{{visible}} of {{total}} visible",
+    "showAll": "Show All",
+    "resetDefault": "Reset Layout",
+    "dragHandleAria": "Drag to reorder {{name}}",
+    "visibilityToggleAria": "Toggle visibility for {{name}}",
+    "hiddenBadge": "Hidden",
+    "visibleBadge": "Visible",
+    "allHiddenTitle": "All dashboard blocks are hidden",
+    "allHiddenSubtitle": "Enable blocks in the layout settings sidebar to display your dashboard.",
+    "restoreBlocks": "Restore Default Layout",
+    "dropSlot": "Drop section here",
+    "blocks": {
+      "timeframeBanner": {
+        "name": "Timeframe & Account Summary",
+        "description": "Net P&L, ROI, date range filter, milestone goal, and deposit editor"
+      },
+      "statsGrid": {
+        "name": "Key Performance Metrics",
+        "description": "Win rate, profit factor, total orders, max drawdown, and trade averages"
+      },
+      "periodInsights": {
+        "name": "Period Performance Insights",
+        "description": "Best and worst trading days, win rate distribution, and period highlights"
+      },
+      "visualizations": {
+        "name": "Charts & Visualizations",
+        "description": "Interactive equity curve, drawdowns, weekday distributions, and P&L charts"
+      },
+      "streakAnalysis": {
+        "name": "Streak Analysis",
+        "description": "Longest win/loss streaks, current streak status, and consistency ratios"
+      },
+      "instrumentsTable": {
+        "name": "Instruments Breakdown",
+        "description": "Symbol-by-symbol profitability, win rate percentages, and volume"
+      },
+      "monthlyReturns": {
+        "name": "Monthly Returns Heatmap",
+        "description": "Year-by-month return matrix and annual net performance totals"
+      },
+      "tradesView": {
+        "name": "Trades Ledger & Daily Matrix",
+        "description": "Interactive trade ledger table and spreadsheet daily export matrix"
+      }
+    }
   }
 }

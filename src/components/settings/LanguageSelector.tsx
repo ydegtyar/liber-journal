@@ -1,19 +1,19 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import { ToggleButton, ToggleButtonGroup } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { SUPPORTED_LOCALES } from '../../i18n';
 
-export const LanguageSelector: React.FC = () => {
+export const LanguageSelector: React.FC = React.memo(() => {
   const { i18n } = useTranslation();
 
-  const handleLanguageChange = (
-    _event: React.MouseEvent<HTMLElement>,
-    newLang: string | null
-  ) => {
-    if (newLang) {
-      i18n.changeLanguage(newLang);
-    }
-  };
+  const handleLanguageChange = useCallback(
+    (_event: React.MouseEvent<HTMLElement>, newLang: string | null) => {
+      if (newLang) {
+        i18n.changeLanguage(newLang);
+      }
+    },
+    [i18n]
+  );
 
   const currentLang = i18n.language ? i18n.language.split('-')[0] : 'en';
 
@@ -47,4 +47,6 @@ export const LanguageSelector: React.FC = () => {
       ))}
     </ToggleButtonGroup>
   );
-};
+});
+
+LanguageSelector.displayName = 'LanguageSelector';

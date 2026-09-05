@@ -1,4 +1,4 @@
-import React, { useState, useTransition } from 'react';
+import React, { useState, useTransition, useCallback, useMemo } from 'react';
 import { Box, Tabs, Tab } from '@mui/material';
 import ReceiptLongIcon from '@mui/icons-material/ReceiptLong';
 import CalendarViewMonthIcon from '@mui/icons-material/CalendarViewMonth';
@@ -15,7 +15,6 @@ export interface TradesViewSectionProps {
   numberFormat: NumberFormatOption;
   isExporting: boolean;
   isImporting: boolean;
-  onUpdateDeposit: (amount: number) => void;
   onSetGroupBy: (groupBy: GroupByOption) => void;
   onToggleSort: () => void;
   onExportXlsx: () => void;
@@ -23,13 +22,12 @@ export interface TradesViewSectionProps {
   onOpenSettings: () => void;
 }
 
-export const TradesViewSection: React.FC<TradesViewSectionProps> = ({
+const TradesViewSectionComponent: React.FC<TradesViewSectionProps> = ({
   filteredTrades,
   settings,
   numberFormat,
   isExporting,
   isImporting,
-  onUpdateDeposit,
   onSetGroupBy,
   onToggleSort,
   onExportXlsx,
@@ -41,14 +39,18 @@ export const TradesViewSection: React.FC<TradesViewSectionProps> = ({
   const [tableSearchQuery, setTableSearchQuery] = useState('');
   const [, startTransition] = useTransition();
 
-  const searchedTradeCount = tableSearchQuery.trim()
-    ? filteredTrades.filter((t) =>
-        t.instrument.toLowerCase().includes(tableSearchQuery.trim().toLowerCase())
-      ).length
-    : filteredTrades.length;
+  const handleTabChange = useCallback((_e: any, val: 'ledger' | 'matrix') => {
+    startTransition(() => setTableViewMode(val));
+  }, []);
+
+  const searchedTradeCount = useMemo(() => {
+    const q = tableSearchQuery.trim().toLowerCase();
+    if (!q) return filteredTrades.length;
+    return filteredTrades.filter((t) => t.instrument.toLowerCase().includes(q)).length;
+  }, [filteredTrades, tableSearchQuery]);
 
   return (
-    <Box component="section" aria-label="Continuous Trade Ledger and Daily Orders">
+    <Box component="section" aria-label="Continuous Trade Ledger and Daily Orders" sx={{ mb: 2.5 }}>
       <Box
         sx={{
           mb: 1.5,
@@ -61,7 +63,7 @@ export const TradesViewSection: React.FC<TradesViewSectionProps> = ({
       >
         <Tabs
           value={tableViewMode}
-          onChange={(_e, val) => startTransition(() => setTableViewMode(val))}
+          onChange={handleTabChange}
           sx={{
             minHeight: 38,
             '& .MuiTab-root': {
@@ -89,7 +91,13 @@ export const TradesViewSection: React.FC<TradesViewSectionProps> = ({
       </Box>
 
       {tableViewMode === 'ledger' ? (
-        <Box sx={{ borderRadius: 1, overflow: 'hidden', border: (theme) => `1px solid ${theme.palette.divider}` }}>
+        <Box
+          sx={{
+            borderRadius: 1,
+            overflow: 'hidden',
+            border: (theme) => `1px solid ${theme.palette.divider}`,
+          }}
+        >
           <TradesTableToolbar
             settings={settings}
             tradeCount={searchedTradeCount}
@@ -97,7 +105,6 @@ export const TradesViewSection: React.FC<TradesViewSectionProps> = ({
             onSearchChange={setTableSearchQuery}
             isExporting={isExporting}
             isImporting={isImporting}
-            onUpdateDeposit={onUpdateDeposit}
             onSetGroupBy={onSetGroupBy}
             onToggleSort={onToggleSort}
             onExportXlsx={onExportXlsx}
@@ -120,8 +127,11 @@ export const TradesViewSection: React.FC<TradesViewSectionProps> = ({
           numberFormat={numberFormat}
           onExportXlsx={onExportXlsx}
           isExporting={isExporting}
+          columnOrder={settings.matrixColumnOrder}
         />
       )}
     </Box>
   );
 };
+
+export const TradesViewSection = React.memo(TradesViewSectionComponent);

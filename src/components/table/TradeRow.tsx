@@ -1,10 +1,5 @@
 import React from 'react';
-import {
-  TableRow,
-  TableCell,
-  Box,
-  Tooltip,
-} from '@mui/material';
+import { TableRow, TableCell, Box, Tooltip } from '@mui/material';
 import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
 import TrendingUpIcon from '@mui/icons-material/TrendingUp';
@@ -29,14 +24,17 @@ interface TradeRowProps {
   locale?: string;
 }
 
-export const TradeRow: React.FC<TradeRowProps> = ({
+const TradeRowComponent: React.FC<TradeRowProps> = ({
   trade,
   currency,
   numberFormat,
   locale = 'en-US',
 }) => {
   const { t } = useTranslation();
-  const pnlData = formatSignedPnl(trade.pnl, currency, numberFormat, locale);
+  const pnlData = React.useMemo(
+    () => formatSignedPnl(trade.pnl, currency, numberFormat, locale),
+    [trade.pnl, currency, numberFormat, locale]
+  );
 
   return (
     <TableRow
@@ -64,7 +62,11 @@ export const TradeRow: React.FC<TradeRowProps> = ({
       {/* 2. Instrument with colored direction arrow */}
       <TableCell sx={{ fontWeight: 600 }}>
         <Box sx={{ display: 'inline-flex', alignItems: 'center', gap: 0.75, flexWrap: 'nowrap' }}>
-          <Tooltip title={trade.direction === 'buy' ? t('table.buy') : t('table.sell')} arrow placement="top">
+          <Tooltip
+            title={trade.direction === 'buy' ? t('table.buy') : t('table.sell')}
+            arrow
+            placement="top"
+          >
             <Box component="span" sx={{ display: 'inline-flex', alignItems: 'center' }}>
               {trade.direction === 'buy' ? (
                 <ArrowUpwardIcon
@@ -100,8 +102,15 @@ export const TradeRow: React.FC<TradeRowProps> = ({
               <div>
                 <strong>{t('table.closedAt')}:</strong> {formatDate(trade.closedAt, locale, true)}
               </div>
-              <div style={{ marginTop: 4, paddingTop: 4, borderTop: '1px solid rgba(128, 128, 128, 0.3)' }}>
-                <strong>{t('table.duration')}:</strong> {formatDetailedDuration(trade.openedAt, trade.closedAt)}
+              <div
+                style={{
+                  marginTop: 4,
+                  paddingTop: 4,
+                  borderTop: '1px solid rgba(128, 128, 128, 0.3)',
+                }}
+              >
+                <strong>{t('table.duration')}:</strong>{' '}
+                {formatDetailedDuration(trade.openedAt, trade.closedAt, locale)}
               </div>
             </Box>
           }
@@ -115,7 +124,7 @@ export const TradeRow: React.FC<TradeRowProps> = ({
               display: 'inline-block',
             }}
           >
-            {formatDuration(trade.openedAt, trade.closedAt)}
+            {formatDuration(trade.openedAt, trade.closedAt, locale)}
           </Box>
         </Tooltip>
       </TableCell>
@@ -136,9 +145,7 @@ export const TradeRow: React.FC<TradeRowProps> = ({
       </TableCell>
 
       {/* 7. Leverage */}
-      <TableCell sx={{ textAlign: 'center' }}>
-        {`x${trade.leverage}`}
-      </TableCell>
+      <TableCell sx={{ textAlign: 'center' }}>{`x${trade.leverage}`}</TableCell>
 
       {/* 8. Gross Return */}
       <TableCell sx={{ textAlign: 'right', color: 'text.secondary' }}>
@@ -157,7 +164,14 @@ export const TradeRow: React.FC<TradeRowProps> = ({
           },
         }}
       >
-        <Box sx={{ display: 'inline-flex', alignItems: 'center', gap: 0.3, justifyContent: 'flex-end' }}>
+        <Box
+          sx={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: 0.3,
+            justifyContent: 'flex-end',
+          }}
+        >
           {pnlData.isPositive && <TrendingUpIcon sx={{ fontSize: 16 }} />}
           {pnlData.isNegative && <TrendingDownIcon sx={{ fontSize: 16 }} />}
           {pnlData.isBreakeven && <RemoveIcon sx={{ fontSize: 14 }} />}
@@ -167,3 +181,5 @@ export const TradeRow: React.FC<TradeRowProps> = ({
     </TableRow>
   );
 };
+
+export const TradeRow = React.memo(TradeRowComponent);

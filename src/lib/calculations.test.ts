@@ -19,6 +19,8 @@ import {
   calculateMonthlyReturns,
   generatePeriodInsights,
   calculateDuration,
+  calculateAvgTradePnl,
+  calculateAvgTradeDuration,
   calculateDayOfWeekPerformance,
   calculateHourlyDistribution,
   calculateGroupSummaries,
@@ -276,13 +278,47 @@ describe('Calculations Library', () => {
   it('calculates trade duration correctly', () => {
     expect(calculateDuration(null, null).formatted).toBe('—');
     expect(calculateDuration('2026-09-01T10:00:00Z', '2026-09-01T10:45:00Z').formatted).toBe('45m');
-    expect(calculateDuration('2026-09-01T10:00:00Z', '2026-09-01T12:30:00Z').formatted).toBe('2h 30m');
-    expect(calculateDuration('2026-09-01T10:00:00Z', '2026-09-03T14:15:00Z').formatted).toBe('2d 4h');
+    expect(calculateDuration('2026-09-01T10:00:00Z', '2026-09-01T12:30:00Z').formatted).toBe(
+      '2h 30m'
+    );
+    expect(calculateDuration('2026-09-01T10:00:00Z', '2026-09-03T14:15:00Z').formatted).toBe(
+      '2d 4h'
+    );
+  });
+
+  it('calculates average trade PnL correctly', () => {
+    expect(calculateAvgTradePnl([])).toBe(0);
+    expect(calculateAvgTradePnl(mockTrades)).toBe(10); // (20 - 10 + 0 + 30) / 4 = 10
+  });
+
+  it('calculates average trade duration correctly', () => {
+    expect(calculateAvgTradeDuration([])).toBe(0);
+    // 2h + 1h + 1h + 1h = 5h = 18,000,000 ms / 4 = 4,500,000 ms (1h 15m)
+    expect(calculateAvgTradeDuration(mockTrades)).toBe(4500000);
+
+    const invalidTrades: Trade[] = [
+      {
+        id: 'inv1',
+        instrument: 'EUR/USD',
+        direction: 'buy',
+        openedAt: 'invalid',
+        closedAt: '2026-09-01T12:00:00.000Z',
+        openPrice: 1,
+        closePrice: 1,
+        margin: 10,
+        leverage: 1,
+        grossReturn: 10,
+        pnl: 0,
+      },
+    ];
+    expect(calculateAvgTradeDuration(invalidTrades)).toBe(0);
   });
 
   it('calculates complete JournalAnalytics including new fields', () => {
     const analytics = calculateAnalytics(1000, mockTrades);
     expect(analytics.totalTrades).toBe(4);
+    expect(analytics.avgTradePnl).toBe(10);
+    expect(analytics.avgTradeDurationMs).toBe(4500000);
     expect(analytics.streakAnalysis).toBeDefined();
     expect(analytics.streakAnalysis.maxWinStreak).toBe(1);
     expect(analytics.insights.length).toBeGreaterThan(0);
@@ -290,4 +326,3 @@ describe('Calculations Library', () => {
     expect(analytics.monthlyReturns.length).toBe(1);
   });
 });
-

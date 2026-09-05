@@ -137,6 +137,15 @@ export function calculateAvgLoss(trades: Trade[]): number {
 }
 
 /**
+ * Calculates average net PnL across all closed trades.
+ * Returns 0 if there are no trades.
+ */
+export function calculateAvgTradePnl(trades: Trade[]): number {
+  if (trades.length === 0) return 0;
+  return round(trades.reduce((sum, t) => sum + (t.pnl || 0), 0) / trades.length);
+}
+
+/**
  * Calculates expectancy per trade:
  * (WinRateDecimal * AvgWin) - ((1 - WinRateDecimal) * AvgLoss)
  */
@@ -506,9 +515,7 @@ export function calculateStreakAnalysis(trades: Trade[]): StreakAnalysis {
   const maxLossStreak = lossStreaks.length > 0 ? Math.max(...lossStreaks) : 0;
 
   const avgWinStreak =
-    winStreaks.length > 0
-      ? round(winStreaks.reduce((a, b) => a + b, 0) / winStreaks.length, 1)
-      : 0;
+    winStreaks.length > 0 ? round(winStreaks.reduce((a, b) => a + b, 0) / winStreaks.length, 1) : 0;
 
   const avgLossStreak =
     lossStreaks.length > 0
@@ -545,9 +552,7 @@ export function calculateInstrumentBreakdown(trades: Trade[]): InstrumentSummary
     (a, b) => new Date(a.closedAt).getTime() - new Date(b.closedAt).getTime()
   );
 
-  const totalGrossWin = trades
-    .filter((t) => t.pnl > 0)
-    .reduce((sum, t) => sum + t.pnl, 0);
+  const totalGrossWin = trades.filter((t) => t.pnl > 0).reduce((sum, t) => sum + t.pnl, 0);
 
   const map: Record<string, Trade[]> = {};
   for (const t of sorted) {
@@ -564,12 +569,9 @@ export function calculateInstrumentBreakdown(trades: Trade[]): InstrumentSummary
     const winRate = calculateWinRate(instTrades);
     const avgPnl = count > 0 ? round(netPnl / count) : 0;
 
-    const instGrossWin = instTrades
-      .filter((t) => t.pnl > 0)
-      .reduce((sum, t) => sum + t.pnl, 0);
+    const instGrossWin = instTrades.filter((t) => t.pnl > 0).reduce((sum, t) => sum + t.pnl, 0);
 
-    const sharePercent =
-      totalGrossWin > 0 ? round((instGrossWin / totalGrossWin) * 100, 1) : 0;
+    const sharePercent = totalGrossWin > 0 ? round((instGrossWin / totalGrossWin) * 100, 1) : 0;
 
     // Cumulative sparkline points starting at 0
     let running = 0;
@@ -751,6 +753,28 @@ export function calculateDuration(
 }
 
 /**
+ * Calculates average trade duration in milliseconds across closed trades.
+ * Returns 0 if there are no trades with valid openedAt and closedAt timestamps.
+ */
+export function calculateAvgTradeDuration(trades: Trade[]): number {
+  let totalMs = 0;
+  let count = 0;
+
+  for (const t of trades) {
+    if (!t.openedAt || !t.closedAt) continue;
+    const start = new Date(t.openedAt).getTime();
+    const end = new Date(t.closedAt).getTime();
+    if (!isNaN(start) && !isNaN(end) && end >= start) {
+      totalMs += end - start;
+      count++;
+    }
+  }
+
+  if (count === 0) return 0;
+  return Math.round(totalMs / count);
+}
+
+/**
  * Calculates complete dashboard analytics.
  */
 export function calculateAnalytics(initialDeposit: number, trades: Trade[]): JournalAnalytics {
@@ -763,6 +787,8 @@ export function calculateAnalytics(initialDeposit: number, trades: Trade[]): Jou
   const profitFactor = calculateProfitFactor(trades);
   const avgWin = calculateAvgWin(trades);
   const avgLoss = calculateAvgLoss(trades);
+  const avgTradePnl = calculateAvgTradePnl(trades);
+  const avgTradeDurationMs = calculateAvgTradeDuration(trades);
   const expectancy = calculateExpectancy(trades);
   const { maxDrawdownAmount, maxDrawdownPercent } = calculateDrawdowns(initialDeposit, trades);
   const currentStreak = calculateCurrentStreak(trades);
@@ -791,6 +817,8 @@ export function calculateAnalytics(initialDeposit: number, trades: Trade[]): Jou
     profitFactor,
     avgWin,
     avgLoss,
+    avgTradePnl,
+    avgTradeDurationMs,
     expectancy,
     maxDrawdownAmount,
     maxDrawdownPercent,

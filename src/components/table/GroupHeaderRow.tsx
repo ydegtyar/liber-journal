@@ -12,14 +12,17 @@ interface GroupHeaderRowProps {
   locale?: string;
 }
 
-export const GroupHeaderRow: React.FC<GroupHeaderRowProps> = ({
+const GroupHeaderRowComponent: React.FC<GroupHeaderRowProps> = ({
   summary,
   colSpan,
   currency,
   numberFormat,
   locale = 'en-US',
 }) => {
-  const pnlFormatted = formatSignedPnl(summary.netPnl, currency, numberFormat, locale);
+  const pnlFormatted = React.useMemo(
+    () => formatSignedPnl(summary.netPnl, currency, numberFormat, locale),
+    [summary.netPnl, currency, numberFormat, locale]
+  );
 
   return (
     <TableRow
@@ -30,10 +33,21 @@ export const GroupHeaderRow: React.FC<GroupHeaderRowProps> = ({
       }}
     >
       <TableCell colSpan={colSpan} sx={{ py: 1, px: 2 }}>
-        <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 2 }}>
+        <Box
+          sx={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            flexWrap: 'wrap',
+            gap: 2,
+          }}
+        >
           {/* Left: Group Key & Trade Count */}
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
-            <Typography variant="subtitle2" sx={{ fontWeight: 700, fontFamily: "'JetBrains Mono', monospace" }}>
+            <Typography
+              variant="subtitle2"
+              sx={{ fontWeight: 700, fontFamily: "'JetBrains Mono', monospace" }}
+            >
               {summary.groupKey}
             </Typography>
             <Chip
@@ -54,7 +68,10 @@ export const GroupHeaderRow: React.FC<GroupHeaderRowProps> = ({
               <Typography variant="caption" color="text.secondary">
                 Margin:
               </Typography>
-              <Typography variant="body2" sx={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 600 }}>
+              <Typography
+                variant="body2"
+                sx={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 600 }}
+              >
                 {formatCurrency(summary.totalMargin, currency, numberFormat, locale)}
               </Typography>
             </Box>
@@ -87,8 +104,8 @@ export const GroupHeaderRow: React.FC<GroupHeaderRowProps> = ({
                   color: pnlFormatted.isPositive
                     ? 'trade.gain'
                     : pnlFormatted.isNegative
-                    ? 'trade.loss'
-                    : 'text.secondary',
+                      ? 'trade.loss'
+                      : 'text.secondary',
                 }}
               >
                 {pnlFormatted.text}
@@ -100,3 +117,5 @@ export const GroupHeaderRow: React.FC<GroupHeaderRowProps> = ({
     </TableRow>
   );
 };
+
+export const GroupHeaderRow = React.memo(GroupHeaderRowComponent);

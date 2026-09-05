@@ -1,10 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { Trade } from '../../types/trade';
-import {
-  sortTrades,
-  getTradeDurationMs,
-  filterTradesByInstrument,
-} from './TradesTable';
+import { sortTrades, getTradeDurationMs, filterTradesByInstrument } from './tradesTableUtils';
 
 describe('TradesTable sorting and structure logic', () => {
   const mockTrades: Trade[] = [

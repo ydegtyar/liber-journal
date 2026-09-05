@@ -21,7 +21,6 @@ import ClearIcon from '@mui/icons-material/Clear';
 import { useTranslation } from 'react-i18next';
 import { JournalSettings } from '../../types/preferences';
 import { GroupByOption } from '../../types/trade';
-import { DepositEditor } from '../deposit/DepositEditor';
 import { CsvUploadDropzone } from '../upload/CsvUploadDropzone';
 
 interface TradesTableToolbarProps {
@@ -31,7 +30,6 @@ interface TradesTableToolbarProps {
   onSearchChange?: (query: string) => void;
   isExporting: boolean;
   isImporting: boolean;
-  onUpdateDeposit: (amount: number) => void;
   onSetGroupBy: (groupBy: GroupByOption) => void;
   onToggleSort: () => void;
   onExportXlsx: () => void;
@@ -39,14 +37,13 @@ interface TradesTableToolbarProps {
   onOpenSettings: () => void;
 }
 
-export const TradesTableToolbar: React.FC<TradesTableToolbarProps> = ({
+const TradesTableToolbarComponent: React.FC<TradesTableToolbarProps> = ({
   settings,
   tradeCount,
   searchQuery = '',
   onSearchChange,
   isExporting,
   isImporting,
-  onUpdateDeposit,
   onSetGroupBy,
   onToggleSort,
   onExportXlsx,
@@ -68,17 +65,11 @@ export const TradesTableToolbar: React.FC<TradesTableToolbarProps> = ({
         backgroundColor: (theme) => theme.palette.background.paper,
       }}
     >
-      {/* Left controls: Deposit input & Title */}
+      {/* Left controls: Title */}
       <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
         <Typography variant="subtitle1" sx={{ fontWeight: 700, fontSize: '0.95rem' }}>
           Trade Ledger ({tradeCount})
         </Typography>
-
-        <DepositEditor
-          initialDeposit={settings.initialDeposit}
-          currency={settings.currency}
-          onSave={onUpdateDeposit}
-        />
       </Box>
 
       {/* Right controls: Search, Group by, Sort, Upload, Export, Settings */}
@@ -122,20 +113,38 @@ export const TradesTableToolbar: React.FC<TradesTableToolbarProps> = ({
             displayEmpty
             sx={{ height: 32, fontSize: '0.8rem' }}
           >
-            <MenuItem value="none">{t('table.groupBy')}: {t('table.groupNone')}</MenuItem>
-            <MenuItem value="day">{t('table.groupBy')}: {t('table.groupDay')}</MenuItem>
-            <MenuItem value="week">{t('table.groupBy')}: {t('table.groupWeek')}</MenuItem>
-            <MenuItem value="month">{t('table.groupBy')}: {t('table.groupMonth')}</MenuItem>
+            <MenuItem value="none">
+              {t('table.groupBy')}: {t('table.groupNone')}
+            </MenuItem>
+            <MenuItem value="day">
+              {t('table.groupBy')}: {t('table.groupDay')}
+            </MenuItem>
+            <MenuItem value="week">
+              {t('table.groupBy')}: {t('table.groupWeek')}
+            </MenuItem>
+            <MenuItem value="month">
+              {t('table.groupBy')}: {t('table.groupMonth')}
+            </MenuItem>
           </Select>
         </FormControl>
 
         {/* Sort order toggle button */}
-        <Tooltip title={settings.sortOrder === 'asc' ? t('table.sortOldestFirst') : t('table.sortNewestFirst')}>
+        <Tooltip
+          title={
+            settings.sortOrder === 'asc' ? t('table.sortOldestFirst') : t('table.sortNewestFirst')
+          }
+        >
           <Button
             size="small"
             variant="outlined"
             onClick={onToggleSort}
-            startIcon={settings.sortOrder === 'asc' ? <ArrowUpwardIcon fontSize="small" /> : <ArrowDownwardIcon fontSize="small" />}
+            startIcon={
+              settings.sortOrder === 'asc' ? (
+                <ArrowUpwardIcon fontSize="small" />
+              ) : (
+                <ArrowDownwardIcon fontSize="small" />
+              )
+            }
             sx={{ height: 32, px: 1.2, fontSize: '0.75rem' }}
           >
             {settings.sortOrder === 'asc' ? 'Oldest' : 'Newest'}
@@ -167,3 +176,5 @@ export const TradesTableToolbar: React.FC<TradesTableToolbarProps> = ({
     </Box>
   );
 };
+
+export const TradesTableToolbar = React.memo(TradesTableToolbarComponent);

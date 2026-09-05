@@ -7,8 +7,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="theme-color" content="#0D1117" />
     <title>Liber Journal — Institutional Trading Journal &amp; Performance Terminal</title>
-    <meta name="description" content="Privacy-first trading journal with real-time analytics, continuous ledger, Sharpe ratio calculations, and live-formula Excel exports." />
-    <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
+    <meta
+      name="description"
+      content="Privacy-first trading journal with real-time analytics, continuous ledger, Sharpe ratio calculations, and live-formula Excel exports."
+    />
+    <meta
+      name="robots"
+      content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1"
+    />
     <link rel="canonical" href="https://liber-journal.vercel.app/" />
 
     <!-- Multilingual Hreflang Tags for International SEO -->
@@ -20,8 +26,14 @@
     <meta property="og:site_name" content="Liber Journal" />
     <meta property="og:type" content="website" />
     <meta property="og:url" content="https://liber-journal.vercel.app/" />
-    <meta property="og:title" content="Liber Journal — Institutional Trading Journal &amp; Performance Terminal" />
-    <meta property="og:description" content="Privacy-first trading journal with real-time analytics, continuous ledger, Sharpe ratio calculations, and live-formula Excel exports." />
+    <meta
+      property="og:title"
+      content="Liber Journal — Institutional Trading Journal &amp; Performance Terminal"
+    />
+    <meta
+      property="og:description"
+      content="Privacy-first trading journal with real-time analytics, continuous ledger, Sharpe ratio calculations, and live-formula Excel exports."
+    />
     <meta property="og:image" content="https://liber-journal.vercel.app/pwa-512x512.png" />
     <meta property="og:image:width" content="512" />
     <meta property="og:image:height" content="512" />
@@ -31,8 +43,14 @@
     <!-- Twitter Card -->
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:url" content="https://liber-journal.vercel.app/" />
-    <meta name="twitter:title" content="Liber Journal — Institutional Trading Journal &amp; Performance Terminal" />
-    <meta name="twitter:description" content="Privacy-first trading journal with real-time analytics, continuous ledger, and live-formula Excel exports." />
+    <meta
+      name="twitter:title"
+      content="Liber Journal — Institutional Trading Journal &amp; Performance Terminal"
+    />
+    <meta
+      name="twitter:description"
+      content="Privacy-first trading journal with real-time analytics, continuous ledger, and live-formula Excel exports."
+    />
     <meta name="twitter:image" content="https://liber-journal.vercel.app/pwa-512x512.png" />
 
     <!-- PWA & Mobile Web App Meta -->
@@ -47,7 +65,7 @@
       rel="stylesheet"
       href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap"
       media="print"
-      onload="this.media='all'"
+      onload="this.media = 'all'"
     />
     <noscript>
       <link
@@ -144,23 +162,70 @@
       }
 
       @keyframes preCandlePulse {
-        0%, 100% { transform: scaleY(0.4); opacity: 0.5; }
-        50% { transform: scaleY(1); opacity: 1; }
+        0%,
+        100% {
+          transform: scaleY(0.4);
+          opacity: 0.5;
+        }
+        50% {
+          transform: scaleY(1);
+          opacity: 1;
+        }
       }
       @keyframes preScan {
-        0% { transform: translateX(-100%); opacity: 0; }
-        50% { opacity: 0.8; }
-        100% { transform: translateX(100%); opacity: 0; }
+        0% {
+          transform: translateX(-100%);
+          opacity: 0;
+        }
+        50% {
+          opacity: 0.8;
+        }
+        100% {
+          transform: translateX(100%);
+          opacity: 0;
+        }
       }
       @keyframes preBlink {
-        0%, 100% { opacity: 0.3; transform: scale(0.8); }
-        50% { opacity: 1; transform: scale(1.3); }
+        0%,
+        100% {
+          opacity: 0.3;
+          transform: scale(0.8);
+        }
+        50% {
+          opacity: 1;
+          transform: scale(1.3);
+        }
       }
-      .pre-wick { width: 2px; border-radius: 1px; transform-origin: center center; animation: preCandlePulse 1.6s infinite ease-in-out; position: absolute; }
-      .pre-body { width: 10px; border-radius: 2px; transform-origin: center center; animation: preCandlePulse 1.6s infinite ease-in-out; position: relative; }
+      .pre-wick {
+        width: 2px;
+        border-radius: 1px;
+        transform-origin: center center;
+        animation: preCandlePulse 1.6s infinite ease-in-out;
+        position: absolute;
+      }
+      .pre-body {
+        width: 10px;
+        border-radius: 2px;
+        transform-origin: center center;
+        animation: preCandlePulse 1.6s infinite ease-in-out;
+        position: relative;
+      }
     </style>
   </head>
-  <body style="margin: 0; background-color: #0D1117; color: #E6EDF3; font-family: 'Geist', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">
+  <body
+    style="
+      margin: 0;
+      background-color: #0d1117;
+      color: #e6edf3;
+      font-family:
+        'Geist',
+        -apple-system,
+        BlinkMacSystemFont,
+        'Segoe UI',
+        Roboto,
+        sans-serif;
+    "
+  >
     <!--
       #root: Pre-hydration loader that matches the EXACT layout React will render.
 
@@ -174,19 +239,50 @@
       The static HTML below mirrors this structure pixel-for-pixel.
     -->
     <div id="root">
-      <div style="min-height: 100vh; display: flex; flex-direction: column; background-color: #0D1117;">
+      <div
+        style="min-height: 100vh; display: flex; flex-direction: column; background-color: #0d1117"
+      >
         <!-- Header — matches AppBar position="static" + Toolbar variant="dense" -->
-        <header style="min-height: 48px; padding: 0 24px; border-bottom: 1px solid #21262d; background-color: #161b22; display: flex; align-items: center; justify-content: space-between; box-sizing: border-box;">
-          <div style="display: flex; align-items: center; gap: 12px;">
-            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#2ea043" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display: block; flex-shrink: 0;">
+        <header
+          style="
+            min-height: 48px;
+            padding: 0 24px;
+            border-bottom: 1px solid #21262d;
+            background-color: #161b22;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-sizing: border-box;
+          "
+        >
+          <div style="display: flex; align-items: center; gap: 12px">
+            <svg
+              width="28"
+              height="28"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="#2ea043"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              style="display: block; flex-shrink: 0"
+            >
               <polyline points="22 7 13.5 15.5 8.5 10.5 2 17"></polyline>
               <polyline points="16 7 22 7 22 13"></polyline>
             </svg>
             <div>
-              <h1 style="font-size: 1rem; font-weight: 800; margin: 0; line-height: 1.1; color: #f0f6fc;">
+              <h1
+                style="
+                  font-size: 1rem;
+                  font-weight: 800;
+                  margin: 0;
+                  line-height: 1.1;
+                  color: #f0f6fc;
+                "
+              >
                 Liber Journal
               </h1>
-              <p style="font-size: 0.68rem; color: #8b949e; margin: 0;">
+              <p style="font-size: 0.68rem; color: #8b949e; margin: 0">
                 Institutional Performance Terminal
               </p>
             </div>
@@ -194,64 +290,329 @@
         </header>
 
         <!-- Main — matches Container maxWidth="xl" with py: 2.5 (20px) -->
-        <main style="max-width: 1536px; width: 100%; margin: 0 auto; padding: 20px 24px; flex: 1; display: flex; flex-direction: column; box-sizing: border-box;">
+        <main
+          style="
+            max-width: 1536px;
+            width: 100%;
+            margin: 0 auto;
+            padding: 20px 24px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            box-sizing: border-box;
+          "
+        >
           <!-- Loader wrapper — matches Box my: auto, py: 6 (48px), maxWidth: 640 -->
-          <div style="margin-top: auto; margin-bottom: auto; padding-top: 48px; padding-bottom: 48px; max-width: 640px; margin-left: auto; margin-right: auto; width: 100%;">
+          <div
+            style="
+              margin-top: auto;
+              margin-bottom: auto;
+              padding-top: 48px;
+              padding-bottom: 48px;
+              max-width: 640px;
+              margin-left: auto;
+              margin-right: auto;
+              width: 100%;
+            "
+          >
             <!-- TradingTerminalLoader — matches minHeight: 320, p: 32px (p: 4), border-radius: 12px (1.5) -->
-            <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 320px; background: radial-gradient(ellipse at center, #161b22 0%, #0d1117 100%); border: 1px solid #30363d; border-radius: 12px; position: relative; overflow: hidden; padding: 32px; user-select: none; box-sizing: border-box;">
+            <div
+              style="
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                min-height: 320px;
+                background: radial-gradient(ellipse at center, #161b22 0%, #0d1117 100%);
+                border: 1px solid #30363d;
+                border-radius: 12px;
+                position: relative;
+                overflow: hidden;
+                padding: 32px;
+                user-select: none;
+                box-sizing: border-box;
+              "
+            >
               <!-- Cyber Grid background -->
-              <div style="position: absolute; inset: 0; opacity: 0.05; background-image: linear-gradient(#E6EDF3 1px, transparent 1px), linear-gradient(90deg, #E6EDF3 1px, transparent 1px); background-size: 24px 24px; pointer-events: none;"></div>
+              <div
+                style="
+                  position: absolute;
+                  inset: 0;
+                  opacity: 0.05;
+                  background-image:
+                    linear-gradient(#e6edf3 1px, transparent 1px),
+                    linear-gradient(90deg, #e6edf3 1px, transparent 1px);
+                  background-size: 24px 24px;
+                  pointer-events: none;
+                "
+              ></div>
 
               <!-- Candlestick Stage — matches gap: 1.75 (14px), height: 70px, mb: 2.5 (20px) -->
-              <div style="display: flex; align-items: center; justify-content: center; gap: 14px; height: 70px; position: relative; margin-bottom: 20px; padding: 0 24px;">
+              <div
+                style="
+                  display: flex;
+                  align-items: center;
+                  justify-content: center;
+                  gap: 14px;
+                  height: 70px;
+                  position: relative;
+                  margin-bottom: 20px;
+                  padding: 0 24px;
+                "
+              >
                 <!-- Candle 1 -->
-                <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; width: 12px; height: 100%;">
-                  <div class="pre-wick" style="height: 42px; background: #2ea043; animation-delay: 0s;"></div>
-                  <div class="pre-body" style="height: 26px; background: #2ea043; box-shadow: 0 0 10px rgba(46,160,67,0.4); animation-delay: 0s;"></div>
+                <div
+                  style="
+                    display: flex;
+                    flex-direction: column;
+                    align-items: center;
+                    justify-content: center;
+                    position: relative;
+                    width: 12px;
+                    height: 100%;
+                  "
+                >
+                  <div
+                    class="pre-wick"
+                    style="height: 42px; background: #2ea043; animation-delay: 0s"
+                  ></div>
+                  <div
+                    class="pre-body"
+                    style="
+                      height: 26px;
+                      background: #2ea043;
+                      box-shadow: 0 0 10px rgba(46, 160, 67, 0.4);
+                      animation-delay: 0s;
+                    "
+                  ></div>
                 </div>
                 <!-- Candle 2 -->
-                <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; width: 12px; height: 100%;">
-                  <div class="pre-wick" style="height: 34px; background: #f85149; animation-delay: 0.18s;"></div>
-                  <div class="pre-body" style="height: 18px; background: #f85149; box-shadow: 0 0 10px rgba(248,81,73,0.4); animation-delay: 0.18s;"></div>
+                <div
+                  style="
+                    display: flex;
+                    flex-direction: column;
+                    align-items: center;
+                    justify-content: center;
+                    position: relative;
+                    width: 12px;
+                    height: 100%;
+                  "
+                >
+                  <div
+                    class="pre-wick"
+                    style="height: 34px; background: #f85149; animation-delay: 0.18s"
+                  ></div>
+                  <div
+                    class="pre-body"
+                    style="
+                      height: 18px;
+                      background: #f85149;
+                      box-shadow: 0 0 10px rgba(248, 81, 73, 0.4);
+                      animation-delay: 0.18s;
+                    "
+                  ></div>
                 </div>
                 <!-- Candle 3 -->
-                <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; width: 12px; height: 100%;">
-                  <div class="pre-wick" style="height: 50px; background: #2ea043; animation-delay: 0.36s;"></div>
-                  <div class="pre-body" style="height: 32px; background: #2ea043; box-shadow: 0 0 10px rgba(46,160,67,0.4); animation-delay: 0.36s;"></div>
+                <div
+                  style="
+                    display: flex;
+                    flex-direction: column;
+                    align-items: center;
+                    justify-content: center;
+                    position: relative;
+                    width: 12px;
+                    height: 100%;
+                  "
+                >
+                  <div
+                    class="pre-wick"
+                    style="height: 50px; background: #2ea043; animation-delay: 0.36s"
+                  ></div>
+                  <div
+                    class="pre-body"
+                    style="
+                      height: 32px;
+                      background: #2ea043;
+                      box-shadow: 0 0 10px rgba(46, 160, 67, 0.4);
+                      animation-delay: 0.36s;
+                    "
+                  ></div>
                 </div>
                 <!-- Candle 4 -->
-                <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; width: 12px; height: 100%;">
-                  <div class="pre-wick" style="height: 38px; background: #f85149; animation-delay: 0.54s;"></div>
-                  <div class="pre-body" style="height: 22px; background: #f85149; box-shadow: 0 0 10px rgba(248,81,73,0.4); animation-delay: 0.54s;"></div>
+                <div
+                  style="
+                    display: flex;
+                    flex-direction: column;
+                    align-items: center;
+                    justify-content: center;
+                    position: relative;
+                    width: 12px;
+                    height: 100%;
+                  "
+                >
+                  <div
+                    class="pre-wick"
+                    style="height: 38px; background: #f85149; animation-delay: 0.54s"
+                  ></div>
+                  <div
+                    class="pre-body"
+                    style="
+                      height: 22px;
+                      background: #f85149;
+                      box-shadow: 0 0 10px rgba(248, 81, 73, 0.4);
+                      animation-delay: 0.54s;
+                    "
+                  ></div>
                 </div>
                 <!-- Candle 5 -->
-                <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; width: 12px; height: 100%;">
-                  <div class="pre-wick" style="height: 56px; background: #2ea043; animation-delay: 0.72s;"></div>
-                  <div class="pre-body" style="height: 38px; background: #2ea043; box-shadow: 0 0 10px rgba(46,160,67,0.4); animation-delay: 0.72s;"></div>
+                <div
+                  style="
+                    display: flex;
+                    flex-direction: column;
+                    align-items: center;
+                    justify-content: center;
+                    position: relative;
+                    width: 12px;
+                    height: 100%;
+                  "
+                >
+                  <div
+                    class="pre-wick"
+                    style="height: 56px; background: #2ea043; animation-delay: 0.72s"
+                  ></div>
+                  <div
+                    class="pre-body"
+                    style="
+                      height: 38px;
+                      background: #2ea043;
+                      box-shadow: 0 0 10px rgba(46, 160, 67, 0.4);
+                      animation-delay: 0.72s;
+                    "
+                  ></div>
                 </div>
                 <!-- Candle 6 -->
-                <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; width: 12px; height: 100%;">
-                  <div class="pre-wick" style="height: 30px; background: #f85149; animation-delay: 0.9s;"></div>
-                  <div class="pre-body" style="height: 16px; background: #f85149; box-shadow: 0 0 10px rgba(248,81,73,0.4); animation-delay: 0.9s;"></div>
+                <div
+                  style="
+                    display: flex;
+                    flex-direction: column;
+                    align-items: center;
+                    justify-content: center;
+                    position: relative;
+                    width: 12px;
+                    height: 100%;
+                  "
+                >
+                  <div
+                    class="pre-wick"
+                    style="height: 30px; background: #f85149; animation-delay: 0.9s"
+                  ></div>
+                  <div
+                    class="pre-body"
+                    style="
+                      height: 16px;
+                      background: #f85149;
+                      box-shadow: 0 0 10px rgba(248, 81, 73, 0.4);
+                      animation-delay: 0.9s;
+                    "
+                  ></div>
                 </div>
                 <!-- Candle 7 -->
-                <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; width: 12px; height: 100%;">
-                  <div class="pre-wick" style="height: 46px; background: #2ea043; animation-delay: 1.08s;"></div>
-                  <div class="pre-body" style="height: 28px; background: #2ea043; box-shadow: 0 0 10px rgba(46,160,67,0.4); animation-delay: 1.08s;"></div>
+                <div
+                  style="
+                    display: flex;
+                    flex-direction: column;
+                    align-items: center;
+                    justify-content: center;
+                    position: relative;
+                    width: 12px;
+                    height: 100%;
+                  "
+                >
+                  <div
+                    class="pre-wick"
+                    style="height: 46px; background: #2ea043; animation-delay: 1.08s"
+                  ></div>
+                  <div
+                    class="pre-body"
+                    style="
+                      height: 28px;
+                      background: #2ea043;
+                      box-shadow: 0 0 10px rgba(46, 160, 67, 0.4);
+                      animation-delay: 1.08s;
+                    "
+                  ></div>
                 </div>
                 <!-- Price Scan Line -->
-                <div style="position: absolute; bottom: 18px; left: 0; right: 0; height: 1px; background: linear-gradient(90deg, transparent, #58a6ff, transparent); animation: preScan 2.2s infinite cubic-bezier(0.4, 0, 0.2, 1);"></div>
+                <div
+                  style="
+                    position: absolute;
+                    bottom: 18px;
+                    left: 0;
+                    right: 0;
+                    height: 1px;
+                    background: linear-gradient(90deg, transparent, #58a6ff, transparent);
+                    animation: preScan 2.2s infinite cubic-bezier(0.4, 0, 0.2, 1);
+                  "
+                ></div>
               </div>
 
               <!-- Text — locked height 48px to match React TradingTerminalLoader -->
-              <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 48px; height: 48px; text-align: center; flex-shrink: 0;">
-                <div style="display: flex; align-items: center; justify-content: center; gap: 8px; min-height: 24px;">
-                  <div style="width: 8px; height: 8px; border-radius: 50%; background-color: #2ea043; box-shadow: 0 0 8px #2ea043; animation: preBlink 1.2s infinite ease-in-out; flex-shrink: 0;"></div>
-                  <span style="font-family: 'JetBrains Mono', monospace; font-size: 0.825rem; font-weight: 700; letter-spacing: 0.08em; color: #f0f6fc; line-height: 1.2;">
+              <div
+                style="
+                  display: flex;
+                  flex-direction: column;
+                  align-items: center;
+                  justify-content: center;
+                  min-height: 48px;
+                  height: 48px;
+                  text-align: center;
+                  flex-shrink: 0;
+                "
+              >
+                <div
+                  style="
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    gap: 8px;
+                    min-height: 24px;
+                  "
+                >
+                  <div
+                    style="
+                      width: 8px;
+                      height: 8px;
+                      border-radius: 50%;
+                      background-color: #2ea043;
+                      box-shadow: 0 0 8px #2ea043;
+                      animation: preBlink 1.2s infinite ease-in-out;
+                      flex-shrink: 0;
+                    "
+                  ></div>
+                  <span
+                    style="
+                      font-family: 'JetBrains Mono', monospace;
+                      font-size: 0.825rem;
+                      font-weight: 700;
+                      letter-spacing: 0.08em;
+                      color: #f0f6fc;
+                      line-height: 1.2;
+                    "
+                  >
                     INITIALIZING TRADING TERMINAL...
                   </span>
                 </div>
-                <span style="font-family: 'JetBrains Mono', monospace; font-size: 0.68rem; color: #8b949e; letter-spacing: 0.05em; line-height: 1.2; margin-top: 4px; opacity: 0.75;">
+                <span
+                  style="
+                    font-family: 'JetBrains Mono', monospace;
+                    font-size: 0.68rem;
+                    color: #8b949e;
+                    letter-spacing: 0.05em;
+                    line-height: 1.2;
+                    margin-top: 4px;
+                    opacity: 0.75;
+                  "
+                >
                   DECRYPTING LOCAL INDEXEDDB LEDGER
                 </span>
               </div>
@@ -268,17 +629,47 @@
       Non-JS crawlers and <noscript> override make it visible for indexing.
     -->
     <div class="seo-fallback">
-      <section aria-label="Terminal Overview" style="max-width: 1280px; margin: 0 auto; padding: 2rem 1.5rem; line-height: 1.6; color: #8b949e; font-size: 0.95rem;">
-        <h2 style="font-size: 1.25rem; color: #f0f6fc; margin-top: 0;">Institutional Trading Journal Features &amp; Capabilities</h2>
+      <section
+        aria-label="Terminal Overview"
+        style="
+          max-width: 1280px;
+          margin: 0 auto;
+          padding: 2rem 1.5rem;
+          line-height: 1.6;
+          color: #8b949e;
+          font-size: 0.95rem;
+        "
+      >
+        <h2 style="font-size: 1.25rem; color: #f0f6fc; margin-top: 0">
+          Institutional Trading Journal Features &amp; Capabilities
+        </h2>
         <p>
-          Liber Journal is an open-source, privacy-first web terminal designed for professional traders, proprietary funds, and retail investors. Built with client-side cryptography and local IndexedDB database persistence, no trade information or financial records ever leave your computer.
+          Liber Journal is an open-source, privacy-first web terminal designed for professional
+          traders, proprietary funds, and retail investors. Built with client-side cryptography and
+          local IndexedDB database persistence, no trade information or financial records ever leave
+          your computer.
         </p>
-        <ul style="padding-left: 1.25rem; margin-top: 0.75rem;">
-          <li><strong>Continuous Ledger:</strong> Comprehensive trade journal supporting multiple executions, commissions, swap, and automated R:R calculation.</li>
-          <li><strong>Quantitative Risk Metrics:</strong> Automated computation of Expectancy, Sharpe Ratio, Profit Factor, Win/Loss Streaks, and Max Drawdown.</li>
-          <li><strong>Interactive Visualizations:</strong> Recharts equity curves, monthly PnL heatmaps, and weekday distribution analysis.</li>
-          <li><strong>Multi-Broker CSV Import:</strong> Direct parsing for MetaTrader 4, MetaTrader 5, Interactive Brokers, Binance, and Bybit.</li>
-          <li><strong>Dynamic ExcelJS Export:</strong> Multi-tab Excel workbook with live dynamic formulas for institutional audit trails.</li>
+        <ul style="padding-left: 1.25rem; margin-top: 0.75rem">
+          <li>
+            <strong>Continuous Ledger:</strong> Comprehensive trade journal supporting multiple
+            executions, commissions, swap, and automated R:R calculation.
+          </li>
+          <li>
+            <strong>Quantitative Risk Metrics:</strong> Automated computation of Expectancy, Sharpe
+            Ratio, Profit Factor, Win/Loss Streaks, and Max Drawdown.
+          </li>
+          <li>
+            <strong>Interactive Visualizations:</strong> Recharts equity curves, monthly PnL
+            heatmaps, and weekday distribution analysis.
+          </li>
+          <li>
+            <strong>Multi-Broker CSV Import:</strong> Direct parsing for MetaTrader 4, MetaTrader 5,
+            Interactive Brokers, Binance, and Bybit.
+          </li>
+          <li>
+            <strong>Dynamic ExcelJS Export:</strong> Multi-tab Excel workbook with live dynamic
+            formulas for institutional audit trails.
+          </li>
         </ul>
       </section>
     </div>

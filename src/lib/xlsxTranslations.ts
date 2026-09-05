@@ -1,6 +1,11 @@
 import { Locale } from '../types/preferences';
 
 export interface XlsxTranslations {
+  // Brand & General
+  appTitle: string;
+  appLinkTooltip: string;
+  webAppTerminalLabel: string;
+
   // Monthly Sheets
   monthNames: string[];
   accountSummaryTitle: string;
@@ -47,8 +52,11 @@ export interface XlsxTranslations {
   };
 }
 
-export const XLSX_TRANSLATIONS: Record<Locale, XlsxTranslations> = {
+const XLSX_TRANSLATIONS: Record<Locale, XlsxTranslations> = {
   en: {
+    appTitle: 'Trading Journal',
+    appLinkTooltip: 'Open Trading Journal Web App',
+    webAppTerminalLabel: 'Trading Journal Web Terminal',
     monthNames: [
       'January',
       'February',
@@ -122,6 +130,9 @@ export const XLSX_TRANSLATIONS: Record<Locale, XlsxTranslations> = {
   },
 
   uk: {
+    appTitle: 'Торговий журнал',
+    appLinkTooltip: 'Відкрити веб-додаток Торговий журнал',
+    webAppTerminalLabel: 'Веб-термінал Торгового журналу',
     monthNames: [
       'Січень',
       'Лютий',
