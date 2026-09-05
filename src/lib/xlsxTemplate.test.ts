@@ -213,35 +213,4 @@ describe('XLSX Template Generator', () => {
     expect(analyticsSheet.getCell('A3').value).toBe('Поточний баланс рахунку');
     expect(analyticsSheet.getCell('A4').value).toBe('Чистий прибуток / збиток');
   });
-
-  it('generates a valid XLSX in Russian when ru locale is selected', async () => {
-    const blob = await generateXlsxWorkbook(sampleTrades, {
-      ...DEFAULT_JOURNAL_SETTINGS,
-      initialDeposit: 10000,
-    }, 'ru');
-
-    const arrayBuffer = await blob.arrayBuffer();
-    const workbook = new ExcelJS.Workbook();
-    await workbook.xlsx.load(arrayBuffer);
-
-    const sheetNames = workbook.worksheets.map((w) => w.name);
-    expect(sheetNames).toContain('Сентябрь 2026');
-
-    const journalSheet = workbook.getWorksheet('Сентябрь 2026')!;
-    expect(journalSheet.getCell('A1').value).toBe('Статистика счета');
-    expect(journalSheet.getCell('E1').value).toBe('За месяц');
-    expect(journalSheet.getCell('A11').value).toBe('Дата');
-    expect(journalSheet.getCell('B11').value).toBe('Закрыто сделок');
-    expect(journalSheet.getCell('C11').value).toBe('Прибыль $');
-    expect(journalSheet.getCell('A14').value).toBe('Всего');
-
-    const tradesSheet = workbook.getWorksheet('Trades')!;
-    expect(tradesSheet.getRow(1).getCell(1).value).toBe('ID сделки');
-    expect(tradesSheet.getRow(1).getCell(2).value).toBe('Инструмент');
-
-    const analyticsSheet = workbook.getWorksheet('Analytics')!;
-    expect(analyticsSheet.getCell('A1').value).toBe('Аналитика эффективности торгового счета');
-    expect(analyticsSheet.getCell('A3').value).toBe('Текущий баланс счета');
-    expect(analyticsSheet.getCell('A4').value).toBe('Чистая прибыль / убыток');
-  });
 });

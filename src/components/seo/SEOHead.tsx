@@ -18,11 +18,7 @@ export const SEOHead: React.FC<SEOHeadProps> = ({
   ogType = 'website',
 }) => {
   const { i18n, t } = useTranslation();
-  const currentLang = i18n.language?.startsWith('uk')
-    ? 'uk'
-    : i18n.language?.startsWith('ru')
-      ? 'ru'
-      : 'en';
+  const currentLang = i18n.language?.startsWith('uk') ? 'uk' : 'en';
 
   const defaultTitle = `${t('app.title', 'Trading Journal')} — Institutional Performance Terminal`;
   const defaultDesc = t(
@@ -53,7 +49,7 @@ export const SEOHead: React.FC<SEOHeadProps> = ({
         operatingSystem: 'All modern browsers (Web Standards)',
         description:
           'Institutional-grade client-side trading journal terminal with real-time analytics, Sharpe ratio, continuous ledger, and live-formula Excel exports.',
-        inLanguage: ['en', 'uk', 'ru'],
+        inLanguage: ['en', 'uk'],
         browserRequirements: 'Requires JavaScript and IndexedDB support',
         offers: {
           '@type': 'Offer',
@@ -112,7 +108,6 @@ export const SEOHead: React.FC<SEOHeadProps> = ({
       {/* Multilingual Hreflang Tags */}
       <link rel="alternate" hrefLang="en" href={`${SITE_URL}/?lang=en`} />
       <link rel="alternate" hrefLang="uk" href={`${SITE_URL}/?lang=uk`} />
-      <link rel="alternate" hrefLang="ru" href={`${SITE_URL}/?lang=ru`} />
       <link rel="alternate" hrefLang="x-default" href={`${SITE_URL}/`} />
 
       {/* Open Graph / Facebook */}
@@ -126,11 +121,10 @@ export const SEOHead: React.FC<SEOHeadProps> = ({
       <meta property="og:image:height" content="512" />
       <meta
         property="og:locale"
-        content={currentLang === 'uk' ? 'uk_UA' : currentLang === 'ru' ? 'ru_RU' : 'en_US'}
+        content={currentLang === 'uk' ? 'uk_UA' : 'en_US'}
       />
       <meta property="og:locale:alternate" content="en_US" />
       <meta property="og:locale:alternate" content="uk_UA" />
-      <meta property="og:locale:alternate" content="ru_RU" />
 
       {/* Twitter Cards */}
       <meta name="twitter:card" content="summary_large_image" />

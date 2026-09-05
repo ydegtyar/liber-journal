@@ -1,6 +1,6 @@
 import { GroupByOption, SortOrder } from './trade';
 
-export type Locale = 'en' | 'ru' | 'uk';
+export type Locale = 'en' | 'uk';
 
 export type ThemeMode = 'light' | 'dark' | 'midnight' | 'unicorn' | 'system';
 

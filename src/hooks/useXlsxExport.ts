@@ -16,11 +16,7 @@ export function useXlsxExport() {
     setIsExporting(true);
     try {
       const loc = exportLocale || currentLocale;
-      const activeLocale: Locale = loc?.startsWith('uk')
-        ? 'uk'
-        : loc?.startsWith('ru')
-          ? 'ru'
-          : 'en';
+      const activeLocale: Locale = loc?.startsWith('uk') ? 'uk' : 'en';
       const [{ generateXlsxWorkbook }, { saveAs }] = await Promise.all([
         import('../lib/xlsxTemplate'),
         import('file-saver'),

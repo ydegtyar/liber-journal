@@ -244,7 +244,6 @@ src/
 │   ├── index.ts                   # i18next init with LanguageDetector, fallback to 'en'
 │   └── locales/
 │       ├── en.json                # English strings
-│       ├── ru.json                # Russian strings
 │       └── uk.json                # Ukrainian strings
 ├── hooks/
 │   ├── useTradesStore.ts          # Dexie-backed reactive CRUD operations & live trade querying
@@ -274,7 +273,7 @@ src/
 │   ├── deposit/
 │   │   └── DepositEditor.tsx      # Editable starting deposit component with currency format
 │   └── settings/
-│       ├── LanguageSelector.tsx   # Text-only segmented selector ('English', 'Русский', 'Українська')
+│       ├── LanguageSelector.tsx   # Text-only segmented selector ('English', 'Українська')
 │       ├── ThemeSwitcher.tsx      # 5-state switcher ('Light', 'Dark', 'Midnight', 'Unicorn', 'System')
 │       └── SettingsDialog.tsx     # Modal for currency, number formatting override, data reset
 ├── pages/

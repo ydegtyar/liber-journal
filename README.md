@@ -65,7 +65,7 @@ Designed to replace fragile, multi-tab spreadsheets with a continuous ledger, re
   - **System**: Live listener tracking OS `prefers-color-scheme`.
   - Global `disableRipple` and visible keyboard focus rings.
 - **Internationalization (i18n)**:
-  - Full translations for **English**, **Українська**, and **Русский** with native endonyms (no country flags).
+  - Full translations for **English** and **Українська** with native endonyms (no country flags).
   - Number format override: Browser Locale, Standard Financial Dot (`1,234.56`), or European Comma (`1.234,56`).
 - **Progressive Web App (PWA) with Workbox**:
   - Offline-first caching with service worker (`vite-plugin-pwa` and Workbox `generateSW`).

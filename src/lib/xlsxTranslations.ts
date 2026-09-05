@@ -193,85 +193,11 @@ export const XLSX_TRANSLATIONS: Record<Locale, XlsxTranslations> = {
       averageLoss: 'Середній збиток',
     },
   },
-
-  ru: {
-    monthNames: [
-      'Январь',
-      'Февраль',
-      'Март',
-      'Апрель',
-      'Май',
-      'Июнь',
-      'Июль',
-      'Август',
-      'Сентябрь',
-      'Октябрь',
-      'Ноябрь',
-      'Декабрь',
-    ],
-    accountSummaryTitle: 'Статистика счета',
-    initialDepositLabel: (dateStr?: string) => `Депозит на начало (${dateStr || 'Начальный'})`,
-    currentDepositLabel: 'Текущий депозит',
-    returnPctLabel: 'Доходность %',
-    totalPnlLabel: 'Суммарная прибыль',
-
-    monthlySummaryTitle: 'За месяц',
-    monthlyPnlLabel: 'Прибыль за месяц',
-    monthlyOrdersLabel: 'Закрыто сделок',
-    monthlyExplanation:
-      'Пояснение: Общая чистая прибыль и суммарное количество закрытых сделок за период. Формулы динамически суммируют ежедневные результаты.',
-
-    weeklySummaryTitle: 'Итоги по неделям',
-    weeklyHeaders: ['Неделя', 'Диапазон', 'Сделок/Неделя', '$/Неделя'],
-    weekLabel: (weekNum: number) => `Неделя ${weekNum}`,
-    weeklyExplanation:
-      'Пояснение: Еженедельный P&L показывает динамику прибыльности и торговую нагрузку за каждую неделю для оценки стабильности стратегии.',
-
-    matrixDateHeader: 'Дата',
-    matrixOrdersHeader: 'Закрыто сделок',
-    matrixDailyPnlHeader: 'Прибыль $',
-    matrixTotalLabel: 'Всего',
-    noTradesLabel: 'Сделки отсутствуют',
-
-    tradesHeaders: [
-      'ID сделки',
-      'Инструмент',
-      'Направление',
-      'Открыто',
-      'Закрыто',
-      'Цена открытия',
-      'Цена закрытия',
-      'Маржа ($)',
-      'Кредитное плечо',
-      'Валовый доход ($)',
-      'Чистый P&L ($)',
-      'Тег',
-      'Заметки',
-    ],
-
-    analyticsTitle: 'Аналитика эффективности торгового счета',
-    analyticsMetrics: {
-      currentAccountBalance: 'Текущий баланс счета',
-      netProfitLoss: 'Чистая прибыль / убыток',
-      totalReturnRoi: 'Общая доходность (ROI %)',
-      totalClosedTrades: 'Всего закрытых сделок',
-      winningTrades: 'Прибыльные сделки',
-      losingTrades: 'Убыточные сделки',
-      breakevenTrades: 'Безубыточные (BE) сделки',
-      winRateExclBe: 'Винрейт % (без BE)',
-      grossProfit: 'Валовая прибыль',
-      grossLoss: 'Валовый убыток',
-      profitFactor: 'Профит-фактор',
-      averageWin: 'Средняя прибыль',
-      averageLoss: 'Средний убыток',
-    },
-  },
 };
 
 export function getXlsxTranslations(locale?: string): XlsxTranslations {
   if (!locale) return XLSX_TRANSLATIONS.en;
   if (locale.startsWith('uk')) return XLSX_TRANSLATIONS.uk;
-  if (locale.startsWith('ru')) return XLSX_TRANSLATIONS.ru;
   return XLSX_TRANSLATIONS.en;
 }
 
