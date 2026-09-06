@@ -1,4 +1,5 @@
-import React, { useState, useTransition, useCallback, useMemo } from 'react';
+import React, { useTransition, useCallback, useMemo, useState } from 'react';
+import { useLocalStorage } from 'usehooks-ts';
 import { Box, Tabs, Tab } from '@mui/material';
 import ReceiptLongIcon from '@mui/icons-material/ReceiptLong';
 import CalendarViewMonthIcon from '@mui/icons-material/CalendarViewMonth';
@@ -35,7 +36,10 @@ const TradesViewSectionComponent: React.FC<TradesViewSectionProps> = ({
   onOpenSettings,
 }) => {
   const { t } = useTranslation();
-  const [tableViewMode, setTableViewMode] = useState<'ledger' | 'matrix'>('ledger');
+  const [tableViewMode, setTableViewMode] = useLocalStorage<'ledger' | 'matrix'>(
+    'liber_journal_table_view_mode',
+    'ledger'
+  );
   const [tableSearchQuery, setTableSearchQuery] = useState('');
   const [, startTransition] = useTransition();
 

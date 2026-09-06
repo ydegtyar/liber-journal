@@ -1,4 +1,5 @@
 import React, { useState, useCallback } from 'react';
+import { useLocalStorage } from 'usehooks-ts';
 import {
   Drawer,
   Box,
@@ -83,7 +84,10 @@ export const PageLayoutSettingsDrawer: React.FC<PageLayoutSettingsDrawerProps> =
     initialTab = 'layout',
   }) => {
     const { t } = useTranslation();
-    const [activeTab, setActiveTab] = useState<'layout' | 'preferences'>(initialTab);
+    const [activeTab, setActiveTab] = useLocalStorage<'layout' | 'preferences'>(
+      'liber_journal_settings_tab',
+      initialTab
+    );
     const [confirmClear, setConfirmClear] = useState(false);
     const [activeId, setActiveId] = useState<PageBlockId | null>(null);
 

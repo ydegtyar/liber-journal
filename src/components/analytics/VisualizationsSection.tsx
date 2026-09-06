@@ -1,4 +1,5 @@
-import React, { lazy, Suspense, useCallback, useMemo, useState, useTransition } from 'react';
+import React, { lazy, Suspense, useCallback, useMemo, useTransition } from 'react';
+import { useLocalStorage } from 'usehooks-ts';
 import { Tab, Tabs } from '@mui/material';
 import ShowChartIcon from '@mui/icons-material/ShowChart';
 import BarChartIcon from '@mui/icons-material/BarChart';
@@ -52,7 +53,10 @@ const VisualizationsSectionComponent: React.FC<VisualizationsSectionProps> = ({
   numberFormat,
 }) => {
   const { t } = useTranslation();
-  const [activeChartTab, setActiveChartTab] = useState(0);
+  const [activeChartTab, setActiveChartTab] = useLocalStorage<number>(
+    'liber_journal_active_chart_tab',
+    0
+  );
   const [, startTransition] = useTransition();
 
   const handleTabChange = useCallback((_e: any, val: number) => {
