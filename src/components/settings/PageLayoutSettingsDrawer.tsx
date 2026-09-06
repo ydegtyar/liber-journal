@@ -52,7 +52,7 @@ import {
 import { BlockCard } from './BlockCard';
 import { SortableBlockItem } from './SortableBlockItem';
 
-export interface PageLayoutSettingsDrawerProps {
+export interface Props {
   open: boolean;
   onClose: () => void;
   settings: JournalSettings;
@@ -68,7 +68,7 @@ export interface PageLayoutSettingsDrawerProps {
   initialTab?: 'layout' | 'preferences';
 }
 
-export const PageLayoutSettingsDrawer: React.FC<PageLayoutSettingsDrawerProps> = React.memo(
+export const PageLayoutSettingsDrawer: React.FC<Props> = React.memo(
   ({
     open,
     onClose,

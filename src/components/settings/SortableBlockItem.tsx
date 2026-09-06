@@ -7,14 +7,14 @@ import { useTranslation } from 'react-i18next';
 import { PageBlockId } from '../../types/preferences';
 import { BlockCard } from './BlockCard';
 
-export interface SortableBlockItemProps {
+export interface Props {
   id: PageBlockId;
   isVisible: boolean;
   onToggleVisibility: (id: PageBlockId) => void;
   index: number;
 }
 
-export const SortableBlockItem: React.FC<SortableBlockItemProps> = React.memo(
+export const SortableBlockItem: React.FC<Props> = React.memo(
   ({ id, isVisible, onToggleVisibility, index }) => {
     const { t } = useTranslation();
 

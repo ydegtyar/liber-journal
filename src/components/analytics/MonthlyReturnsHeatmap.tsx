@@ -16,7 +16,7 @@ import { YearMonthlyReturns } from '../../types/trade';
 import { NumberFormatOption } from '../../types/preferences';
 import { formatPercent, formatSignedPnl } from '../../lib/formatters';
 
-interface MonthlyReturnsHeatmapProps {
+interface Props {
   data: YearMonthlyReturns[];
   currency: string;
   numberFormat: NumberFormatOption;
@@ -37,7 +37,7 @@ const MONTH_NAMES = [
   'Dec',
 ];
 
-export const MonthlyReturnsHeatmap: React.FC<MonthlyReturnsHeatmapProps> = React.memo(
+export const MonthlyReturnsHeatmap: React.FC<Props> = React.memo(
   ({ data, currency, numberFormat }) => {
     const { t, i18n } = useTranslation();
     const currentLang = i18n.language || 'en-US';

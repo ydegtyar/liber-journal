@@ -17,14 +17,14 @@ import {
   formatDetailedDuration,
 } from '../../lib/formatters';
 
-interface TradeRowProps {
+interface Props {
   trade: Trade;
   currency: string;
   numberFormat: NumberFormatOption;
   locale?: string;
 }
 
-const TradeRowComponent: React.FC<TradeRowProps> = ({
+const TradeRowComponent: React.FC<Props> = ({
   trade,
   currency,
   numberFormat,

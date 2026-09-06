@@ -5,11 +5,11 @@ import ArrowDropUpIcon from '@mui/icons-material/ArrowDropUp';
 import { useTranslation } from 'react-i18next';
 import { PeriodInsight } from '../../types/trade';
 
-interface PeriodInsightsCardProps {
+interface Props {
   insights: PeriodInsight[];
 }
 
-export const PeriodInsightsCard: React.FC<PeriodInsightsCardProps> = React.memo(({ insights }) => {
+export const PeriodInsightsCard: React.FC<Props> = React.memo(({ insights }) => {
   const { t } = useTranslation();
 
   if (insights.length === 0) return null;

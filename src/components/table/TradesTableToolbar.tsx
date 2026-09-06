@@ -23,7 +23,7 @@ import { JournalSettings } from '../../types/preferences';
 import { GroupByOption } from '../../types/trade';
 import { CsvUploadDropzone } from '../upload/CsvUploadDropzone';
 
-interface TradesTableToolbarProps {
+interface Props {
   settings: JournalSettings;
   tradeCount: number;
   searchQuery?: string;
@@ -37,7 +37,7 @@ interface TradesTableToolbarProps {
   onOpenSettings: () => void;
 }
 
-const TradesTableToolbarComponent: React.FC<TradesTableToolbarProps> = ({
+const TradesTableToolbarComponent: React.FC<Props> = ({
   settings,
   tradeCount,
   searchQuery = '',

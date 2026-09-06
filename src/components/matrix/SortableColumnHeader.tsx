@@ -4,7 +4,7 @@ import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { MatrixColumnBlockId } from '../../types/preferences';
 
-export interface SortableColumnHeaderProps {
+export interface Props {
   id: MatrixColumnBlockId;
   children: React.ReactNode;
   colSpan?: number;
@@ -13,7 +13,7 @@ export interface SortableColumnHeaderProps {
   sx?: SxProps<Theme>;
 }
 
-export const SortableColumnHeader: React.FC<SortableColumnHeaderProps> = React.memo(
+export const SortableColumnHeader: React.FC<Props> = React.memo(
   ({ id, children, colSpan, rowSpan, align = 'center', sx }) => {
     const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
       id,

@@ -10,7 +10,7 @@ import { TradesTableToolbar } from './TradesTableToolbar';
 import { TradesTable } from './TradesTable';
 import { DailyOrdersMatrixTable } from '../matrix/DailyOrdersMatrixTable';
 
-export interface TradesViewSectionProps {
+export interface Props {
   filteredTrades: Trade[];
   settings: JournalSettings;
   numberFormat: NumberFormatOption;
@@ -23,7 +23,7 @@ export interface TradesViewSectionProps {
   onOpenSettings: () => void;
 }
 
-const TradesViewSectionComponent: React.FC<TradesViewSectionProps> = ({
+const TradesViewSectionComponent: React.FC<Props> = ({
   filteredTrades,
   settings,
   numberFormat,

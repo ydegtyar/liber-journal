@@ -1,11 +1,11 @@
 import React from 'react';
 
-export interface CircularRingProps {
+export interface Props {
   progress: number;
   sentiment: string;
 }
 
-export const CircularRing: React.FC<CircularRingProps> = React.memo(({ progress, sentiment }) => {
+export const CircularRing: React.FC<Props> = React.memo(({ progress, sentiment }) => {
   const size = 26;
   const strokeWidth = 3.5;
   const radius = (size - strokeWidth) / 2;

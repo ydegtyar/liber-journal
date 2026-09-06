@@ -2,7 +2,7 @@ import React from 'react';
 import { Paper, Typography, Box } from '@mui/material';
 import { CircularRing } from './CircularRing';
 
-interface StatCardProps {
+interface Props {
   title: string;
   value: string | number;
   subValue?: string;
@@ -11,7 +11,7 @@ interface StatCardProps {
   circularProgress?: number; // 0 - 100 percentage
 }
 
-export const StatCard: React.FC<StatCardProps> = React.memo(
+export const StatCard: React.FC<Props> = React.memo(
   ({ title, value, subValue, sentiment = 'neutral', icon, circularProgress }) => {
     return (
       <Paper

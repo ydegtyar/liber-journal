@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
-export interface SEOHeadProps {
+export interface Props {
   title?: string;
   description?: string;
   canonicalPath?: string;
@@ -11,7 +11,7 @@ export interface SEOHeadProps {
 const SITE_URL = 'https://liber-journal.vercel.app';
 const DEFAULT_PREVIEW_IMG = `${SITE_URL}/pwa-512x512.png`;
 
-export const SEOHead: React.FC<SEOHeadProps> = React.memo(
+export const SEOHead: React.FC<Props> = React.memo(
   ({ title, description, canonicalPath = '', ogType = 'website' }) => {
     const { i18n, t } = useTranslation();
     const currentLang = i18n.language?.startsWith('uk') ? 'uk' : 'en';

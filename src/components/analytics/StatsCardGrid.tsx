@@ -11,13 +11,13 @@ import {
   formatDurationMs,
 } from '../../lib/formatters';
 
-interface StatsCardGridProps {
+interface Props {
   analytics: JournalAnalytics;
   currency: string;
   numberFormat: NumberFormatOption;
 }
 
-export const StatsCardGrid: React.FC<StatsCardGridProps> = React.memo(
+export const StatsCardGrid: React.FC<Props> = React.memo(
   ({ analytics, currency, numberFormat }) => {
     const { t, i18n } = useTranslation();
     const currentLang = i18n.language || 'en-US';

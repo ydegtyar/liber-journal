@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { TextField, InputAdornment, SxProps, Theme } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 
-interface DepositEditorProps {
+interface Props {
   initialDeposit: number;
   currency: string;
   onSave: (value: number) => void;
@@ -10,7 +10,7 @@ interface DepositEditorProps {
   sx?: SxProps<Theme>;
 }
 
-export const DepositEditor: React.FC<DepositEditorProps> = React.memo(
+export const DepositEditor: React.FC<Props> = React.memo(
   ({ initialDeposit, currency, onSave, label, sx }) => {
     const { t } = useTranslation();
     const [val, setVal] = useState(String(initialDeposit));

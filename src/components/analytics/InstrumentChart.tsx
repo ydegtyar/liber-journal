@@ -22,112 +22,109 @@ interface InstrumentData {
   winRate: number;
 }
 
-interface InstrumentChartProps {
+interface Props {
   data: InstrumentData[];
   currency: string;
   numberFormat: NumberFormatOption;
 }
 
-export const InstrumentChart: React.FC<InstrumentChartProps> = React.memo(
-  ({ data, currency, numberFormat }) => {
-    const { t, i18n } = useTranslation();
-    const theme = useTheme();
-    const currentLang = i18n.language || 'en-US';
+export const InstrumentChart: React.FC<Props> = React.memo(({ data, currency, numberFormat }) => {
+  const { t, i18n } = useTranslation();
+  const theme = useTheme();
+  const currentLang = i18n.language || 'en-US';
 
-    // Sort descending by P&L
-    const sorted = useMemo(() => [...data].sort((a, b) => b.pnl - a.pnl), [data]);
+  // Sort descending by P&L
+  const sorted = useMemo(() => [...data].sort((a, b) => b.pnl - a.pnl), [data]);
 
-    return (
-      <Paper sx={{ p: 2, height: 320, display: 'flex', flexDirection: 'column' }}>
-        <Box sx={{ mb: 1, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <Typography variant="subtitle2" sx={{ fontWeight: 600 }}>
-            {t('charts.instruments')}
-          </Typography>
-        </Box>
+  return (
+    <Paper sx={{ p: 2, height: 320, display: 'flex', flexDirection: 'column' }}>
+      <Box sx={{ mb: 1, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <Typography variant="subtitle2" sx={{ fontWeight: 600 }}>
+          {t('charts.instruments')}
+        </Typography>
+      </Box>
 
-        <Box sx={{ flex: 1, width: '100%', minHeight: 0 }}>
-          <ResponsiveContainer width="100%" height="100%">
-            <BarChart
-              data={sorted}
-              layout="vertical"
-              margin={{ top: 5, right: 20, left: 40, bottom: 5 }}
-            >
-              <CartesianGrid strokeDasharray="3 3" stroke={theme.palette.divider} opacity={0.6} />
-              <XAxis
-                type="number"
-                stroke={theme.palette.text.secondary}
-                fontSize={11}
-                tickLine={false}
-                tickFormatter={(val) => formatCurrency(val, currency, numberFormat, currentLang)}
-              />
-              <YAxis
-                type="category"
-                dataKey="symbol"
-                stroke={theme.palette.text.secondary}
-                fontSize={11}
-                tickLine={false}
-                width={70}
-              />
-              <ReferenceLine x={0} stroke={theme.palette.text.secondary} />
-              <Tooltip
-                content={({ active, payload }) => {
-                  if (active && payload && payload.length) {
-                    const pt = payload[0].payload as InstrumentData;
-                    return (
-                      <Box
+      <Box sx={{ flex: 1, width: '100%', minHeight: 0 }}>
+        <ResponsiveContainer width="100%" height="100%">
+          <BarChart
+            data={sorted}
+            layout="vertical"
+            margin={{ top: 5, right: 20, left: 40, bottom: 5 }}
+          >
+            <CartesianGrid strokeDasharray="3 3" stroke={theme.palette.divider} opacity={0.6} />
+            <XAxis
+              type="number"
+              stroke={theme.palette.text.secondary}
+              fontSize={11}
+              tickLine={false}
+              tickFormatter={(val) => formatCurrency(val, currency, numberFormat, currentLang)}
+            />
+            <YAxis
+              type="category"
+              dataKey="symbol"
+              stroke={theme.palette.text.secondary}
+              fontSize={11}
+              tickLine={false}
+              width={70}
+            />
+            <ReferenceLine x={0} stroke={theme.palette.text.secondary} />
+            <Tooltip
+              content={({ active, payload }) => {
+                if (active && payload && payload.length) {
+                  const pt = payload[0].payload as InstrumentData;
+                  return (
+                    <Box
+                      sx={{
+                        backgroundColor: theme.palette.background.paper,
+                        border: `1px solid ${theme.palette.divider}`,
+                        p: 1.5,
+                        borderRadius: 1,
+                        boxShadow: '0 4px 12px rgba(0,0,0,0.2)',
+                      }}
+                    >
+                      <Typography variant="subtitle2" sx={{ fontWeight: 700 }}>
+                        {pt.symbol}
+                      </Typography>
+                      <Typography variant="caption" color="text.secondary">
+                        {pt.trades} trades • Win Rate:{' '}
+                        {formatPercent(pt.winRate, 1, numberFormat, currentLang)}
+                      </Typography>
+                      <Typography
+                        variant="body2"
                         sx={{
-                          backgroundColor: theme.palette.background.paper,
-                          border: `1px solid ${theme.palette.divider}`,
-                          p: 1.5,
-                          borderRadius: 1,
-                          boxShadow: '0 4px 12px rgba(0,0,0,0.2)',
+                          fontFamily: "'JetBrains Mono', monospace",
+                          fontWeight: 700,
+                          mt: 0.5,
+                          color: pt.pnl >= 0 ? theme.palette.trade.gain : theme.palette.trade.loss,
                         }}
                       >
-                        <Typography variant="subtitle2" sx={{ fontWeight: 700 }}>
-                          {pt.symbol}
-                        </Typography>
-                        <Typography variant="caption" color="text.secondary">
-                          {pt.trades} trades • Win Rate:{' '}
-                          {formatPercent(pt.winRate, 1, numberFormat, currentLang)}
-                        </Typography>
-                        <Typography
-                          variant="body2"
-                          sx={{
-                            fontFamily: "'JetBrains Mono', monospace",
-                            fontWeight: 700,
-                            mt: 0.5,
-                            color:
-                              pt.pnl >= 0 ? theme.palette.trade.gain : theme.palette.trade.loss,
-                          }}
-                        >
-                          Net P&L: {formatCurrency(pt.pnl, currency, numberFormat, currentLang)}
-                        </Typography>
-                      </Box>
-                    );
+                        Net P&L: {formatCurrency(pt.pnl, currency, numberFormat, currentLang)}
+                      </Typography>
+                    </Box>
+                  );
+                }
+                return null;
+              }}
+            />
+            <Bar dataKey="pnl" radius={[0, 3, 3, 0]}>
+              {sorted.map((entry, index) => (
+                <Cell
+                  key={`inst-${index}`}
+                  fill={
+                    entry.pnl > 0.001
+                      ? theme.palette.trade.gain
+                      : entry.pnl < -0.001
+                        ? theme.palette.trade.loss
+                        : theme.palette.trade.breakeven
                   }
-                  return null;
-                }}
-              />
-              <Bar dataKey="pnl" radius={[0, 3, 3, 0]}>
-                {sorted.map((entry, index) => (
-                  <Cell
-                    key={`inst-${index}`}
-                    fill={
-                      entry.pnl > 0.001
-                        ? theme.palette.trade.gain
-                        : entry.pnl < -0.001
-                          ? theme.palette.trade.loss
-                          : theme.palette.trade.breakeven
-                    }
-                  />
-                ))}
-              </Bar>
-            </BarChart>
-          </ResponsiveContainer>
-        </Box>
-      </Paper>
-    );
-  }
-);
+                />
+              ))}
+            </Bar>
+          </BarChart>
+        </ResponsiveContainer>
+      </Box>
+    </Paper>
+  );
+});
 
 InstrumentChart.displayName = 'InstrumentChart';

@@ -14,12 +14,12 @@ import { EquityPoint } from '../../types/trade';
 import { NumberFormatOption } from '../../types/preferences';
 import { formatPercent } from '../../lib/formatters';
 
-interface DrawdownChartProps {
+interface Props {
   data: EquityPoint[];
   numberFormat: NumberFormatOption;
 }
 
-export const DrawdownChart: React.FC<DrawdownChartProps> = React.memo(({ data, numberFormat }) => {
+export const DrawdownChart: React.FC<Props> = React.memo(({ data, numberFormat }) => {
   const { t, i18n } = useTranslation();
   const theme = useTheme();
   const currentLang = i18n.language || 'en-US';

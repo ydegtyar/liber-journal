@@ -22,7 +22,7 @@ export interface DayRowData {
   dailyPnl: number;
 }
 
-export interface ColumnDragPreviewProps {
+export interface Props {
   blockId: MatrixColumnBlockId;
   dayRows: DayRowData[];
   orderColumnsCount: number;
@@ -34,7 +34,7 @@ export interface ColumnDragPreviewProps {
   t: (key: string, options?: any) => string;
 }
 
-export const ColumnDragPreview: React.FC<ColumnDragPreviewProps> = React.memo(
+export const ColumnDragPreview: React.FC<Props> = React.memo(
   ({
     blockId,
     dayRows,

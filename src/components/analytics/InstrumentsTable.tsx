@@ -17,7 +17,7 @@ import { InstrumentSummary } from '../../types/trade';
 import { NumberFormatOption } from '../../types/preferences';
 import { formatPercent, formatSignedPnl } from '../../lib/formatters';
 
-interface InstrumentsTableProps {
+interface Props {
   data: InstrumentSummary[];
   currency: string;
   numberFormat: NumberFormatOption;
@@ -27,7 +27,7 @@ interface InstrumentsTableProps {
 
 type SortField = 'symbol' | 'trades' | 'winRate' | 'netPnl' | 'avgPnl' | 'sharePercent';
 
-export const InstrumentsTable: React.FC<InstrumentsTableProps> = React.memo(
+export const InstrumentsTable: React.FC<Props> = React.memo(
   ({ data, currency, numberFormat, selectedInstrument, onSelectInstrument }) => {
     const { t, i18n } = useTranslation();
     const currentLang = i18n.language || 'en-US';

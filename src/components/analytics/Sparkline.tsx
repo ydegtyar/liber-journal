@@ -1,12 +1,12 @@
 import React from 'react';
 import ShowChartIcon from '@mui/icons-material/ShowChart';
 
-export interface SparklineProps {
+export interface Props {
   points: number[];
   isPositive: boolean;
 }
 
-export const Sparkline: React.FC<SparklineProps> = React.memo(({ points, isPositive }) => {
+export const Sparkline: React.FC<Props> = React.memo(({ points, isPositive }) => {
   if (points.length < 2) {
     return <ShowChartIcon sx={{ fontSize: 16, color: 'text.disabled' }} />;
   }

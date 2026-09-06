@@ -27,7 +27,7 @@ import { GroupHeaderRow } from './GroupHeaderRow';
 
 import { SortColumn, sortTrades, filterTradesByInstrument } from './tradesTableUtils';
 
-interface TradesTableProps {
+interface Props {
   trades: Trade[];
   settings: JournalSettings;
   numberFormat: NumberFormatOption;
@@ -38,7 +38,7 @@ interface TradesTableProps {
   onToggleSort?: () => void;
 }
 
-const TradesTableComponent: React.FC<TradesTableProps> = ({
+const TradesTableComponent: React.FC<Props> = ({
   trades,
   settings,
   numberFormat,

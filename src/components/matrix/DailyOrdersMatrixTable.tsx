@@ -52,7 +52,7 @@ import { formatCurrency } from '../../lib/formatters';
 import { getTradeDateKey, formatDisplayDate } from '../../lib/dateUtils';
 import { getStoredMatrixColumnOrder, saveMatrixColumnOrder } from '../../lib/db';
 
-interface DailyOrdersMatrixTableProps {
+interface Props {
   trades: Trade[];
   currency?: string;
   numberFormat?: NumberFormatOption;
@@ -62,7 +62,7 @@ interface DailyOrdersMatrixTableProps {
   onColumnOrderChange?: (order: MatrixColumnBlockId[]) => void;
 }
 
-const DailyOrdersMatrixTableComponent: React.FC<DailyOrdersMatrixTableProps> = ({
+const DailyOrdersMatrixTableComponent: React.FC<Props> = ({
   trades,
   currency = 'USD',
   numberFormat = 'locale',

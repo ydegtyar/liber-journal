@@ -19,7 +19,7 @@ import { formatCurrency, formatSignedPnl } from '../../lib/formatters';
 
 export type HeatmapMetric = 'pnl' | 'winRate' | 'trades';
 
-export interface HourlyDayHeatmapProps {
+export interface Props {
   trades: Trade[];
   currency: string;
   numberFormat: NumberFormatOption;
@@ -40,7 +40,7 @@ interface SlotData {
 const WEEKDAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
 const SHORT_WEEKDAYS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
 
-export const HourlyDayHeatmap: React.FC<HourlyDayHeatmapProps> = React.memo(
+export const HourlyDayHeatmap: React.FC<Props> = React.memo(
   ({ trades, currency, numberFormat }) => {
     const { t, i18n } = useTranslation();
     const theme = useTheme();

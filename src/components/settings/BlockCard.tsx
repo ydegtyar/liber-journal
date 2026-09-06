@@ -6,7 +6,7 @@ import { useTranslation } from 'react-i18next';
 import { PageBlockId } from '../../types/preferences';
 import { BLOCK_CONFIGS } from './blockConfigs';
 
-export interface BlockCardProps {
+export interface Props {
   id: PageBlockId;
   index: number;
   isVisible: boolean;
@@ -15,7 +15,7 @@ export interface BlockCardProps {
   dragHandleProps?: Record<string, any>;
 }
 
-export const BlockCard: React.FC<BlockCardProps> = React.memo(
+export const BlockCard: React.FC<Props> = React.memo(
   ({ id, index, isVisible, onToggleVisibility, isOverlay = false, dragHandleProps }) => {
     const { t } = useTranslation();
     const config = BLOCK_CONFIGS[id] ?? {

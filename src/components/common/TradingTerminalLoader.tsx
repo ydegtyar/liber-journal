@@ -1,7 +1,7 @@
 import React from 'react';
 import { Box, Typography, keyframes, useTheme } from '@mui/material';
 
-interface TradingTerminalLoaderProps {
+interface Props {
   message?: string;
   subMessage?: string;
   minHeight?: number | string;
@@ -54,7 +54,7 @@ const CANDLES = [
   { bodyH: 28, wickH: 46, isGreen: true, delay: '1.08s' },
 ];
 
-export const TradingTerminalLoader: React.FC<TradingTerminalLoaderProps> = React.memo(
+export const TradingTerminalLoader: React.FC<Props> = React.memo(
   ({
     message = 'INITIALIZING TERMINAL ENGINE...',
     subMessage = 'SYNCING CLIENT-SIDE LEDGER',

@@ -3,13 +3,13 @@ import { Box, Typography, Button, CircularProgress } from '@mui/material';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import { useTranslation } from 'react-i18next';
 
-interface CsvUploadDropzoneProps {
+interface Props {
   onFileSelected: (file: File) => Promise<unknown>;
   isImporting: boolean;
   compact?: boolean;
 }
 
-export const CsvUploadDropzone: React.FC<CsvUploadDropzoneProps> = React.memo(
+export const CsvUploadDropzone: React.FC<Props> = React.memo(
   ({ onFileSelected, isImporting, compact = false }) => {
     const { t } = useTranslation();
     const [isDragOver, setIsDragOver] = useState(false);

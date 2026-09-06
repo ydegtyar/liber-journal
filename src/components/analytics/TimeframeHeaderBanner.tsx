@@ -24,7 +24,7 @@ import { NumberFormatOption } from '../../types/preferences';
 import { formatSignedPnl, formatPercent, formatCurrency } from '../../lib/formatters';
 import { DepositEditor } from '../deposit/DepositEditor';
 
-interface TimeframeHeaderBannerProps {
+interface Props {
   netPnl: number;
   roiPercent: number;
   tradeCount: number;
@@ -54,7 +54,7 @@ const TIMEFRAME_BUTTONS: Array<{ id: TimeframeOption; label: string }> = [
   { id: 'ALL', label: 'ALL' },
 ];
 
-export const TimeframeHeaderBanner: React.FC<TimeframeHeaderBannerProps> = React.memo(
+export const TimeframeHeaderBanner: React.FC<Props> = React.memo(
   ({
     netPnl,
     roiPercent,

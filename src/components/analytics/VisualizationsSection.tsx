@@ -37,7 +37,7 @@ const HourlyDayHeatmap = lazy(() =>
   import('./HourlyDayHeatmap').then((m) => ({ default: m.HourlyDayHeatmap }))
 );
 
-export interface VisualizationsSectionProps {
+export interface Props {
   filteredTrades: Trade[];
   equityCurve: EquityPoint[];
   dayOfWeekPerformance: Array<{ day: string; pnl: number; trades: number; winRate: number }>;
@@ -45,7 +45,7 @@ export interface VisualizationsSectionProps {
   numberFormat: NumberFormatOption;
 }
 
-const VisualizationsSectionComponent: React.FC<VisualizationsSectionProps> = ({
+const VisualizationsSectionComponent: React.FC<Props> = ({
   filteredTrades,
   equityCurve,
   dayOfWeekPerformance,

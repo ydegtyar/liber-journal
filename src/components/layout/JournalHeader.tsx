@@ -22,13 +22,13 @@ import { ThemeMode } from '../../types/preferences';
 import { SUPPORTED_LOCALES } from '../../i18n';
 import { MOBILE_THEME_OPTIONS } from './mobileThemeOptions';
 
-export interface JournalHeaderProps {
+export interface Props {
   themeMode: ThemeMode;
   onThemeModeChange: (mode: ThemeMode) => void;
   onOpenSettings?: () => void;
 }
 
-export const JournalHeader: React.FC<JournalHeaderProps> = React.memo(
+export const JournalHeader: React.FC<Props> = React.memo(
   ({ themeMode, onThemeModeChange, onOpenSettings }) => {
     const { t, i18n } = useTranslation();
     const [langAnchorEl, setLangAnchorEl] = useState<null | HTMLElement>(null);

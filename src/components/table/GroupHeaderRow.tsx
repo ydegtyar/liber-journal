@@ -4,7 +4,7 @@ import { GroupSummary } from '../../types/trade';
 import { NumberFormatOption } from '../../types/preferences';
 import { formatCurrency, formatSignedPnl, formatPercent } from '../../lib/formatters';
 
-interface GroupHeaderRowProps {
+interface Props {
   summary: GroupSummary;
   colSpan: number;
   currency: string;
@@ -12,7 +12,7 @@ interface GroupHeaderRowProps {
   locale?: string;
 }
 
-const GroupHeaderRowComponent: React.FC<GroupHeaderRowProps> = ({
+const GroupHeaderRowComponent: React.FC<Props> = ({
   summary,
   colSpan,
   currency,
