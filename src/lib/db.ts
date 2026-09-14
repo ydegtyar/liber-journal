@@ -73,37 +73,143 @@ export async function saveMatrixColumnOrder(order: MatrixColumnBlockId[]): Promi
   await saveJournalSettings({ ...currentSettings, matrixColumnOrder: order });
 }
 
+export interface MergeResult {
+  mode: 'merge';
+  importedCount: number;
+  conflictsResolvedCount: number;
+  unchangedCount: number;
+  totalCount: number;
+}
+
+export interface ReplaceResult {
+  mode: 'replace';
+  deletedCount: number;
+  importedCount: number;
+  totalCount: number;
+}
+
+export interface DirectImportResult {
+  mode: 'direct';
+  importedCount: number;
+  totalCount: number;
+}
+
+export type ImportSummaryData = MergeResult | ReplaceResult | DirectImportResult;
+
 /**
- * De-duplicates and saves trades into IndexedDB.
- * Updates existing trades with matching IDs, adds new ones.
+ * Compares financial and execution fields of two trades to detect conflict vs identical data.
  */
-export async function importTrades(
-  newTrades: Trade[]
-): Promise<{ importedCount: number; updatedCount: number }> {
+export function areTradeValuesEqual(a: Trade, b: Trade): boolean {
+  return (
+    a.instrument === b.instrument &&
+    a.direction === b.direction &&
+    a.openedAt === b.openedAt &&
+    a.closedAt === b.closedAt &&
+    Math.abs(a.openPrice - b.openPrice) < 0.000001 &&
+    Math.abs(a.closePrice - b.closePrice) < 0.000001 &&
+    Math.abs(a.margin - b.margin) < 0.000001 &&
+    Math.abs(a.leverage - b.leverage) < 0.000001 &&
+    Math.abs(a.grossReturn - b.grossReturn) < 0.000001 &&
+    Math.abs(a.pnl - b.pnl) < 0.000001
+  );
+}
+
+/**
+ * Merges deals by trade number (dealId or id).
+ * On conflict (fields differ), uses fresh data.
+ * On same data, keeps old data.
+ * Completely new deals are appended.
+ */
+export async function mergeTrades(newTrades: Trade[]): Promise<MergeResult> {
   let importedCount = 0;
-  let updatedCount = 0;
+  let conflictsResolvedCount = 0;
+  let unchangedCount = 0;
 
   await db.transaction('rw', db.trades, async () => {
+    // Build a map of existing trades by dealId and id
+    const existingList = await db.trades.toArray();
+    const existingById = new Map<string, Trade>();
+    const existingByDealId = new Map<string, Trade>();
+
+    for (const item of existingList) {
+      existingById.set(item.id, item);
+      if (item.dealId) {
+        existingByDealId.set(item.dealId, item);
+      }
+    }
+
     for (const trade of newTrades) {
-      const existing = await db.trades.get(trade.id);
+      const existing =
+        (trade.dealId ? existingByDealId.get(trade.dealId) : undefined) ||
+        existingById.get(trade.id);
+
       if (existing) {
-        // Keep user-edited notes/tags/plannedRisk if present on existing
-        await db.trades.put({
-          ...trade,
-          tag: existing.tag || trade.tag,
-          session: existing.session || trade.session,
-          note: existing.note || trade.note,
-          plannedRisk: existing.plannedRisk || trade.plannedRisk,
-        });
-        updatedCount++;
+        if (areTradeValuesEqual(existing, trade)) {
+          // Same data: use old (keep unchanged)
+          unchangedCount++;
+        } else {
+          // Conflict: use fresh data, preserving user notes / tags
+          await db.trades.put({
+            ...trade,
+            id: existing.id,
+            tag: existing.tag || trade.tag,
+            session: existing.session || trade.session,
+            note: existing.note || trade.note,
+            plannedRisk: existing.plannedRisk || trade.plannedRisk,
+          });
+          conflictsResolvedCount++;
+        }
       } else {
         await db.trades.add(trade);
         importedCount++;
+        // Update in-memory lookup so duplicates in the same CSV batch don't double insert
+        existingById.set(trade.id, trade);
+        if (trade.dealId) {
+          existingByDealId.set(trade.dealId, trade);
+        }
       }
     }
   });
 
-  return { importedCount, updatedCount };
+  const totalCount = await db.trades.count();
+  return {
+    mode: 'merge',
+    importedCount,
+    conflictsResolvedCount,
+    unchangedCount,
+    totalCount,
+  };
+}
+
+/**
+ * Removes all old data and writes new trades.
+ */
+export async function replaceTrades(newTrades: Trade[]): Promise<ReplaceResult> {
+  const deletedCount = await db.trades.count();
+  await db.transaction('rw', db.trades, async () => {
+    await db.trades.clear();
+    await db.trades.bulkAdd(newTrades);
+  });
+  const totalCount = await db.trades.count();
+  return {
+    mode: 'replace',
+    deletedCount,
+    importedCount: newTrades.length,
+    totalCount,
+  };
+}
+
+/**
+ * Direct import when no old data exists.
+ */
+export async function importTradesDirectly(newTrades: Trade[]): Promise<DirectImportResult> {
+  await db.trades.bulkAdd(newTrades);
+  const totalCount = await db.trades.count();
+  return {
+    mode: 'direct',
+    importedCount: newTrades.length,
+    totalCount,
+  };
 }
 
 /**

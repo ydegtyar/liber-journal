@@ -280,5 +280,33 @@
     "close": "Close",
     "privacy": "We collect and store your data to provide the service. Your data is never shared with third parties without your consent. You may request deletion at any time. All data is public and can be gathered by third parties.",
     "terms": "By using this service you agree to the terms outlined herein. You must not misuse the service, and you are responsible for your data. The service is provided as-is without warranties."
+  },
+  "importDialog": {
+    "title": "Import Strategy",
+    "subtitle": "Choose how to integrate uploaded trades with your existing journal records.",
+    "mergeTitle": "Merge with Existing",
+    "mergeBadge": "Recommended",
+    "mergeDescription": "Combines deals by trade number. Resolves conflicts using fresh data, keeps unchanged records intact.",
+    "replaceTitle": "Replace All Data",
+    "replaceBadge": "Overwrite",
+    "replaceDescription": "Removes all previous trades and populates ledger with newly uploaded file only.",
+    "continue": "Continue",
+    "cancel": "Cancel"
+  },
+  "importSummary": {
+    "title": "Import Summary",
+    "mergeTitle": "Deals Merged Successfully",
+    "replaceTitle": "Ledger Replaced Successfully",
+    "directTitle": "Deals Imported Successfully",
+    "mode": "Mode",
+    "modeMerge": "Merge",
+    "modeReplace": "Replace All",
+    "modeDirect": "Fresh Import",
+    "newTrades": "New Trades Added",
+    "conflictsResolved": "Conflicts Resolved (Fresh Data)",
+    "unchangedTrades": "Unchanged Records Kept",
+    "deletedTrades": "Old Trades Removed",
+    "totalTrades": "Total Trades in Ledger",
+    "done": "Done"
   }
 }

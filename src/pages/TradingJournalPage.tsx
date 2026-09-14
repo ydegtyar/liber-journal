@@ -13,6 +13,8 @@ import { JournalHeader } from '../components/layout/JournalHeader';
 import { PageLayoutSettingsDrawer } from '../components/settings/PageLayoutSettingsDrawer';
 import { CsvUploadDropzone } from '../components/upload/CsvUploadDropzone';
 import { ParseErrorSummary } from '../components/upload/ParseErrorSummary';
+import { ImportStrategyDialog } from '../components/upload/ImportStrategyDialog';
+import { ImportSummaryDialog } from '../components/upload/ImportSummaryDialog';
 import { TimeframeHeaderBanner } from '../components/analytics/TimeframeHeaderBanner';
 import { PeriodInsightsCard } from '../components/analytics/PeriodInsightsCard';
 import { StatsCardGrid } from '../components/analytics/StatsCardGrid';
@@ -45,8 +47,21 @@ export const TradingJournalPage: React.FC = () => {
     showAllPageBlocks,
   } = useJournalSettings();
 
-  const { handleFileImport, isImporting, lastResult, showErrorModal, closeErrorModal } =
-    useCsvImport();
+  const {
+    handleFileImport,
+    isImporting,
+    isProcessingStrategy,
+    lastResult,
+    showErrorModal,
+    closeErrorModal,
+    showStrategyModal,
+    pendingImport,
+    handleConfirmStrategy,
+    handleCancelStrategy,
+    showSummaryModal,
+    summaryData,
+    closeSummaryModal,
+  } = useCsvImport();
 
   const { exportJournal, isExporting } = useXlsxExport();
 
@@ -348,6 +363,23 @@ export const TradingJournalPage: React.FC = () => {
         numberFormat={numberFormat}
         onUpdateNumberFormat={setNumberFormat}
         onClearAllData={clearAll}
+      />
+
+      {/* Import Strategy Dialog (Merge vs Replace) */}
+      <ImportStrategyDialog
+        open={showStrategyModal}
+        onClose={handleCancelStrategy}
+        onConfirm={handleConfirmStrategy}
+        isProcessing={isProcessingStrategy}
+        pendingTradeCount={pendingImport?.result.trades.length}
+      />
+
+      {/* Import Summary Dialog */}
+      <ImportSummaryDialog
+        open={showSummaryModal}
+        onClose={closeSummaryModal}
+        summaryData={summaryData}
+        warnings={lastResult?.warnings}
       />
 
       {/* CSV Diagnostics / Error Modal */}

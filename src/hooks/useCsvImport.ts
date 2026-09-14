@@ -1,12 +1,26 @@
 import { useState, useCallback, useMemo } from 'react';
 import { parseBrokerCsv, ParseResult } from '../lib/csvParser';
-import { importTrades } from '../lib/db';
+import { db, mergeTrades, replaceTrades, importTradesDirectly, ImportSummaryData } from '../lib/db';
+import { ImportStrategy } from '../components/upload/ImportStrategyDialog';
 import { useJournalSettings } from './useJournalSettings';
+
+interface PendingImport {
+  file: File;
+  result: ParseResult;
+}
 
 export function useCsvImport() {
   const [isImporting, setIsImporting] = useState(false);
+  const [isProcessingStrategy, setIsProcessingStrategy] = useState(false);
   const [lastResult, setLastResult] = useState<ParseResult | null>(null);
   const [showErrorModal, setShowErrorModal] = useState(false);
+
+  // Strategy & Summary state
+  const [pendingImport, setPendingImport] = useState<PendingImport | null>(null);
+  const [showStrategyModal, setShowStrategyModal] = useState(false);
+  const [showSummaryModal, setShowSummaryModal] = useState(false);
+  const [summaryData, setSummaryData] = useState<ImportSummaryData | null>(null);
+
   const { updateSettings } = useJournalSettings();
 
   const handleFileImport = useCallback(
@@ -17,19 +31,32 @@ export function useCsvImport() {
         const result = parseBrokerCsv(text);
         setLastResult(result);
 
-        if (result.trades.length > 0) {
-          await importTrades(result.trades);
+        // If no trades parsed, or critical errors
+        if (result.trades.length === 0) {
+          setShowErrorModal(true);
+          return null;
+        }
 
-          // Update currency if found
+        // Check if there is existing old data in the database
+        const existingCount = await db.trades.count();
+
+        if (existingCount === 0) {
+          // If no old data, do not show strategy dialog since direct import is the only option
+          const directResult = await importTradesDirectly(result.trades);
+
           if (result.metadata.currency) {
             await updateSettings({ currency: result.metadata.currency });
           }
+
+          setSummaryData(directResult);
+          setShowSummaryModal(true);
+          return directResult;
         }
 
-        if (result.errors.length > 0 || result.warnings.length > 0) {
-          setShowErrorModal(true);
-        }
-        return result;
+        // Old data exists: prompt user with strategy dialog (Merge vs Replace)
+        setPendingImport({ file, result });
+        setShowStrategyModal(true);
+        return null;
       } catch (err) {
         const errorMsg = err instanceof Error ? err.message : 'Unknown parsing error';
         setLastResult({
@@ -48,6 +75,45 @@ export function useCsvImport() {
     [updateSettings]
   );
 
+  const handleConfirmStrategy = useCallback(
+    async (strategy: ImportStrategy) => {
+      if (!pendingImport) return;
+      setIsProcessingStrategy(true);
+
+      try {
+        let outcome: ImportSummaryData;
+
+        if (strategy === 'merge') {
+          outcome = await mergeTrades(pendingImport.result.trades);
+        } else {
+          outcome = await replaceTrades(pendingImport.result.trades);
+        }
+
+        if (pendingImport.result.metadata.currency) {
+          await updateSettings({ currency: pendingImport.result.metadata.currency });
+        }
+
+        setSummaryData(outcome);
+        setShowStrategyModal(false);
+        setPendingImport(null);
+        setShowSummaryModal(true);
+      } finally {
+        setIsProcessingStrategy(false);
+      }
+    },
+    [pendingImport, updateSettings]
+  );
+
+  const handleCancelStrategy = useCallback(() => {
+    setShowStrategyModal(false);
+    setPendingImport(null);
+  }, []);
+
+  const closeSummaryModal = useCallback(() => {
+    setShowSummaryModal(false);
+    setSummaryData(null);
+  }, []);
+
   const closeErrorModal = useCallback(() => {
     setShowErrorModal(false);
   }, []);
@@ -56,10 +122,32 @@ export function useCsvImport() {
     () => ({
       handleFileImport,
       isImporting,
+      isProcessingStrategy,
       lastResult,
       showErrorModal,
       closeErrorModal,
+      showStrategyModal,
+      pendingImport,
+      handleConfirmStrategy,
+      handleCancelStrategy,
+      showSummaryModal,
+      summaryData,
+      closeSummaryModal,
     }),
-    [handleFileImport, isImporting, lastResult, showErrorModal, closeErrorModal]
+    [
+      handleFileImport,
+      isImporting,
+      isProcessingStrategy,
+      lastResult,
+      showErrorModal,
+      closeErrorModal,
+      showStrategyModal,
+      pendingImport,
+      handleConfirmStrategy,
+      handleCancelStrategy,
+      showSummaryModal,
+      summaryData,
+      closeSummaryModal,
+    ]
   );
 }
