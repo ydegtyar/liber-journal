@@ -175,7 +175,9 @@ export function calculateDrawdowns(
   equityCurve: EquityPoint[];
 } {
   const sorted = [...trades].sort((a, b) => {
-    return new Date(a.closedAt).getTime() - new Date(b.closedAt).getTime();
+    const timeA = new Date(a.closedAt || a.openedAt).getTime() || 0;
+    const timeB = new Date(b.closedAt || b.openedAt).getTime() || 0;
+    return timeA - timeB;
   });
 
   const equityCurve: EquityPoint[] = [];
@@ -187,7 +189,7 @@ export function calculateDrawdowns(
   // Add initial baseline point
   equityCurve.push({
     index: 0,
-    date: sorted.length > 0 ? sorted[0].openedAt : new Date().toISOString(),
+    date: sorted.length > 0 ? sorted[0].openedAt || sorted[0].closedAt || '' : '',
     instrument: 'Initial Deposit',
     pnl: 0,
     equity: initialDeposit,
@@ -214,7 +216,7 @@ export function calculateDrawdowns(
 
     equityCurve.push({
       index: i + 1,
-      date: t.closedAt,
+      date: t.closedAt || t.openedAt,
       dealId: t.dealId,
       instrument: t.instrument,
       pnl: t.pnl,
@@ -245,9 +247,11 @@ export function calculateCurrentStreak(trades: Trade[]): {
   }
 
   // Sort newest first
-  const sorted = [...trades].sort(
-    (a, b) => new Date(b.closedAt).getTime() - new Date(a.closedAt).getTime()
-  );
+  const sorted = [...trades].sort((a, b) => {
+    const timeA = new Date(a.closedAt || a.openedAt).getTime() || 0;
+    const timeB = new Date(b.closedAt || b.openedAt).getTime() || 0;
+    return timeB - timeA;
+  });
 
   const firstTrade = sorted[0];
   let currentType: 'win' | 'loss' | 'breakeven';
@@ -316,7 +320,8 @@ export function calculateInstrumentPerformance(trades: Trade[]): {
  * Day of week performance (Monday through Sunday).
  */
 export function calculateDayOfWeekPerformance(
-  trades: Trade[]
+  trades: Trade[],
+  basis: 'closed' | 'opened' = 'closed'
 ): Array<{ day: string; pnl: number; trades: number; winRate: number }> {
   const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
   const dayBuckets: Record<string, Trade[]> = {};
@@ -325,7 +330,9 @@ export function calculateDayOfWeekPerformance(
   }
 
   for (const t of trades) {
-    const date = new Date(t.closedAt);
+    const dateStr = basis === 'opened' ? t.openedAt || t.closedAt : t.closedAt || t.openedAt;
+    if (!dateStr) continue;
+    const date = new Date(dateStr);
     if (!isNaN(date.getTime())) {
       const dayName = days[date.getDay()];
       dayBuckets[dayName].push(t);
@@ -354,10 +361,11 @@ export function calculateDayOfWeekPerformance(
 }
 
 /**
- * Hourly distribution (0 - 23) based on trade closed time.
+ * Hourly distribution (0 - 23) based on trade closed or open time.
  */
 export function calculateHourlyDistribution(
-  trades: Trade[]
+  trades: Trade[],
+  basis: 'closed' | 'opened' = 'closed'
 ): Array<{ hour: number; pnl: number; trades: number }> {
   const hours = Array.from({ length: 24 }, (_, i) => ({
     hour: i,
@@ -366,7 +374,9 @@ export function calculateHourlyDistribution(
   }));
 
   for (const t of trades) {
-    const date = new Date(t.closedAt);
+    const dateStr = basis === 'opened' ? t.openedAt || t.closedAt : t.closedAt || t.openedAt;
+    if (!dateStr) continue;
+    const date = new Date(dateStr);
     if (!isNaN(date.getTime())) {
       const h = date.getHours();
       hours[h].trades++;
@@ -424,7 +434,7 @@ export function calculateGroupSummaries(
   const groups: Record<string, Trade[]> = {};
 
   for (const t of trades) {
-    const key = getGroupKey(t.closedAt, groupBy);
+    const key = getGroupKey(t.closedAt || t.openedAt, groupBy);
     if (!groups[key]) {
       groups[key] = [];
     }
@@ -475,9 +485,11 @@ export function calculateStreakAnalysis(trades: Trade[]): StreakAnalysis {
   }
 
   // Sort chronologically ascending (oldest first)
-  const sorted = [...trades].sort(
-    (a, b) => new Date(a.closedAt).getTime() - new Date(b.closedAt).getTime()
-  );
+  const sorted = [...trades].sort((a, b) => {
+    const timeA = new Date(a.closedAt || a.openedAt).getTime() || 0;
+    const timeB = new Date(b.closedAt || b.openedAt).getTime() || 0;
+    return timeA - timeB;
+  });
 
   const winStreaks: number[] = [];
   const lossStreaks: number[] = [];
@@ -548,9 +560,11 @@ export function calculateInstrumentBreakdown(trades: Trade[]): InstrumentSummary
   if (trades.length === 0) return [];
 
   // Sort trades chronologically
-  const sorted = [...trades].sort(
-    (a, b) => new Date(a.closedAt).getTime() - new Date(b.closedAt).getTime()
-  );
+  const sorted = [...trades].sort((a, b) => {
+    const timeA = new Date(a.closedAt || a.openedAt).getTime() || 0;
+    const timeB = new Date(b.closedAt || b.openedAt).getTime() || 0;
+    return timeA - timeB;
+  });
 
   const totalGrossWin = trades.filter((t) => t.pnl > 0).reduce((sum, t) => sum + t.pnl, 0);
 
@@ -598,13 +612,18 @@ export function calculateInstrumentBreakdown(trades: Trade[]): InstrumentSummary
 /**
  * Calculates monthly performance table / heatmap (Year x Month).
  */
-export function calculateMonthlyReturns(trades: Trade[]): YearMonthlyReturns[] {
+export function calculateMonthlyReturns(
+  trades: Trade[],
+  basis: 'closed' | 'opened' = 'closed'
+): YearMonthlyReturns[] {
   if (trades.length === 0) return [];
 
   const yearMap: Record<number, Record<number, Trade[]>> = {};
 
   for (const t of trades) {
-    const d = new Date(t.closedAt);
+    const dateStr = basis === 'opened' ? t.openedAt || t.closedAt : t.closedAt || t.openedAt;
+    if (!dateStr) continue;
+    const d = new Date(dateStr);
     if (isNaN(d.getTime())) continue;
     const year = d.getFullYear();
     const month = d.getMonth() + 1; // 1-12

@@ -20,12 +20,14 @@ export function useTimeframeFilter(trades: Trade[]): UseTimeframeFilterResult {
   const [customEndDate, setCustomEndDate] = useState<string>('');
   const [selectedInstrument, setSelectedInstrument] = useState<string | null>(null);
 
-  // Reference date: latest closed trade or current date
+  // Reference date: latest closed or opened trade, or current date
   const latestTradeDate = useMemo(() => {
     if (trades.length === 0) return new Date();
     let maxTime = 0;
     for (const t of trades) {
-      const time = new Date(t.closedAt).getTime();
+      const dateStr = t.closedAt || t.openedAt;
+      if (!dateStr) continue;
+      const time = new Date(dateStr).getTime();
       if (!isNaN(time) && time > maxTime) {
         maxTime = time;
       }
@@ -47,11 +49,15 @@ export function useTimeframeFilter(trades: Trade[]): UseTimeframeFilterResult {
       if (result.length === 0) {
         return { filteredTrades: [], dateRangeLabel: '—' };
       }
-      const sorted = [...result].sort(
-        (a, b) => new Date(a.closedAt).getTime() - new Date(b.closedAt).getTime()
-      );
-      const minDate = formatDateRangePart(sorted[0].closedAt);
-      const maxDate = formatDateRangePart(sorted[sorted.length - 1].closedAt);
+      const sorted = [...result].sort((a, b) => {
+        const timeA = new Date(a.closedAt || a.openedAt).getTime() || 0;
+        const timeB = new Date(b.closedAt || b.openedAt).getTime() || 0;
+        return timeA - timeB;
+      });
+      const firstDate = sorted[0].closedAt || sorted[0].openedAt;
+      const lastDate = sorted[sorted.length - 1].closedAt || sorted[sorted.length - 1].openedAt;
+      const minDate = formatDateRangePart(firstDate);
+      const maxDate = formatDateRangePart(lastDate);
       const label = minDate === maxDate ? minDate : `${minDate} – ${maxDate}`;
       return { filteredTrades: result, dateRangeLabel: label };
     }
@@ -127,7 +133,9 @@ export function useTimeframeFilter(trades: Trade[]): UseTimeframeFilterResult {
     }
 
     const filtered = result.filter((t) => {
-      const time = new Date(t.closedAt).getTime();
+      const dateStr = t.closedAt || t.openedAt;
+      if (!dateStr) return false;
+      const time = new Date(dateStr).getTime();
       return !isNaN(time) && time >= startTimestamp && time <= endTimestamp;
     });
 

@@ -16,29 +16,79 @@ export interface ParseResult {
 }
 
 /**
- * Parses date string in format "d/M/yyyy H:mm", "dd.MM.yyyy HH:mm:ss", or ISO string.
+ * Parses diverse broker date formats into an ISO 8601 string.
+ * Supports:
+ * - ISO formats (2026-09-01T18:50:00Z, with timezone or local)
+ * - Space-separated ISO (2026-09-01 18:50:00, 2026-09-01 18:50)
+ * - Dot-separated (01.09.2026 18:50:00, 1.9.2026 18:50, 2026.09.01 18:50:00)
+ * - Slash-separated (1/9/2026 18:50, 01/09/2026 18:50:00, 2026/09/01 18:50)
+ * - Dash-separated (01-09-2026 18:50:00)
+ * - 2-digit years (01.09.26 18:50, 1/9/26 18:50)
+ * - 12-hour AM/PM times (9/1/2026 6:50 PM, 01.09.2026 06:50:00 AM)
+ * - Text months (01 Sep 2026 18:50, Sep 1, 2026 18:50)
+ * - Unix timestamps (seconds or milliseconds) and Excel serial numbers
+ *
+ * Never returns the import date (new Date().toISOString()).
+ * Returns fallback (default: '') if input is missing or unparseable.
  */
-function parseBrokerDate(dateStr: string): string {
-  if (!dateStr) return new Date().toISOString();
-  const trimmed = dateStr.trim();
+export function parseBrokerDate(dateStr: unknown, fallback = ''): string {
+  if (dateStr === undefined || dateStr === null) return fallback;
+  const str = String(dateStr).trim();
+  if (!str) return fallback;
 
-  // Try standard ISO or new Date directly first
-  const directDate = new Date(trimmed);
-  if (!isNaN(directDate.getTime()) && trimmed.includes('-')) {
-    return directDate.toISOString();
+  // 1. Numeric timestamp or Excel serial date
+  if (/^\d+(\.\d+)?$/.test(str)) {
+    const num = parseFloat(str);
+    // Excel serial date (~1982 to 2078)
+    if (num > 25000 && num < 80000) {
+      const ms = (num - 25569) * 86400 * 1000;
+      const d = new Date(ms);
+      if (!isNaN(d.getTime())) return d.toISOString();
+    }
+    // Unix seconds (10 digits: ~1970 to 2286)
+    if (num >= 1000000000 && num < 9999999999) {
+      const d = new Date(num * 1000);
+      if (!isNaN(d.getTime())) return d.toISOString();
+    }
+    // Unix milliseconds (13 digits)
+    if (num >= 1000000000000 && num < 9999999999999) {
+      const d = new Date(num);
+      if (!isNaN(d.getTime())) return d.toISOString();
+    }
   }
 
-  // Handle d/M/yyyy H:mm or dd/MM/yyyy HH:mm:ss
-  const slashMatch = trimmed.match(
-    /^(\d{1,2})\/(\d{1,2})\/(\d{4})(?:\s+(\d{1,2}):(\d{2})(?::(\d{2}))?)?$/
+  // 2. Standard ISO 8601 with T
+  if (/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}/.test(str)) {
+    const d = new Date(str);
+    if (!isNaN(d.getTime())) return d.toISOString();
+  }
+
+  // 3. Check for AM/PM
+  let isPM = false;
+  let hasAmPm = false;
+  let cleanStr = str;
+  if (/\b(pm|am)\b/i.test(cleanStr)) {
+    hasAmPm = true;
+    isPM = /\bpm\b/i.test(cleanStr);
+    cleanStr = cleanStr.replace(/\s*(am|pm)\b/gi, '').trim();
+  }
+
+  // 4. Format: YYYY[-/.]MM[-/.]DD [HH:mm[:ss]]
+  const ymdMatch = cleanStr.match(
+    /^(\d{4})[-/.](\d{1,2})[-/.](\d{1,2})(?:[\sT]+(\d{1,2}):(\d{2})(?::(\d{2}))?)?$/
   );
-  if (slashMatch) {
-    const day = parseInt(slashMatch[1], 10);
-    const month = parseInt(slashMatch[2], 10) - 1; // 0-indexed
-    const year = parseInt(slashMatch[3], 10);
-    const hour = slashMatch[4] ? parseInt(slashMatch[4], 10) : 0;
-    const minute = slashMatch[5] ? parseInt(slashMatch[5], 10) : 0;
-    const second = slashMatch[6] ? parseInt(slashMatch[6], 10) : 0;
+  if (ymdMatch) {
+    const year = parseInt(ymdMatch[1], 10);
+    const month = parseInt(ymdMatch[2], 10) - 1;
+    const day = parseInt(ymdMatch[3], 10);
+    let hour = ymdMatch[4] ? parseInt(ymdMatch[4], 10) : 0;
+    const minute = ymdMatch[5] ? parseInt(ymdMatch[5], 10) : 0;
+    const second = ymdMatch[6] ? parseInt(ymdMatch[6], 10) : 0;
+
+    if (hasAmPm) {
+      if (isPM && hour < 12) hour += 12;
+      if (!isPM && hour === 12) hour = 0;
+    }
 
     const parsed = new Date(Date.UTC(year, month, day, hour, minute, second));
     if (!isNaN(parsed.getTime())) {
@@ -46,17 +96,34 @@ function parseBrokerDate(dateStr: string): string {
     }
   }
 
-  // Handle dd.MM.yyyy HH:mm:ss or d.M.yyyy H:mm
-  const dotMatch = trimmed.match(
-    /^(\d{1,2})\.(\d{1,2})\.(\d{4})(?:\s+(\d{1,2}):(\d{2})(?::(\d{2}))?)?$/
+  // 5. Format: DD[-/.]MM[-/.](YYYY|YY) [HH:mm[:ss]]
+  const dmyMatch = cleanStr.match(
+    /^(\d{1,2})[-/.](\d{1,2})[-/.](\d{2}|\d{4})(?:[\sT]+(\d{1,2}):(\d{2})(?::(\d{2}))?)?$/
   );
-  if (dotMatch) {
-    const day = parseInt(dotMatch[1], 10);
-    const month = parseInt(dotMatch[2], 10) - 1;
-    const year = parseInt(dotMatch[3], 10);
-    const hour = dotMatch[4] ? parseInt(dotMatch[4], 10) : 0;
-    const minute = dotMatch[5] ? parseInt(dotMatch[5], 10) : 0;
-    const second = dotMatch[6] ? parseInt(dotMatch[6], 10) : 0;
+  if (dmyMatch) {
+    const p1 = parseInt(dmyMatch[1], 10);
+    const p2 = parseInt(dmyMatch[2], 10);
+    let year = parseInt(dmyMatch[3], 10);
+    if (year < 100) {
+      year += year < 70 ? 2000 : 1900;
+    }
+
+    let day = p1;
+    let month = p2 - 1;
+    // Disambiguate if p1 is month and p2 is day (> 12)
+    if (p1 <= 12 && p2 > 12) {
+      day = p2;
+      month = p1 - 1;
+    }
+
+    let hour = dmyMatch[4] ? parseInt(dmyMatch[4], 10) : 0;
+    const minute = dmyMatch[5] ? parseInt(dmyMatch[5], 10) : 0;
+    const second = dmyMatch[6] ? parseInt(dmyMatch[6], 10) : 0;
+
+    if (hasAmPm) {
+      if (isPM && hour < 12) hour += 12;
+      if (!isPM && hour === 12) hour = 0;
+    }
 
     const parsed = new Date(Date.UTC(year, month, day, hour, minute, second));
     if (!isNaN(parsed.getTime())) {
@@ -64,7 +131,13 @@ function parseBrokerDate(dateStr: string): string {
     }
   }
 
-  return new Date().toISOString();
+  // 6. Direct Date parse fallback (handles "01 Sep 2026", "Sep 1, 2026")
+  const direct = new Date(cleanStr);
+  if (!isNaN(direct.getTime())) {
+    return direct.toISOString();
+  }
+
+  return fallback;
 }
 
 /**
@@ -229,8 +302,8 @@ export function parseBrokerCsv(csvContent: string): ParseResult {
 
     const dealId = (row[columnIndices.dealId] || '').trim();
     const directionStr = row[columnIndices.direction] || 'Купити';
-    const openedAtStr = row[columnIndices.openedAt] || '';
-    const closedAtStr = row[columnIndices.closedAt] || '';
+    const openedAtStr = columnIndices.openedAt !== undefined ? row[columnIndices.openedAt] : '';
+    const closedAtStr = columnIndices.closedAt !== undefined ? row[columnIndices.closedAt] : '';
     const openPrice = parseBrokerNumber(row[columnIndices.openPrice]);
     const closePrice = parseBrokerNumber(row[columnIndices.closePrice]);
     const margin = parseBrokerNumber(row[columnIndices.margin]);
@@ -238,13 +311,30 @@ export function parseBrokerCsv(csvContent: string): ParseResult {
     const grossReturn = parseBrokerNumber(row[columnIndices.grossReturn]);
     const pnl = parseBrokerNumber(row[columnIndices.pnl]);
 
+    let openedAt = parseBrokerDate(openedAtStr);
+    let closedAt = parseBrokerDate(closedAtStr);
+
+    // If one date is available and the other is not, mirror it
+    if (!openedAt && closedAt) {
+      openedAt = closedAt;
+    } else if (!closedAt && openedAt) {
+      closedAt = openedAt;
+    } else if (!openedAt && !closedAt) {
+      // If neither date was found in the row, check reportDate from header metadata
+      const reportDateParsed = metadata.reportDate ? parseBrokerDate(metadata.reportDate) : '';
+      if (reportDateParsed) {
+        openedAt = reportDateParsed;
+        closedAt = reportDateParsed;
+      }
+    }
+
     const trade: Trade = {
       id: dealId || `trade-${Date.now()}-${trades.length + 1}`,
       dealId: dealId || undefined,
       instrument,
       direction: parseDirection(directionStr),
-      openedAt: parseBrokerDate(openedAtStr),
-      closedAt: parseBrokerDate(closedAtStr),
+      openedAt,
+      closedAt,
       openPrice,
       closePrice,
       margin,

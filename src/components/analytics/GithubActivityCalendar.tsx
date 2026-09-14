@@ -65,8 +65,9 @@ export const GithubActivityCalendar: React.FC<Props> = React.memo(
       const yearsSet = new Set<number>();
 
       for (const trade of trades) {
-        if (!trade.closedAt) continue;
-        const datePart = trade.closedAt.split('T')[0];
+        const tradeDate = trade.closedAt || trade.openedAt;
+        if (!tradeDate) continue;
+        const datePart = tradeDate.split('T')[0];
         const year = parseInt(datePart.split('-')[0], 10);
         if (!isNaN(year)) yearsSet.add(year);
 

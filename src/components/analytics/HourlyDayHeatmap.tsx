@@ -48,6 +48,7 @@ export const HourlyDayHeatmap: React.FC<Props> = React.memo(
     const currentLang = i18n.language || 'en-US';
 
     const [metric, setMetric] = useState<HeatmapMetric>('pnl');
+    const [timeBasis, setTimeBasis] = useState<'closed' | 'opened'>('closed');
 
     // Compute 2D matrix: 7 days x 24 hours
     const {
@@ -80,8 +81,12 @@ export const HourlyDayHeatmap: React.FC<Props> = React.memo(
       let weekendActivity = false;
 
       for (const trade of trades) {
-        if (!trade.closedAt) continue;
-        const date = new Date(trade.closedAt);
+        const tradeDate =
+          timeBasis === 'opened'
+            ? trade.openedAt || trade.closedAt
+            : trade.closedAt || trade.openedAt;
+        if (!tradeDate) continue;
+        const date = new Date(tradeDate);
         if (isNaN(date.getTime())) continue;
 
         // 0 = Sun in JS getDay(), convert to 0 = Mon .. 6 = Sun
@@ -181,7 +186,7 @@ export const HourlyDayHeatmap: React.FC<Props> = React.memo(
         minPnl: Math.abs(lowestPnl) || 1,
         maxTrades: highestTrades || 1,
       };
-    }, [trades]);
+    }, [trades, timeBasis]);
 
     const activeDaysCount = hasWeekendTrades ? 7 : 5;
 
@@ -290,27 +295,54 @@ export const HourlyDayHeatmap: React.FC<Props> = React.memo(
             </Box>
           </Box>
 
-          {/* Metric Selector Toggle */}
-          <ToggleButtonGroup
-            value={metric}
-            exclusive
-            onChange={handleMetricChange}
-            size="small"
-            sx={{
-              height: 32,
-              '& .MuiToggleButton-root': {
-                px: 1.5,
-                py: 0.5,
-                fontSize: '0.75rem',
-                fontWeight: 700,
-                textTransform: 'none',
-              },
-            }}
-          >
-            <ToggleButton value="pnl">{t('heatmap.metricPnl')}</ToggleButton>
-            <ToggleButton value="winRate">{t('heatmap.metricWinRate')}</ToggleButton>
-            <ToggleButton value="trades">{t('heatmap.metricTrades')}</ToggleButton>
-          </ToggleButtonGroup>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, flexWrap: 'wrap' }}>
+            {/* Time Basis Toggle (Exit / Entry Time) */}
+            <ToggleButtonGroup
+              value={timeBasis}
+              exclusive
+              onChange={(_e, val) => val && setTimeBasis(val)}
+              size="small"
+              sx={{
+                height: 32,
+                '& .MuiToggleButton-root': {
+                  px: 1.5,
+                  py: 0.5,
+                  fontSize: '0.75rem',
+                  fontWeight: 700,
+                  textTransform: 'none',
+                },
+              }}
+            >
+              <ToggleButton value="closed">
+                {t('charts.byCloseDate', { defaultValue: 'Закриття' })}
+              </ToggleButton>
+              <ToggleButton value="opened">
+                {t('charts.byOpenDate', { defaultValue: 'Відкриття' })}
+              </ToggleButton>
+            </ToggleButtonGroup>
+
+            {/* Metric Selector Toggle */}
+            <ToggleButtonGroup
+              value={metric}
+              exclusive
+              onChange={handleMetricChange}
+              size="small"
+              sx={{
+                height: 32,
+                '& .MuiToggleButton-root': {
+                  px: 1.5,
+                  py: 0.5,
+                  fontSize: '0.75rem',
+                  fontWeight: 700,
+                  textTransform: 'none',
+                },
+              }}
+            >
+              <ToggleButton value="pnl">{t('heatmap.metricPnl')}</ToggleButton>
+              <ToggleButton value="winRate">{t('heatmap.metricWinRate')}</ToggleButton>
+              <ToggleButton value="trades">{t('heatmap.metricTrades')}</ToggleButton>
+            </ToggleButtonGroup>
+          </Box>
         </Box>
 
         {/* Golden / Risk Highlights Bar */}

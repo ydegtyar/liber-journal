@@ -1,4 +1,4 @@
-import React, { lazy, Suspense, useCallback, useMemo, useTransition } from 'react';
+import React, { lazy, Suspense, useCallback, useMemo, useState, useTransition } from 'react';
 import { useLocalStorage } from 'usehooks-ts';
 import { Tab, Tabs } from '@mui/material';
 import ShowChartIcon from '@mui/icons-material/ShowChart';
@@ -58,6 +58,7 @@ const VisualizationsSectionComponent: React.FC<Props> = ({
     0
   );
   const [, startTransition] = useTransition();
+  const [dailyPnlDateBasis, setDailyPnlDateBasis] = useState<'closed' | 'opened'>('closed');
 
   const handleTabChange = useCallback((_e: any, val: number) => {
     startTransition(() => setActiveChartTab(val));
@@ -67,7 +68,11 @@ const VisualizationsSectionComponent: React.FC<Props> = ({
   const dailyPnlData = useMemo(() => {
     const map: Record<string, { pnl: number; count: number }> = {};
     for (const trade of filteredTrades) {
-      const dateKey = trade.closedAt ? trade.closedAt.split('T')[0] : 'Unknown';
+      const tradeDate =
+        dailyPnlDateBasis === 'opened'
+          ? trade.openedAt || trade.closedAt
+          : trade.closedAt || trade.openedAt;
+      const dateKey = tradeDate ? tradeDate.split('T')[0] : 'Unknown';
       if (!map[dateKey]) {
         map[dateKey] = { pnl: 0, count: 0 };
       }
@@ -82,7 +87,7 @@ const VisualizationsSectionComponent: React.FC<Props> = ({
         tradesCount: val.count,
       }))
       .sort((a, b) => a.date.localeCompare(b.date));
-  }, [filteredTrades]);
+  }, [filteredTrades, dailyPnlDateBasis]);
 
   const instrumentPerformance = useMemo(() => {
     return calculateInstrumentPerformance(filteredTrades).byInstrument;
@@ -158,7 +163,13 @@ const VisualizationsSectionComponent: React.FC<Props> = ({
           <EquityCurveChart data={equityCurve} currency={currency} numberFormat={numberFormat} />
         )}
         {activeChartTab === 1 && (
-          <DailyPnlChart data={dailyPnlData} currency={currency} numberFormat={numberFormat} />
+          <DailyPnlChart
+            data={dailyPnlData}
+            currency={currency}
+            numberFormat={numberFormat}
+            dateBasis={dailyPnlDateBasis}
+            onDateBasisChange={setDailyPnlDateBasis}
+          />
         )}
         {activeChartTab === 2 && (
           <DayOfWeekChart
