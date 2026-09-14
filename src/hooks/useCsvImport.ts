@@ -41,15 +41,13 @@ export function useCsvImport() {
         const existingCount = await db.trades.count();
 
         if (existingCount === 0) {
-          // If no old data, do not show strategy dialog since direct import is the only option
+          // On initial import (no old data), import directly without showing any dialogs
           const directResult = await importTradesDirectly(result.trades);
 
           if (result.metadata.currency) {
             await updateSettings({ currency: result.metadata.currency });
           }
 
-          setSummaryData(directResult);
-          setShowSummaryModal(true);
           return directResult;
         }
 
