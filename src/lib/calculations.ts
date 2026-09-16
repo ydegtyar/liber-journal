@@ -745,8 +745,8 @@ export function calculateDuration(
     return { formatted: '—', ms: 0 };
   }
 
-  const tOpen = new Date(openedAt).getTime();
-  const tClose = new Date(closedAt).getTime();
+  const tOpen = parseTimestampMs(openedAt);
+  const tClose = parseTimestampMs(closedAt);
 
   if (isNaN(tOpen) || isNaN(tClose) || tClose < tOpen) {
     return { formatted: '—', ms: 0 };
@@ -772,18 +772,88 @@ export function calculateDuration(
 }
 
 /**
- * Calculates average trade duration in milliseconds across closed trades.
- * Returns 0 if there are no trades with valid openedAt and closedAt timestamps.
+ * Parses timestamp value (ISO string, date string, or Unix epoch number/string) to milliseconds.
+ * Returns NaN if unparseable.
+ */
+export function parseTimestampMs(val: unknown): number {
+  if (val === undefined || val === null || val === '') return NaN;
+  if (typeof val === 'number') {
+    if (isNaN(val) || val <= 0) return NaN;
+    return val < 10000000000 ? val * 1000 : val;
+  }
+  const str = String(val).trim();
+  if (!str) return NaN;
+
+  // Numeric epoch / Excel serial date
+  if (/^\d+(\.\d+)?$/.test(str)) {
+    const num = parseFloat(str);
+    if (num > 25000 && num < 80000) {
+      // Excel serial date
+      return (num - 25569) * 86400 * 1000;
+    }
+    if (num >= 1000000000 && num < 10000000000) {
+      return num * 1000;
+    }
+    if (num >= 10000000000 && num < 100000000000000) {
+      return num;
+    }
+    if (num >= 100000000000000) {
+      return Math.round(num / 1000);
+    }
+  }
+
+  let parsed = new Date(str).getTime();
+  if (isNaN(parsed)) {
+    // Try DD.MM.YYYY or DD/MM/YYYY
+    const dmyMatch = str.match(
+      /^(\d{1,2})[./](\d{1,2})[./](\d{2,4})(?:\s+(\d{1,2}):(\d{2})(?::(\d{2}))?)?/
+    );
+    if (dmyMatch) {
+      let year = parseInt(dmyMatch[3], 10);
+      if (year < 100) year += year < 70 ? 2000 : 1900;
+      const month = parseInt(dmyMatch[2], 10) - 1;
+      const day = parseInt(dmyMatch[1], 10);
+      const hour = dmyMatch[4] ? parseInt(dmyMatch[4], 10) : 0;
+      const min = dmyMatch[5] ? parseInt(dmyMatch[5], 10) : 0;
+      const sec = dmyMatch[6] ? parseInt(dmyMatch[6], 10) : 0;
+      parsed = Date.UTC(year, month, day, hour, min, sec);
+    }
+  }
+  return parsed;
+}
+
+/**
+ * Calculates average trade duration in milliseconds across closed trades/orders.
+ * Uses open and close timestamps from orders.
+ * Returns 0 if there are no trades with valid open and close timestamps (end > start).
  */
 export function calculateAvgTradeDuration(trades: Trade[]): number {
   let totalMs = 0;
   let count = 0;
 
   for (const t of trades) {
-    if (!t.openedAt || !t.closedAt) continue;
-    const start = new Date(t.openedAt).getTime();
-    const end = new Date(t.closedAt).getTime();
-    if (!isNaN(start) && !isNaN(end) && end >= start) {
+    const rawOrder = t as unknown as Record<string, unknown>;
+    const openRaw =
+      t.openedAt ||
+      rawOrder.openTime ||
+      rawOrder.openTimestamp ||
+      rawOrder.open_time ||
+      rawOrder.openDate ||
+      rawOrder.opened_at;
+    const closeRaw =
+      t.closedAt ||
+      rawOrder.closeTime ||
+      rawOrder.closeTimestamp ||
+      rawOrder.close_time ||
+      rawOrder.closeDate ||
+      rawOrder.closed_at;
+
+    if (!openRaw || !closeRaw) continue;
+
+    const start = parseTimestampMs(openRaw);
+    const end = parseTimestampMs(closeRaw);
+
+    if (!isNaN(start) && !isNaN(end) && end > start) {
       totalMs += end - start;
       count++;
     }

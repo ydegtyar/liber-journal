@@ -31,7 +31,7 @@ export interface ParseResult {
  * Never returns the import date (new Date().toISOString()).
  * Returns fallback (default: '') if input is missing or unparseable.
  */
-export function parseBrokerDate(dateStr: unknown, fallback = ''): string {
+export function parseBrokerDate(dateStr: unknown, fallback = '', baseDate = ''): string {
   if (dateStr === undefined || dateStr === null) return fallback;
   const str = String(dateStr).trim();
   if (!str) return fallback;
@@ -46,13 +46,18 @@ export function parseBrokerDate(dateStr: unknown, fallback = ''): string {
       if (!isNaN(d.getTime())) return d.toISOString();
     }
     // Unix seconds (10 digits: ~1970 to 2286)
-    if (num >= 1000000000 && num < 9999999999) {
+    if (num >= 1000000000 && num < 10000000000) {
       const d = new Date(num * 1000);
       if (!isNaN(d.getTime())) return d.toISOString();
     }
-    // Unix milliseconds (13 digits)
-    if (num >= 1000000000000 && num < 9999999999999) {
+    // Unix milliseconds (11-14 digits)
+    if (num >= 10000000000 && num < 100000000000000) {
       const d = new Date(num);
+      if (!isNaN(d.getTime())) return d.toISOString();
+    }
+    // Microseconds (15-17 digits)
+    if (num >= 100000000000000) {
+      const d = new Date(Math.round(num / 1000));
       if (!isNaN(d.getTime())) return d.toISOString();
     }
   }
@@ -131,13 +136,83 @@ export function parseBrokerDate(dateStr: unknown, fallback = ''): string {
     }
   }
 
-  // 6. Direct Date parse fallback (handles "01 Sep 2026", "Sep 1, 2026")
+  // 6. Format: HH:mm[:ss] (time only with base date)
+  const timeOnlyMatch = cleanStr.match(/^(\d{1,2}):(\d{2})(?::(\d{2}))?$/);
+  if (timeOnlyMatch && baseDate) {
+    let hour = parseInt(timeOnlyMatch[1], 10);
+    const minute = parseInt(timeOnlyMatch[2], 10);
+    const second = timeOnlyMatch[3] ? parseInt(timeOnlyMatch[3], 10) : 0;
+
+    if (hasAmPm) {
+      if (isPM && hour < 12) hour += 12;
+      if (!isPM && hour === 12) hour = 0;
+    }
+
+    let baseIso = baseDate;
+    if (baseDate && !baseDate.includes('T')) {
+      baseIso = parseBrokerDate(baseDate);
+    }
+    const baseParsed = new Date(baseIso);
+    if (!isNaN(baseParsed.getTime())) {
+      const parsed = new Date(
+        Date.UTC(
+          baseParsed.getUTCFullYear(),
+          baseParsed.getUTCMonth(),
+          baseParsed.getUTCDate(),
+          hour,
+          minute,
+          second
+        )
+      );
+      if (!isNaN(parsed.getTime())) {
+        return parsed.toISOString();
+      }
+    }
+  }
+
+  // 7. Direct Date parse fallback (handles "01 Sep 2026", "Sep 1, 2026")
   const direct = new Date(cleanStr);
   if (!isNaN(direct.getTime())) {
     return direct.toISOString();
   }
 
   return fallback;
+}
+
+/**
+ * Combines separate date and time strings into an ISO string.
+ * Handles cases where date string already contains time or where only time is given with a baseDate.
+ */
+export function combineDateAndTime(
+  dateStr?: unknown,
+  timeStr?: unknown,
+  baseDate?: string
+): string {
+  const d = dateStr !== undefined && dateStr !== null ? String(dateStr).trim() : '';
+  const t = timeStr !== undefined && timeStr !== null ? String(timeStr).trim() : '';
+
+  if (d && t) {
+    // If date already includes time (e.g. contains ':' or 'T'), parse it directly
+    if (d.includes(':') || d.includes('T')) {
+      const parsed = parseBrokerDate(d, '', baseDate);
+      if (parsed) return parsed;
+    }
+    // Otherwise concatenate date and time
+    const combined = `${d} ${t}`;
+    const parsedCombined = parseBrokerDate(combined, '', baseDate);
+    if (parsedCombined) return parsedCombined;
+    return parseBrokerDate(d, '', baseDate);
+  }
+
+  if (d) {
+    return parseBrokerDate(d, '', baseDate);
+  }
+
+  if (t) {
+    return parseBrokerDate(t, '', baseDate);
+  }
+
+  return '';
 }
 
 /**
@@ -303,7 +378,16 @@ export function parseBrokerCsv(csvContent: string): ParseResult {
     const dealId = (row[columnIndices.dealId] || '').trim();
     const directionStr = row[columnIndices.direction] || 'Купити';
     const openedAtStr = columnIndices.openedAt !== undefined ? row[columnIndices.openedAt] : '';
+    const openDateStr = columnIndices.openDate !== undefined ? row[columnIndices.openDate] : '';
+    const openTimeStr = columnIndices.openTime !== undefined ? row[columnIndices.openTime] : '';
+
     const closedAtStr = columnIndices.closedAt !== undefined ? row[columnIndices.closedAt] : '';
+    const closeDateStr = columnIndices.closeDate !== undefined ? row[columnIndices.closeDate] : '';
+    const closeTimeStr = columnIndices.closeTime !== undefined ? row[columnIndices.closeTime] : '';
+
+    const tradeDateStr = columnIndices.tradeDate !== undefined ? row[columnIndices.tradeDate] : '';
+    const baseDate = tradeDateStr || metadata.reportDate || '';
+
     const openPrice = parseBrokerNumber(row[columnIndices.openPrice]);
     const closePrice = parseBrokerNumber(row[columnIndices.closePrice]);
     const margin = parseBrokerNumber(row[columnIndices.margin]);
@@ -311,8 +395,28 @@ export function parseBrokerCsv(csvContent: string): ParseResult {
     const grossReturn = parseBrokerNumber(row[columnIndices.grossReturn]);
     const pnl = parseBrokerNumber(row[columnIndices.pnl]);
 
-    let openedAt = parseBrokerDate(openedAtStr);
-    let closedAt = parseBrokerDate(closedAtStr);
+    // Parse closedAt first (often has full date/time in reports)
+    let closedAt = combineDateAndTime(
+      closedAtStr || closeDateStr || tradeDateStr,
+      closeTimeStr,
+      baseDate
+    );
+
+    // Parse openedAt using baseDate or closedAt as date reference for time-only fields
+    let openedAt = combineDateAndTime(
+      openedAtStr || openDateStr || tradeDateStr,
+      openTimeStr,
+      baseDate || closedAt
+    );
+
+    // If closedAt was time-only and missed baseDate, retry with openedAt
+    if (!closedAt && (closedAtStr || closeTimeStr) && openedAt) {
+      closedAt = combineDateAndTime(closedAtStr || closeDateStr, closeTimeStr, openedAt);
+    }
+    // If openedAt was time-only and missed baseDate, retry with closedAt
+    if (!openedAt && (openedAtStr || openTimeStr) && closedAt) {
+      openedAt = combineDateAndTime(openedAtStr || openDateStr, openTimeStr, closedAt);
+    }
 
     // If one date is available and the other is not, mirror it
     if (!openedAt && closedAt) {

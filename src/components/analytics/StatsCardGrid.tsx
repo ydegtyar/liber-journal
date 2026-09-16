@@ -47,9 +47,7 @@ export const StatsCardGrid: React.FC<Props> = React.memo(
     const avgDurationFormatted =
       analytics.totalTrades > 0 && analytics.avgTradeDurationMs > 0
         ? formatDurationMs(analytics.avgTradeDurationMs, currentLang)
-        : analytics.totalTrades > 0
-          ? formatDurationMs(0, currentLang)
-          : '-';
+        : '-';
 
     const streakSentiment =
       analytics.currentStreak.type === 'win'

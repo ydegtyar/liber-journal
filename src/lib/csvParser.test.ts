@@ -1,8 +1,8 @@
 import { describe, it, expect } from 'vitest';
 import * as fs from 'fs';
 import * as path from 'path';
-import { parseBrokerCsv, parseBrokerDate } from './csvParser';
-import { calculateNetPnl } from './calculations';
+import { parseBrokerCsv, parseBrokerDate, combineDateAndTime } from './csvParser';
+import { calculateNetPnl, calculateAvgTradeDuration } from './calculations';
 
 describe('CSV Parser', () => {
   it('parses the Libertex sample export correctly with exact 23 trades and matching checksum', () => {
@@ -101,6 +101,80 @@ describe('CSV Parser', () => {
       expect(res.trades.length).toBe(1);
       expect(res.trades[0].closedAt).toBe('2026-09-02T15:30:00.000Z');
       expect(res.trades[0].openedAt).toBe('2026-09-02T15:30:00.000Z');
+    });
+  });
+
+  describe('Order open and close timestamps in imports', () => {
+    it('parses order open time and order close time columns', () => {
+      const csv = `Instrument,Direction,Order Open Time,Order Close Time,Open Price,Close Price,Margin,PnL
+EUR/USD,Buy,2026-09-01 10:00:00,2026-09-01 11:30:00,1.1000,1.1050,100,50
+GBP/USD,Sell,2026-09-01 12:00:00,2026-09-01 13:00:00,1.3000,1.2950,100,30`;
+
+      const res = parseBrokerCsv(csv);
+      expect(res.trades.length).toBe(2);
+      expect(res.trades[0].openedAt).toBe('2026-09-01T10:00:00.000Z');
+      expect(res.trades[0].closedAt).toBe('2026-09-01T11:30:00.000Z'); // 90 min
+      expect(res.trades[1].openedAt).toBe('2026-09-01T12:00:00.000Z');
+      expect(res.trades[1].closedAt).toBe('2026-09-01T13:00:00.000Z'); // 60 min
+
+      // (90m + 60m) / 2 = 75m = 4,500,000 ms
+      const avgDuration = calculateAvgTradeDuration(res.trades);
+      expect(avgDuration).toBe(4500000);
+    });
+
+    it('parses Ukrainian order open and close time column headers', () => {
+      const csv = `Інструмент,Напрямок,Час відкриття ордера,Час закриття ордера,Ціна відкриття,Ціна закриття,Сума ($),Прибуток ($)
+EUR/USD,Купити,01.09.2026 10:00,01.09.2026 11:00,1.1000,1.1050,100,50`;
+
+      const res = parseBrokerCsv(csv);
+      expect(res.trades.length).toBe(1);
+      expect(res.trades[0].openedAt).toBe('2026-09-01T10:00:00.000Z');
+      expect(res.trades[0].closedAt).toBe('2026-09-01T11:00:00.000Z');
+      expect(calculateAvgTradeDuration(res.trades)).toBe(3600000);
+    });
+
+    it('combines separate Date, Open Time, and Close Time columns', () => {
+      const csv = `Instrument,Direction,Date,Open Time,Close Time,Open Price,Close Price,Margin,PnL
+EUR/USD,Buy,01.09.2026,10:00,11:30,1.1000,1.1050,100,50`;
+
+      const res = parseBrokerCsv(csv);
+      expect(res.trades.length).toBe(1);
+      expect(res.trades[0].openedAt).toBe('2026-09-01T10:00:00.000Z');
+      expect(res.trades[0].closedAt).toBe('2026-09-01T11:30:00.000Z');
+      expect(calculateAvgTradeDuration(res.trades)).toBe(5400000); // 1h 30m
+    });
+
+    it('combines separate Open Date, Open Time, Close Date, and Close Time columns', () => {
+      const csv = `Instrument,Direction,Open Date,Open Time,Close Date,Close Time,Open Price,Close Price,Margin,PnL
+EUR/USD,Buy,01.09.2026,10:00,02.09.2026,12:00,1.1000,1.1050,100,50`;
+
+      const res = parseBrokerCsv(csv);
+      expect(res.trades.length).toBe(1);
+      expect(res.trades[0].openedAt).toBe('2026-09-01T10:00:00.000Z');
+      expect(res.trades[0].closedAt).toBe('2026-09-02T12:00:00.000Z');
+      expect(calculateAvgTradeDuration(res.trades)).toBe(93600000); // 26 hours
+    });
+  });
+
+  describe('combineDateAndTime helper', () => {
+    it('combines date and time strings accurately', () => {
+      expect(combineDateAndTime('01.09.2026', '14:30')).toBe('2026-09-01T14:30:00.000Z');
+      expect(combineDateAndTime('2026-09-01', '14:30:00')).toBe('2026-09-01T14:30:00.000Z');
+    });
+
+    it('handles date string that already includes time', () => {
+      expect(combineDateAndTime('01.09.2026 14:30', '')).toBe('2026-09-01T14:30:00.000Z');
+      expect(combineDateAndTime('2026-09-01T14:30:00.000Z', '')).toBe('2026-09-01T14:30:00.000Z');
+    });
+
+    it('handles time-only string with baseDate', () => {
+      expect(combineDateAndTime('', '14:30', '2026-09-01')).toBe('2026-09-01T14:30:00.000Z');
+      expect(combineDateAndTime('', '14:30', '01.09.2026')).toBe('2026-09-01T14:30:00.000Z');
+    });
+
+    it('returns empty string on empty inputs', () => {
+      expect(combineDateAndTime('', '')).toBe('');
+      expect(combineDateAndTime(null, undefined)).toBe('');
     });
   });
 });

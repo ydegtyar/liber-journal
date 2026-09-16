@@ -25,6 +25,7 @@ import {
   calculateHourlyDistribution,
   calculateGroupSummaries,
   calculateAnalytics,
+  parseTimestampMs,
 } from './calculations';
 import { Trade } from '../types/trade';
 
@@ -312,6 +313,90 @@ describe('Calculations Library', () => {
       },
     ];
     expect(calculateAvgTradeDuration(invalidTrades)).toBe(0);
+  });
+
+  it('calculates average trade duration using order open and close timestamps', () => {
+    // Orders with raw open/close properties like openTime / closeTime
+    const orderTrades = [
+      {
+        id: 'ord-1',
+        instrument: 'EUR/USD',
+        direction: 'buy',
+        openedAt: '',
+        closedAt: '',
+        openTime: '2026-09-01T10:00:00.000Z',
+        closeTime: '2026-09-01T10:30:00.000Z', // 30 min = 1,800,000 ms
+        openPrice: 1.1,
+        closePrice: 1.11,
+        margin: 100,
+        leverage: 50,
+        grossReturn: 120,
+        pnl: 20,
+      } as unknown as Trade,
+      {
+        id: 'ord-2',
+        instrument: 'GBP/USD',
+        direction: 'sell',
+        openedAt: '',
+        closedAt: '',
+        openTimestamp: 1725184800000, // Unix ms
+        closeTimestamp: 1725190200000, // +90 min = 5,400,000 ms
+        openPrice: 1.3,
+        closePrice: 1.29,
+        margin: 100,
+        leverage: 50,
+        grossReturn: 110,
+        pnl: 10,
+      } as unknown as Trade,
+    ];
+
+    // (1,800,000 + 5,400,000) / 2 = 3,600,000 ms (1 hour)
+    expect(calculateAvgTradeDuration(orderTrades)).toBe(3600000);
+  });
+
+  it('excludes mirrored or same-minute trades from inflating or diluting the average duration', () => {
+    const mixedTrades: Trade[] = [
+      {
+        ...mockTrades[0],
+        id: 'valid-1',
+        openedAt: '2026-09-01T10:00:00.000Z',
+        closedAt: '2026-09-01T11:00:00.000Z', // 1 hour = 3,600,000 ms
+      },
+      {
+        ...mockTrades[1],
+        id: 'mirrored-1',
+        openedAt: '2026-09-01T15:00:00.000Z',
+        closedAt: '2026-09-01T15:00:00.000Z', // 0 ms (mirrored from missing open date)
+      },
+    ];
+
+    // Should only average valid trades where end > start
+    expect(calculateAvgTradeDuration(mixedTrades)).toBe(3600000);
+
+    // If all trades are mirrored (end === start), duration returns 0
+    const allMirrored: Trade[] = [
+      {
+        ...mockTrades[0],
+        openedAt: '2026-09-01T10:00:00.000Z',
+        closedAt: '2026-09-01T10:00:00.000Z',
+      },
+    ];
+    expect(calculateAvgTradeDuration(allMirrored)).toBe(0);
+  });
+
+  it('parses timestamps across ISO, Unix seconds, Unix ms, and DD.MM.YYYY formats', () => {
+    expect(parseTimestampMs('2026-09-01T10:00:00.000Z')).toBe(
+      new Date('2026-09-01T10:00:00.000Z').getTime()
+    );
+    expect(parseTimestampMs(1725184800)).toBe(1725184800000); // 10-digit seconds
+    expect(parseTimestampMs('1725184800')).toBe(1725184800000); // 10-digit seconds string
+    expect(parseTimestampMs(1725184800000)).toBe(1725184800000); // 13-digit ms
+    expect(parseTimestampMs('1725184800000')).toBe(1725184800000); // 13-digit ms string
+    expect(parseTimestampMs('25.09.2026 10:00')).toBe(Date.UTC(2026, 8, 25, 10, 0, 0));
+    expect(parseTimestampMs('')).toBeNaN();
+    expect(parseTimestampMs(null)).toBeNaN();
+    expect(parseTimestampMs(undefined)).toBeNaN();
+    expect(parseTimestampMs('not-a-timestamp')).toBeNaN();
   });
 
   it('calculates complete JournalAnalytics including new fields', () => {
