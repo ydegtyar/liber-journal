@@ -177,4 +177,78 @@ EUR/USD,Buy,01.09.2026,10:00,02.09.2026,12:00,1.1000,1.1050,100,50`;
       expect(combineDateAndTime(null, undefined)).toBe('');
     });
   });
+
+  describe('Libertex English Export Format (Opening date and Closing out date)', () => {
+    it('parses English Libertex columns: Trade number, Opening date, Closing out date, Date of report', () => {
+      const csv = `Libertex platform\n\nAccount:\t1819447571\tName:\tALONA DEHTIAR\tCurrency:\tUSD\tDate of report:\t18.09.2026 19:48:10\n\nInstrument\tTrade number\tDirection\tOpening date\tOpening price\tClosing out date\tClosing price\tAmount ($)\tMultiplier\tResult ($)\tProfit ($)\nGBP/USD\tGBPUSD-144766648\tBuy\t18/9/2026 6:46\t1.33729\t18/9/2026 19:21\t1.33964\t20\tx60\t22.02\t2.02\nCoinbase Global Inc.\tCOIN-144788187\tBuy\t18/9/2026 14:31\t189.63\t18/9/2026 16:19\t194.42\t30\tx4\t33.02\t3.02\n\nTotal:\t50\t55.04\t5.04`;
+
+      const res = parseBrokerCsv(csv);
+
+      expect(res.errors).toEqual([]);
+      expect(res.metadata.accountNumber).toBe('1819447571');
+      expect(res.metadata.accountHolder).toBe('ALONA DEHTIAR');
+      expect(res.metadata.currency).toBe('USD');
+      expect(res.metadata.reportDate).toBe('18.09.2026 19:48:10');
+
+      expect(res.trades.length).toBe(2);
+
+      // First trade
+      const t1 = res.trades[0];
+      expect(t1.instrument).toBe('GBP/USD');
+      expect(t1.dealId).toBe('GBPUSD-144766648');
+      expect(t1.direction).toBe('buy');
+      expect(t1.openedAt).toBe('2026-09-18T06:46:00.000Z');
+      expect(t1.closedAt).toBe('2026-09-18T19:21:00.000Z');
+      expect(t1.openPrice).toBe(1.33729);
+      expect(t1.closePrice).toBe(1.33964);
+      expect(t1.margin).toBe(20);
+      expect(t1.leverage).toBe(60);
+      expect(t1.grossReturn).toBe(22.02);
+      expect(t1.pnl).toBe(2.02);
+
+      // Second trade
+      const t2 = res.trades[1];
+      expect(t2.instrument).toBe('Coinbase Global Inc.');
+      expect(t2.dealId).toBe('COIN-144788187');
+      expect(t2.openedAt).toBe('2026-09-18T14:31:00.000Z');
+      expect(t2.closedAt).toBe('2026-09-18T16:19:00.000Z');
+
+      // Duration: 12h 35m (45,300,000 ms) and 1h 48m (6,480,000 ms)
+      // Average: (45300000 + 6480000) / 2 = 25,890,000 ms = 7h 11m 30s
+      const avgDuration = calculateAvgTradeDuration(res.trades);
+      expect(avgDuration).toBe(25890000);
+      expect(res.checksumPassed).toBe(true);
+    });
+
+    it('accurately parses full real example file if present without mirroring dates', () => {
+      const realCsvPath = path.resolve(__dirname, '../../closed_deals_on_18.09.26.csv');
+      if (!fs.existsSync(realCsvPath)) return;
+
+      const content = fs.readFileSync(realCsvPath, 'utf-8');
+      const res = parseBrokerCsv(content);
+
+      expect(res.errors).toEqual([]);
+      expect(res.trades.length).toBe(292);
+      expect(res.metadata.accountNumber).toBe('1819447571');
+      expect(res.metadata.accountHolder).toBe('ALONA DEHTIAR');
+      expect(res.metadata.reportDate).toBe('18.09.2026 19:48:10');
+
+      // Verify trade IDs are preserved from Trade number
+      expect(res.trades[0].dealId).toBe('GBPUSD-144766648');
+      expect(res.trades[1].dealId).toBe('COIN-144788187');
+
+      // Verify opening and closing out dates are NOT mirrored
+      expect(res.trades[0].openedAt).toBe('2026-09-18T06:46:00.000Z');
+      expect(res.trades[0].closedAt).toBe('2026-09-18T19:21:00.000Z');
+
+      expect(res.trades[1].openedAt).toBe('2026-09-18T14:31:00.000Z');
+      expect(res.trades[1].closedAt).toBe('2026-09-18T16:19:00.000Z');
+
+      // Verify average order duration is accurately computed across real trades
+      const avgDuration = calculateAvgTradeDuration(res.trades);
+      expect(avgDuration).toBeGreaterThan(0);
+      expect(avgDuration).toBe(198577938); // 2d 7h
+      expect(res.checksumPassed).toBe(true);
+    });
+  });
 });

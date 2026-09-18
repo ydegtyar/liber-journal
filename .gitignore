@@ -27,3 +27,6 @@ dist-ssr
 .vercel
 
 *.tsbuildinfo
+
+# User raw exports in root
+/closed_deals_*.csv

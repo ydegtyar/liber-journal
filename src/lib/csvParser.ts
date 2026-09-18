@@ -290,16 +290,16 @@ export function parseBrokerCsv(csvContent: string): ParseResult {
       const cell = (row[c] || '').trim();
       const nextCell = (row[c + 1] || '').trim();
 
-      if (/^(рахунок|счет|account):?$/i.test(cell) && nextCell) {
+      if (/^(рахунок|счет|account|account number):?$/i.test(cell) && nextCell) {
         metadata.accountNumber = nextCell;
       }
-      if (/^(ім’я|имя|name|holder):?$/i.test(cell) && nextCell) {
+      if (/^(ім’я|имя|name|holder|client|client name):?$/i.test(cell) && nextCell) {
         metadata.accountHolder = nextCell;
       }
       if (/^(валюта|currency):?$/i.test(cell) && nextCell) {
         metadata.currency = nextCell;
       }
-      if (/^(дата звіту|дата отчета|report date):?$/i.test(cell) && nextCell) {
+      if (/^(дата звіту|дата отчета|report date|date of report):?$/i.test(cell) && nextCell) {
         metadata.reportDate = nextCell;
       }
     }
