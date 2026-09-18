@@ -44,7 +44,7 @@ export const DepositEditor: React.FC<Props> = React.memo(
 
     return (
       <TextField
-        size="small"
+        size="medium"
         label={label || t('banner.initialDeposit', { defaultValue: t('table.initialDeposit') })}
         value={val}
         onChange={handleChange}
