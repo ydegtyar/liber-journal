@@ -23,7 +23,8 @@ export type PageBlockId =
   | 'streakAnalysis'
   | 'instrumentsTable'
   | 'monthlyReturns'
-  | 'tradesView';
+  | 'tradesView'
+  | 'forecast';
 
 export const DEFAULT_PAGE_BLOCK_ORDER: PageBlockId[] = [
   'timeframeBanner',
@@ -34,6 +35,7 @@ export const DEFAULT_PAGE_BLOCK_ORDER: PageBlockId[] = [
   'instrumentsTable',
   'monthlyReturns',
   'tradesView',
+  'forecast',
 ];
 
 export interface JournalSettings {

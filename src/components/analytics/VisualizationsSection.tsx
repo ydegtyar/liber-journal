@@ -152,7 +152,7 @@ const VisualizationsSectionComponent: React.FC<Props> = ({
       <Suspense
         fallback={
           <TradingTerminalLoader
-            minHeight={320}
+            minHeight={380}
             variant="compact"
             message="RENDERING ANALYTICS VISUALIZATION..."
             subMessage="COMPUTING REAL-TIME CHART SERIES"

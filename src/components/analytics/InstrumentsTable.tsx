@@ -10,7 +10,12 @@ import {
   TableBody,
   TableSortLabel,
   Button,
+  TextField,
+  InputAdornment,
+  IconButton,
 } from '@mui/material';
+import SearchIcon from '@mui/icons-material/Search';
+import ClearIcon from '@mui/icons-material/Clear';
 import { Sparkline } from './Sparkline';
 import { useTranslation } from 'react-i18next';
 import { InstrumentSummary } from '../../types/trade';
@@ -34,6 +39,7 @@ export const InstrumentsTable: React.FC<Props> = React.memo(
 
     const [sortField, setSortField] = useState<SortField>('netPnl');
     const [sortAsc, setSortAsc] = useState(false);
+    const [filterQuery, setFilterQuery] = useState('');
 
     const handleSort = useCallback((field: SortField) => {
       setSortField((prevField) => {
@@ -47,8 +53,14 @@ export const InstrumentsTable: React.FC<Props> = React.memo(
       });
     }, []);
 
+    const filteredData = useMemo(() => {
+      if (!filterQuery.trim()) return data;
+      const q = filterQuery.trim().toLowerCase();
+      return data.filter((item) => item.symbol.toLowerCase().includes(q));
+    }, [data, filterQuery]);
+
     const sortedData = useMemo(() => {
-      return [...data].sort((a, b) => {
+      return [...filteredData].sort((a, b) => {
         let diff = 0;
         if (sortField === 'symbol') diff = a.symbol.localeCompare(b.symbol);
         else if (sortField === 'trades') diff = a.trades - b.trades;
@@ -58,7 +70,7 @@ export const InstrumentsTable: React.FC<Props> = React.memo(
         else if (sortField === 'sharePercent') diff = a.sharePercent - b.sharePercent;
         return sortAsc ? diff : -diff;
       });
-    }, [data, sortField, sortAsc]);
+    }, [filteredData, sortField, sortAsc]);
 
     if (data.length === 0) return null;
 
@@ -92,10 +104,50 @@ export const InstrumentsTable: React.FC<Props> = React.memo(
               })}
             </Typography>
           </div>
+
+          <TextField
+            size="small"
+            value={filterQuery}
+            onChange={(e) => setFilterQuery(e.target.value)}
+            placeholder={t('instruments.filterPlaceholder', {
+              defaultValue: 'Фільтр інструментів...',
+            })}
+            inputProps={{
+              'aria-label': t('instruments.filterLabel', {
+                defaultValue: 'Фільтрувати інструменти',
+              }),
+            }}
+            InputProps={{
+              startAdornment: (
+                <InputAdornment position="start">
+                  <SearchIcon fontSize="small" sx={{ color: 'text.secondary' }} />
+                </InputAdornment>
+              ),
+              endAdornment: filterQuery ? (
+                <InputAdornment position="end">
+                  <IconButton
+                    size="small"
+                    onClick={() => setFilterQuery('')}
+                    edge="end"
+                    sx={{ p: 0.25 }}
+                    aria-label={t('instruments.clearFilter', { defaultValue: 'Очистити фільтр' })}
+                  >
+                    <ClearIcon sx={{ fontSize: 16 }} />
+                  </IconButton>
+                </InputAdornment>
+              ) : null,
+              sx: { height: 32, fontSize: '0.8rem', minWidth: 160, maxWidth: 220 },
+            }}
+          />
         </Box>
 
         <Box sx={{ overflowX: 'auto' }}>
-          <Table size="small" aria-label="Instruments breakdown table">
+          <Table
+            size="small"
+            aria-label={t('instruments.tableAria', {
+              defaultValue: 'Таблиця розподілу за інструментами',
+            })}
+          >
             <TableHead>
               <TableRow>
                 <TableCell>
@@ -165,105 +217,119 @@ export const InstrumentsTable: React.FC<Props> = React.memo(
               </TableRow>
             </TableHead>
             <TableBody>
-              {sortedData.map((row) => {
-                const isSelected = selectedInstrument?.toLowerCase() === row.symbol.toLowerCase();
-                const pnlData = formatSignedPnl(row.netPnl, currency, numberFormat, currentLang);
-                const avgData = formatSignedPnl(row.avgPnl, currency, numberFormat, currentLang);
+              {sortedData.length === 0 ? (
+                <TableRow>
+                  <TableCell colSpan={8} align="center" sx={{ py: 3, color: 'text.secondary' }}>
+                    <Typography variant="body2">
+                      {t('instruments.noMatchingInstruments', {
+                        defaultValue: 'Не знайдено інструментів',
+                      })}
+                    </Typography>
+                  </TableCell>
+                </TableRow>
+              ) : (
+                sortedData.map((row) => {
+                  const isSelected = selectedInstrument?.toLowerCase() === row.symbol.toLowerCase();
+                  const pnlData = formatSignedPnl(row.netPnl, currency, numberFormat, currentLang);
+                  const avgData = formatSignedPnl(row.avgPnl, currency, numberFormat, currentLang);
 
-                return (
-                  <TableRow
-                    key={row.symbol}
-                    hover
-                    onClick={() => onSelectInstrument(row.symbol)}
-                    sx={{
-                      cursor: 'pointer',
-                      backgroundColor: isSelected ? 'action.selected' : 'inherit',
-                    }}
-                  >
-                    {/* Symbol */}
-                    <TableCell sx={{ fontWeight: 700, fontFamily: "'JetBrains Mono', monospace" }}>
-                      {row.symbol}
-                    </TableCell>
-
-                    {/* Trades */}
-                    <TableCell align="right">{row.trades}</TableCell>
-
-                    {/* Win % */}
-                    <TableCell
-                      align="right"
+                  return (
+                    <TableRow
+                      key={row.symbol}
+                      hover
+                      onClick={() => onSelectInstrument(row.symbol)}
                       sx={{
-                        fontWeight: 600,
-                        color: (theme) =>
-                          row.winRate >= 60
-                            ? theme.palette.trade.gain
-                            : row.winRate < 45
-                              ? theme.palette.trade.loss
-                              : 'text.primary',
+                        cursor: 'pointer',
+                        backgroundColor: isSelected ? 'action.selected' : 'inherit',
                       }}
                     >
-                      {formatPercent(row.winRate, 0, numberFormat, currentLang)}
-                    </TableCell>
-
-                    {/* Net P&L */}
-                    <TableCell
-                      align="right"
-                      sx={{
-                        fontWeight: 700,
-                        fontFamily: "'JetBrains Mono', monospace",
-                        color: (theme) =>
-                          pnlData.isPositive
-                            ? theme.palette.trade.gain
-                            : pnlData.isNegative
-                              ? theme.palette.trade.loss
-                              : theme.palette.trade.breakeven,
-                      }}
-                    >
-                      {pnlData.text}
-                    </TableCell>
-
-                    {/* Avg P&L */}
-                    <TableCell
-                      align="right"
-                      sx={{
-                        fontFamily: "'JetBrains Mono', monospace",
-                        color: (theme) =>
-                          avgData.isPositive
-                            ? theme.palette.trade.gain
-                            : avgData.isNegative
-                              ? theme.palette.trade.loss
-                              : 'text.secondary',
-                      }}
-                    >
-                      {avgData.text}
-                    </TableCell>
-
-                    {/* Share % */}
-                    <TableCell align="right" sx={{ color: 'text.secondary', fontSize: '0.8rem' }}>
-                      {formatPercent(row.sharePercent, 1, numberFormat, currentLang)}
-                    </TableCell>
-
-                    {/* Trend Sparkline */}
-                    <TableCell align="center" sx={{ py: 0.5 }}>
-                      <Sparkline points={row.sparkline} isPositive={row.netPnl >= 0} />
-                    </TableCell>
-
-                    {/* Action */}
-                    <TableCell align="right" sx={{ py: 0.5 }}>
-                      <Button
-                        size="small"
-                        variant={isSelected ? 'contained' : 'text'}
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          onSelectInstrument(row.symbol);
-                        }}
-                        sx={{ fontSize: '0.75rem', py: 0.25, px: 1 }}
+                      {/* Symbol */}
+                      <TableCell
+                        sx={{ fontWeight: 700, fontFamily: "'JetBrains Mono', monospace" }}
                       >
-                        {t('instruments.details', { defaultValue: 'Деталі' })}
-                      </Button>
-                    </TableCell>
-                  </TableRow>
-                );
-              })}
+                        {row.symbol}
+                      </TableCell>
+
+                      {/* Trades */}
+                      <TableCell align="right">{row.trades}</TableCell>
+
+                      {/* Win % */}
+                      <TableCell
+                        align="right"
+                        sx={{
+                          fontWeight: 600,
+                          color: (theme) =>
+                            row.winRate >= 60
+                              ? theme.palette.trade.gain
+                              : row.winRate < 45
+                                ? theme.palette.trade.loss
+                                : 'text.primary',
+                        }}
+                      >
+                        {formatPercent(row.winRate, 0, numberFormat, currentLang)}
+                      </TableCell>
+
+                      {/* Net P&L */}
+                      <TableCell
+                        align="right"
+                        sx={{
+                          fontWeight: 700,
+                          fontFamily: "'JetBrains Mono', monospace",
+                          color: (theme) =>
+                            pnlData.isPositive
+                              ? theme.palette.trade.gain
+                              : pnlData.isNegative
+                                ? theme.palette.trade.loss
+                                : theme.palette.trade.breakeven,
+                        }}
+                      >
+                        {pnlData.text}
+                      </TableCell>
+
+                      {/* Avg P&L */}
+                      <TableCell
+                        align="right"
+                        sx={{
+                          fontFamily: "'JetBrains Mono', monospace",
+                          color: (theme) =>
+                            avgData.isPositive
+                              ? theme.palette.trade.gain
+                              : avgData.isNegative
+                                ? theme.palette.trade.loss
+                                : 'text.secondary',
+                        }}
+                      >
+                        {avgData.text}
+                      </TableCell>
+
+                      {/* Share % */}
+                      <TableCell align="right" sx={{ color: 'text.secondary', fontSize: '0.8rem' }}>
+                        {formatPercent(row.sharePercent, 1, numberFormat, currentLang)}
+                      </TableCell>
+
+                      {/* Trend Sparkline */}
+                      <TableCell align="center" sx={{ py: 0.5 }}>
+                        <Sparkline points={row.sparkline} isPositive={row.netPnl >= 0} />
+                      </TableCell>
+
+                      {/* Action */}
+                      <TableCell align="right" sx={{ py: 0.5 }}>
+                        <Button
+                          size="small"
+                          variant={isSelected ? 'contained' : 'text'}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            onSelectInstrument(row.symbol);
+                          }}
+                          sx={{ fontSize: '0.75rem', py: 0.25, px: 1 }}
+                        >
+                          {t('instruments.details', { defaultValue: 'Деталі' })}
+                        </Button>
+                      </TableCell>
+                    </TableRow>
+                  );
+                })
+              )}
             </TableBody>
           </Table>
         </Box>

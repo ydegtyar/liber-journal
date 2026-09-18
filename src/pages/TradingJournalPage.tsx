@@ -23,6 +23,7 @@ import { StreakAnalysisSection } from '../components/analytics/StreakAnalysisSec
 import { InstrumentsTable } from '../components/analytics/InstrumentsTable';
 import { MonthlyReturnsHeatmap } from '../components/analytics/MonthlyReturnsHeatmap';
 import { TradesViewSection } from '../components/table/TradesViewSection';
+import { ForecastSection } from '../components/forecast/ForecastSection';
 import { SEOHead } from '../components/seo/SEOHead';
 import { TradingTerminalLoader } from '../components/common/TradingTerminalLoader';
 import { PageBlockId, DEFAULT_PAGE_BLOCK_ORDER } from '../types/preferences';
@@ -229,6 +230,16 @@ export const TradingJournalPage: React.FC = () => {
               onExportXlsx={handleExportXlsx}
               onUploadFile={handleFileImport}
               onOpenSettings={handleOpenSettings}
+            />
+          );
+        case 'forecast':
+          return (
+            <ForecastSection
+              key="forecast"
+              trades={filteredTrades}
+              initialDeposit={settings.initialDeposit}
+              currency={settings.currency}
+              numberFormat={numberFormat}
             />
           );
         default:

@@ -10,8 +10,9 @@ import enLocale from '../../i18n/locales/en.json';
 import ukLocale from '../../i18n/locales/uk.json';
 
 describe('PageLayoutSettingsDrawer & Block Layout Configuration', () => {
-  it('contains configurations for all 8 default page blocks', () => {
-    expect(DEFAULT_PAGE_BLOCK_ORDER).toHaveLength(8);
+  it('contains configurations for all 9 default page blocks with forecast at the bottom', () => {
+    expect(DEFAULT_PAGE_BLOCK_ORDER).toHaveLength(9);
+    expect(DEFAULT_PAGE_BLOCK_ORDER[8]).toBe('forecast');
 
     const configuredBlockIds = Object.keys(BLOCK_CONFIGS);
     expect(configuredBlockIds.sort()).toEqual([...DEFAULT_PAGE_BLOCK_ORDER].sort());
@@ -47,12 +48,12 @@ describe('PageLayoutSettingsDrawer & Block Layout Configuration', () => {
   it('reorders page blocks correctly with arrayMove', () => {
     const initialOrder: PageBlockId[] = [...DEFAULT_PAGE_BLOCK_ORDER];
 
-    // Move 'tradesView' (last item, index 7) to the top (index 0)
-    const reordered = arrayMove(initialOrder, 7, 0);
+    // Move 'forecast' (last item, index 8) to the top (index 0)
+    const reordered = arrayMove(initialOrder, 8, 0);
 
-    expect(reordered[0]).toBe('tradesView');
+    expect(reordered[0]).toBe('forecast');
     expect(reordered[1]).toBe('timeframeBanner');
-    expect(reordered).toHaveLength(8);
+    expect(reordered).toHaveLength(9);
   });
 
   it('handles block visibility toggling correctly', () => {
@@ -78,7 +79,7 @@ describe('PageLayoutSettingsDrawer & Block Layout Configuration', () => {
 
     // Filter visible blocks
     const visibleBlocks = DEFAULT_PAGE_BLOCK_ORDER.filter((id) => !hiddenBlocks.includes(id));
-    expect(visibleBlocks).toHaveLength(7);
+    expect(visibleBlocks).toHaveLength(8);
     expect(visibleBlocks.includes('streakAnalysis')).toBe(false);
   });
 

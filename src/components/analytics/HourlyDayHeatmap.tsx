@@ -285,14 +285,14 @@ export const HourlyDayHeatmap: React.FC<Props> = React.memo(
         >
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
             <AccessTimeIcon sx={{ fontSize: 22, color: 'primary.main' }} />
-            <Box>
+            <div>
               <Typography
                 variant="subtitle1"
                 sx={{ fontWeight: 800, fontSize: '0.95rem', lineHeight: 1.2 }}
               >
                 {t('heatmap.title')}
               </Typography>
-            </Box>
+            </div>
           </Box>
 
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, flexWrap: 'wrap' }}>

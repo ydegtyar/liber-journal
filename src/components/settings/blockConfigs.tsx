@@ -7,6 +7,7 @@ import ElectricBoltIcon from '@mui/icons-material/ElectricBolt';
 import PieChartOutlineIcon from '@mui/icons-material/PieChartOutline';
 import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
 import TableChartIcon from '@mui/icons-material/TableChart';
+import AutoGraphIcon from '@mui/icons-material/AutoGraph';
 import { PageBlockId } from '../../types/preferences';
 
 export interface BlockConfig {
@@ -64,5 +65,11 @@ export const BLOCK_CONFIGS: Record<PageBlockId, BlockConfig> = {
     nameKey: 'layoutSettings.blocks.tradesView.name',
     descKey: 'layoutSettings.blocks.tradesView.description',
     icon: <TableChartIcon sx={{ fontSize: 20 }} />,
+  },
+  forecast: {
+    id: 'forecast',
+    nameKey: 'layoutSettings.blocks.forecast.name',
+    descKey: 'layoutSettings.blocks.forecast.description',
+    icon: <AutoGraphIcon sx={{ fontSize: 20 }} />,
   },
 };

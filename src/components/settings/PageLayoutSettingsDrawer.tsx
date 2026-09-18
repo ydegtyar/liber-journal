@@ -169,11 +169,11 @@ export const PageLayoutSettingsDrawer: React.FC<Props> = React.memo(
         >
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
             <TuneIcon sx={{ color: 'primary.main', fontSize: 22 }} />
-            <Box>
+            <div>
               <Typography variant="subtitle1" sx={{ fontWeight: 800, lineHeight: 1.2 }}>
                 {t('layoutSettings.title')}
               </Typography>
-            </Box>
+            </div>
           </Box>
           <IconButton onClick={onClose} size="small" aria-label={t('common.close')}>
             <CloseIcon fontSize="small" />
@@ -208,7 +208,7 @@ export const PageLayoutSettingsDrawer: React.FC<Props> = React.memo(
         {/* Drawer Content */}
         <Box sx={{ flex: 1, overflowY: 'auto', p: 2 }}>
           {activeTab === 'layout' ? (
-            <Box>
+            <div>
               {/* Quick Action Bar / Counters */}
               <Box
                 sx={{
@@ -299,7 +299,7 @@ export const PageLayoutSettingsDrawer: React.FC<Props> = React.memo(
                   ) : null}
                 </DragOverlay>
               </DndContext>
-            </Box>
+            </div>
           ) : (
             /* General Preferences Tab */
             <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2.5, pt: 1 }}>

@@ -316,14 +316,14 @@ export const GithubActivityCalendar: React.FC<Props> = React.memo(
         >
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
             <CalendarMonthIcon sx={{ fontSize: 22, color: 'primary.main' }} />
-            <Box>
+            <div>
               <Typography
                 variant="subtitle1"
                 sx={{ fontWeight: 800, fontSize: '0.95rem', lineHeight: 1.2 }}
               >
                 {t('calendar.title')}
               </Typography>
-            </Box>
+            </div>
           </Box>
 
           {availableYears.length > 1 && (

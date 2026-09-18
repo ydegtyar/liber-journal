@@ -71,7 +71,7 @@ export const ImportStrategyDialog: React.FC<Props> = React.memo(
           >
             <FileUploadIcon />
           </Box>
-          <Box>
+          <div>
             <Typography variant="h6" sx={{ fontWeight: 700, fontSize: '1.1rem' }}>
               {t('importDialog.title')}
             </Typography>
@@ -80,7 +80,7 @@ export const ImportStrategyDialog: React.FC<Props> = React.memo(
                 ? `${t('importDialog.subtitle')} (${pendingTradeCount} incoming trades)`
                 : t('importDialog.subtitle')}
             </Typography>
-          </Box>
+          </div>
         </DialogTitle>
 
         <DialogContent sx={{ pt: 1.5, display: 'flex', flexDirection: 'column', gap: 2 }}>

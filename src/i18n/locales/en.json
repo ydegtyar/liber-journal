@@ -183,7 +183,12 @@
     "avg": "AVG",
     "share": "SHARE",
     "trend": "TREND",
-    "details": "Details"
+    "details": "Details",
+    "filterPlaceholder": "Filter instruments...",
+    "filterLabel": "Filter instruments",
+    "clearFilter": "Clear filter",
+    "noMatchingInstruments": "No matching instruments found",
+    "tableAria": "Instruments breakdown table"
   },
   "monthly": {
     "title": "Monthly Performance",
@@ -271,7 +276,73 @@
       "tradesView": {
         "name": "Trades Ledger & Daily Matrix",
         "description": "Interactive trade ledger table and spreadsheet daily export matrix"
+      },
+      "forecast": {
+        "name": "Performance Forecast & Scenarios",
+        "description": "Monte Carlo, regression, run-rate, and compounding projections across 3 risk modes"
       }
+    }
+  },
+  "forecast": {
+    "title": "Performance Forecast & Future Projections",
+    "models": {
+      "monteCarlo": "Monte Carlo",
+      "linearRegression": "Linear Trend",
+      "runRate": "Run-Rate",
+      "compounding": "Compounding"
+    },
+    "scenarios": {
+      "conservative": "Conservative",
+      "average": "Average",
+      "optimistic": "Optimistic"
+    },
+    "horizonModes": {
+      "time": "Time",
+      "trades": "Trades"
+    },
+    "timeHorizons": {
+      "1m": "1M",
+      "3m": "3M",
+      "6m": "6M",
+      "12m": "12M",
+      "approxTrades": "~{{count}} trades"
+    },
+    "horizons": {
+      "label": "Forward Horizon",
+      "tradesCount": "+{{count}} Trades"
+    },
+    "kpis": {
+      "projectedDeposit": "Projected Deposit",
+      "projectedPnl": "Projected P&L",
+      "projectedRoi": "Projected ROI",
+      "winProbability": "Probability of Profit",
+      "estimatedDrawdown": "Estimated Max Drawdown",
+      "currentBaseline": "Current Balance"
+    },
+    "chart": {
+      "historicalEquity": "Historical Balance",
+      "conservativeBound": "Conservative (10th %ile)",
+      "averageTrajectory": "Average (Expected)",
+      "optimisticBound": "Optimistic (90th %ile)",
+      "forecastRange": "Projected Scenario Range"
+    },
+    "techniques": {
+      "monteCarlo": "Resamples empirical trade distribution across thousands of iterations to generate probabilistic forecast bands.",
+      "linearRegression": "Projects future equity using an ordinary least squares trendline with statistical prediction intervals.",
+      "runRate": "Projects next periods using rolling historical averages weighted with empirical performance volatility.",
+      "compounding": "Compounds log-normal historical periodic returns forward, factoring geometric reinvestment and growth variance."
+    },
+    "techniqueDescription": {
+      "monteCarlo": "Resamples empirical trade distribution across thousands of iterations to generate probabilistic forecast bands.",
+      "linearRegression": "Projects future equity using an ordinary least squares trendline with statistical prediction intervals.",
+      "runRate": "Projects next periods using rolling historical averages weighted with empirical performance volatility.",
+      "compounding": "Compounds log-normal historical periodic returns forward, factoring geometric reinvestment and growth variance."
+    },
+    "disclaimer": "Past performance does not guarantee future results. Projections are theoretical models for analytical purposes only.",
+    "insufficientData": "Insufficient trade data for forecasting. Please record or import more trades.",
+    "placeholder": {
+      "title": "Select a Horizon to Generate Forecast",
+      "subtitle": "Choose a time period or trade count above to simulate Conservative, Average, and Optimistic scenarios."
     }
   },
   "legal": {
