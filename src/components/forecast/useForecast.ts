@@ -48,16 +48,18 @@ export function useForecast({
   const [asyncState, setAsyncState] = useState<{
     key: string;
     forecast: ForecastResult | null;
+    lastKnownForecast: ForecastResult | null;
     isLoading: boolean;
     error: Error | null;
   }>({
     key: cacheKey,
     forecast: cached,
+    lastKnownForecast: cached,
     isLoading: isEnabled && cached === null,
     error: null,
   });
 
-  // Track latest active request ID to ignore stale responses
+  // Track latest active request ID to ignore stale responses in effect
   const activeRequestIdRef = useRef<number>(0);
 
   useEffect(() => {
@@ -66,7 +68,7 @@ export function useForecast({
       return;
     }
 
-    // If result is already present in cache, no background calculation needed
+    // If result is already present in cache, skip background calculation
     if (getCachedForecast(cacheKey)) {
       return;
     }
@@ -81,6 +83,7 @@ export function useForecast({
           setAsyncState({
             key: cacheKey,
             forecast: result,
+            lastKnownForecast: result,
             isLoading: false,
             error: null,
           });
@@ -111,7 +114,9 @@ export function useForecast({
   }
 
   const isCurrentKey = asyncState.key === cacheKey;
-  const effectiveForecast = cached ?? (isCurrentKey ? asyncState.forecast : null);
+  const currentOrCached = cached ?? (isCurrentKey ? asyncState.forecast : null);
+  // Keep previous forecast rendered while new model or parameter calculates to prevent unmounting/blinking
+  const effectiveForecast = currentOrCached ?? asyncState.lastKnownForecast;
   const effectiveIsLoading = cached ? false : isCurrentKey ? asyncState.isLoading : true;
   const effectiveError = isCurrentKey ? asyncState.error : null;
 

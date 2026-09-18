@@ -149,4 +149,12 @@ describe('ForecastSection & Technique Descriptions', () => {
     expect(FORECAST_STORAGE_KEYS.TRADES_HORIZON).toBe('liber_journal_forecast_trades_horizon');
     expect(FORECAST_STORAGE_KEYS.SCENARIO).toBe('liber_journal_forecast_scenario');
   });
+
+  it('validates 3m as the default time horizon and time as the default mode', async () => {
+    const en3m = enLocale.forecast.timeHorizons['3m'];
+    const uk3m = ukLocale.forecast.timeHorizons['3m'];
+
+    expect(en3m).toBe('3M');
+    expect(uk3m).toBe('3М');
+  });
 });

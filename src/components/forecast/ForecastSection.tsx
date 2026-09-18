@@ -1,4 +1,4 @@
-import React, { useMemo, useTransition } from 'react';
+import React, { useState, useEffect, useMemo, useTransition } from 'react';
 import {
   Box,
   Paper,
@@ -83,13 +83,13 @@ export const ForecastSection: React.FC<Props> = React.memo(
       ? rawHorizonMode
       : 'time';
 
-    // Persist selected forecast horizon option between sessions (null by default for lazy computation)
+    // Persist selected forecast horizon option between sessions ('3m' by default on init)
     const [rawTimeHorizon, setTimeHorizon] = useLocalStorage<TimeHorizonKey | null>(
       FORECAST_STORAGE_KEYS.TIME_HORIZON,
-      null
+      '3m'
     );
-    const timeHorizon: TimeHorizonKey | null =
-      rawTimeHorizon && VALID_TIME_HORIZONS.includes(rawTimeHorizon) ? rawTimeHorizon : null;
+    const timeHorizon: TimeHorizonKey =
+      rawTimeHorizon && VALID_TIME_HORIZONS.includes(rawTimeHorizon) ? rawTimeHorizon : '3m';
 
     const [rawTradesHorizon, setTradesHorizon] = useLocalStorage<number | null>(
       FORECAST_STORAGE_KEYS.TRADES_HORIZON,
@@ -123,25 +123,28 @@ export const ForecastSection: React.FC<Props> = React.memo(
       return tradesHorizon;
     }, [horizonMode, monthlyTradesRate, timeHorizon, tradesHorizon]);
 
+    // Track if a specific horizon button was clicked to isolate its spinner
+    const [pendingHorizon, setPendingHorizon] = useState<string | number | null>(null);
+
     const handleModelChange = (_: React.SyntheticEvent, newModel: ForecastModelId) => {
-      startTransition(() => {
+      if (newModel) {
         setModel(newModel);
-      });
+      }
     };
 
     const handleHorizonModeChange = (mode: HorizonMode) => {
-      startTransition(() => {
-        setHorizonMode(mode);
-      });
+      setHorizonMode(mode);
     };
 
     const handleTimeHorizonSelect = (th: TimeHorizonKey) => {
+      setPendingHorizon(th);
       startTransition(() => {
         setTimeHorizon(th);
       });
     };
 
     const handleTradesHorizonSelect = (th: number) => {
+      setPendingHorizon(th);
       startTransition(() => {
         setTradesHorizon(th);
       });
@@ -174,6 +177,12 @@ export const ForecastSection: React.FC<Props> = React.memo(
       options: forecastOptions,
       enabled: hasSelectedOption && hasSufficientData,
     });
+
+    useEffect(() => {
+      if (!isLoading) {
+        setPendingHorizon(null);
+      }
+    }, [isLoading]);
 
     return (
       <section aria-label={t('forecast.title')}>
@@ -422,7 +431,7 @@ export const ForecastSection: React.FC<Props> = React.memo(
                         >
                           {t(`forecast.timeHorizons.${thKey}`)}
                         </Typography>
-                        {isSelected && isLoading ? (
+                        {isSelected && isLoading && pendingHorizon === thKey ? (
                           <Box
                             sx={{ display: 'inline-flex', alignItems: 'center', gap: 0.5, mt: 0.2 }}
                           >
@@ -505,7 +514,7 @@ export const ForecastSection: React.FC<Props> = React.memo(
                         >
                           +{count}
                         </Typography>
-                        {isSelected && isLoading ? (
+                        {isSelected && isLoading && pendingHorizon === count ? (
                           <Box
                             sx={{ display: 'inline-flex', alignItems: 'center', gap: 0.5, mt: 0.2 }}
                           >
@@ -646,7 +655,7 @@ export const ForecastSection: React.FC<Props> = React.memo(
               <Box component="span" sx={{ fontWeight: 800, color: 'primary.main', mr: 0.75 }}>
                 {t(`forecast.models.${model}`)}:
               </Box>
-              {t(forecast?.techniqueDescriptionKey ?? `forecast.techniques.${model}`)}
+              {t(`forecast.techniques.${model}`)}
             </Typography>
           </Box>
 
