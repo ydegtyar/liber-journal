@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useRef } from 'react';
 import {
   AppBar,
   Toolbar,
@@ -11,13 +11,16 @@ import {
   ListItemIcon,
   ListItemText,
   Tooltip,
+  CircularProgress,
 } from '@mui/material';
 import TranslateIcon from '@mui/icons-material/Translate';
 import CheckIcon from '@mui/icons-material/Check';
 import TuneIcon from '@mui/icons-material/Tune';
+import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import { useTranslation } from 'react-i18next';
 import { LanguageSelector } from '../settings/LanguageSelector';
 import { ThemeSwitcher } from '../settings/ThemeSwitcher';
+import { Logo } from '../common/Logo';
 import { ThemeMode } from '../../types/preferences';
 import { SUPPORTED_LOCALES } from '../../i18n';
 import { MOBILE_THEME_OPTIONS } from './mobileThemeOptions';
@@ -26,13 +29,30 @@ export interface Props {
   themeMode: ThemeMode;
   onThemeModeChange: (mode: ThemeMode) => void;
   onOpenSettings?: () => void;
+  onUploadFile?: (file: File) => Promise<unknown>;
+  isImporting?: boolean;
 }
 
 export const JournalHeader: React.FC<Props> = React.memo(
-  ({ themeMode, onThemeModeChange, onOpenSettings }) => {
+  ({ themeMode, onThemeModeChange, onOpenSettings, onUploadFile, isImporting = false }) => {
     const { t, i18n } = useTranslation();
     const [langAnchorEl, setLangAnchorEl] = useState<null | HTMLElement>(null);
     const [themeAnchorEl, setThemeAnchorEl] = useState<null | HTMLElement>(null);
+    const fileInputRef = useRef<HTMLInputElement>(null);
+
+    const handleUploadClick = useCallback(() => {
+      fileInputRef.current?.click();
+    }, []);
+
+    const handleFileChange = useCallback(
+      async (e: React.ChangeEvent<HTMLInputElement>) => {
+        if (e.target.files && e.target.files.length > 0 && onUploadFile) {
+          await onUploadFile(e.target.files[0]);
+          e.target.value = '';
+        }
+      },
+      [onUploadFile]
+    );
 
     const currentLang = i18n.language ? i18n.language.split('-')[0] : 'en';
     const isLangMenuOpen = Boolean(langAnchorEl);
@@ -103,21 +123,11 @@ export const JournalHeader: React.FC<Props> = React.memo(
               alignItems: 'center',
               gap: { xs: 1, sm: 1.5 },
               minWidth: 0,
-              overflow: 'hidden',
+              overflow: 'visible',
             }}
           >
-            <Box
-              component="img"
-              src="/favicon.svg"
-              alt="Trading Journal Logo"
-              sx={{
-                width: { xs: 24, sm: 28 },
-                height: { xs: 24, sm: 28 },
-                display: 'block',
-                flexShrink: 0,
-              }}
-            />
-            <Box sx={{ minWidth: 0 }}>
+            <Logo />
+            <Box sx={{ minWidth: 0, overflow: 'hidden' }}>
               <Typography
                 component="h1"
                 variant="subtitle1"
@@ -157,6 +167,34 @@ export const JournalHeader: React.FC<Props> = React.memo(
           >
             <LanguageSelector />
             <ThemeSwitcher currentMode={themeMode} onChange={onThemeModeChange} />
+            {onUploadFile && (
+              <Tooltip title={t('common.uploadCsv')} arrow>
+                <IconButton
+                  size="small"
+                  onClick={handleUploadClick}
+                  disabled={isImporting}
+                  aria-label={t('common.uploadCsv')}
+                  data-testid="header-upload-button"
+                  sx={{
+                    width: 32,
+                    height: 32,
+                    border: (theme) => `1px solid ${theme.palette.divider}`,
+                    borderRadius: 1,
+                    color: 'text.secondary',
+                    '&:hover': {
+                      backgroundColor: 'action.hover',
+                      color: 'text.primary',
+                    },
+                  }}
+                >
+                  {isImporting ? (
+                    <CircularProgress size={16} color="inherit" />
+                  ) : (
+                    <CloudUploadIcon sx={{ fontSize: 18 }} />
+                  )}
+                </IconButton>
+              </Tooltip>
+            )}
             {onOpenSettings && (
               <Tooltip title={t('layoutSettings.title')} arrow>
                 <IconButton
@@ -352,6 +390,36 @@ export const JournalHeader: React.FC<Props> = React.memo(
               })}
             </Menu>
 
+            {/* Mobile Upload File Button */}
+            {onUploadFile && (
+              <Tooltip title={t('common.uploadCsv')} arrow>
+                <IconButton
+                  size="small"
+                  onClick={handleUploadClick}
+                  disabled={isImporting}
+                  aria-label={t('common.uploadCsv')}
+                  data-testid="header-upload-button-mobile"
+                  sx={{
+                    width: 32,
+                    height: 32,
+                    border: (theme) => `1px solid ${theme.palette.divider}`,
+                    borderRadius: 1,
+                    color: 'text.secondary',
+                    '&:hover': {
+                      backgroundColor: 'action.hover',
+                      color: 'text.primary',
+                    },
+                  }}
+                >
+                  {isImporting ? (
+                    <CircularProgress size={16} color="inherit" />
+                  ) : (
+                    <CloudUploadIcon sx={{ fontSize: 18 }} />
+                  )}
+                </IconButton>
+              </Tooltip>
+            )}
+
             {/* Mobile Settings Button */}
             {onOpenSettings && (
               <Tooltip title={t('layoutSettings.title')} arrow>
@@ -378,6 +446,18 @@ export const JournalHeader: React.FC<Props> = React.memo(
             )}
           </Box>
         </Toolbar>
+
+        {/* Hidden File Input for Native File Selection */}
+        {onUploadFile && (
+          <input
+            type="file"
+            ref={fileInputRef}
+            onChange={handleFileChange}
+            accept=".csv,.tsv,.txt"
+            style={{ display: 'none' }}
+            data-testid="header-file-input"
+          />
+        )}
       </AppBar>
     );
   }

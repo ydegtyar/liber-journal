@@ -5,13 +5,18 @@ import packageJson from './package.json';
 
 const buildTimestamp = Date.now().toString();
 
-export default defineConfig({
+export default defineConfig(({ mode }) => ({
   define: {
     __APP_VERSION__: JSON.stringify(packageJson.version),
     __APP_BUILD_TIME__: JSON.stringify(buildTimestamp),
   },
   plugins: [
-    react(),
+    react({
+      babel: {
+        plugins:
+          mode === 'development' ? [['@locator/babel-jsx/dist', { env: 'development' }]] : [],
+      },
+    }),
     VitePWA({
       registerType: 'autoUpdate',
       includeAssets: [
@@ -106,4 +111,4 @@ export default defineConfig({
       },
     },
   },
-});
+}));

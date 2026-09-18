@@ -24,4 +24,12 @@ describe('JournalHeader mobile configurations', () => {
     expect(enLocale.default.layoutSettings.title).toBeTruthy();
     expect(ukLocale.default.layoutSettings.title).toBeTruthy();
   });
+
+  it('verifies common.uploadCsv translation exists for header upload button', async () => {
+    const enLocale = await import('../../i18n/locales/en.json');
+    const ukLocale = await import('../../i18n/locales/uk.json');
+
+    expect(enLocale.default.common.uploadCsv).toBe('Upload CSV');
+    expect(ukLocale.default.common.uploadCsv).toBe('Завантажити CSV');
+  });
 });

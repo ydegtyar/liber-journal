@@ -282,6 +282,15 @@ export const TradingJournalPage: React.FC = () => {
         themeMode={themeMode}
         onThemeModeChange={setThemeMode}
         onOpenSettings={handleOpenSettings}
+        onUploadFile={handleFileImport}
+        isImporting={isImporting}
+      />
+
+      {/* Full-Page Drag & Drop Overlay (active whenever a supported file is dragged) */}
+      <CsvUploadDropzone
+        onFileSelected={handleFileImport}
+        isImporting={isImporting}
+        fullPageOverlay
       />
 
       {/* Main Semantic Landmark Content Area */}
@@ -301,7 +310,11 @@ export const TradingJournalPage: React.FC = () => {
         ) : trades.length === 0 ? (
           /* Empty State */
           <Box sx={{ my: 'auto', py: 6, maxWidth: 640, mx: 'auto', width: '100%' }}>
-            <CsvUploadDropzone onFileSelected={handleFileImport} isImporting={isImporting} />
+            <CsvUploadDropzone
+              onFileSelected={handleFileImport}
+              isImporting={isImporting}
+              enableGlobalDrop={false}
+            />
           </Box>
         ) : /* Populated State with Dynamic Block Layout */
         visibleBlocks.length === 0 ? (

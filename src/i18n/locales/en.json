@@ -14,6 +14,8 @@
     "exportXlsx": "Export XLSX",
     "uploadCsv": "Upload CSV",
     "dragDrop": "Drag & drop broker CSV export here, or click to browse",
+    "dropAnywhere": "Drop broker export file anywhere to import",
+    "clientSideProcessing": "100% Client-Side & Private • Processed locally in browser",
     "supportedBrokers": "Supports Libertex CSV/TSV, tab-delimited exports, and standard broker tables",
     "settings": "Settings",
     "clearAllData": "Clear All Trades",

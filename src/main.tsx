@@ -4,6 +4,12 @@ import { App } from './App';
 import './i18n';
 import { registerPwaVersionBuster } from './lib/pwa';
 
+if (import.meta.env.DEV) {
+  import('@locator/runtime').then((locator) => {
+    locator.default();
+  });
+}
+
 registerPwaVersionBuster();
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
