@@ -151,6 +151,7 @@
     "customRange": "Свій діапазон",
     "startDate": "Дата початку",
     "endDate": "Дата кінця",
+    "defaultPeriod": "3 місяці (за замовчуванням)",
     "initialDeposit": "Початковий депозит"
   },
   "insights": {

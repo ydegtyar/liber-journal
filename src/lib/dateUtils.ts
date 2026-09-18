@@ -46,3 +46,34 @@ export function formatDisplayDate(dateKey: string): string {
   }
   return dateKey;
 }
+
+/**
+ * Formats Date to YYYY-MM-DD string using local time
+ */
+export function formatToYMD(date: Date): string {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+}
+
+/**
+ * Returns default 3-month range ending on current date in YYYY-MM-DD format
+ */
+export function getDefault3MonthsRange(): { startDate: string; endDate: string } {
+  const now = new Date();
+  const year = now.getFullYear();
+  const month = now.getMonth();
+  const day = now.getDate();
+
+  const past = new Date(year, month - 3, day);
+  const expectedMonth = (month - 3 + 12) % 12;
+  if (past.getMonth() !== expectedMonth) {
+    past.setDate(0);
+  }
+
+  return {
+    startDate: formatToYMD(past),
+    endDate: formatToYMD(now),
+  };
+}

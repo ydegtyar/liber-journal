@@ -16,13 +16,16 @@ import {
   Tooltip,
 } from '@mui/material';
 import FlagIcon from '@mui/icons-material/Flag';
-import CloseIcon from '@mui/icons-material/Close';
 import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
 import { useTranslation } from 'react-i18next';
 import { TimeframeOption } from '../../types/trade';
 import { NumberFormatOption } from '../../types/preferences';
 import { formatSignedPnl, formatPercent, formatCurrency } from '../../lib/formatters';
 import { DepositEditor } from '../deposit/DepositEditor';
+
+const CustomRangePickerDialog = React.lazy(() =>
+  import('./CustomRangePickerDialog').then((m) => ({ default: m.CustomRangePickerDialog }))
+);
 
 interface Props {
   netPnl: number;
@@ -81,8 +84,6 @@ export const TimeframeHeaderBanner: React.FC<Props> = React.memo(
     const [goalInput, setGoalInput] = useState(monthlyGoal > 0 ? String(monthlyGoal) : '');
 
     const [customRangeDialogOpen, setCustomRangeDialogOpen] = useState(false);
-    const [startDateInput, setStartDateInput] = useState(customStartDate);
-    const [endDateInput, setEndDateInput] = useState(customEndDate);
 
     const pnlData = formatSignedPnl(netPnl, currency, numberFormat, currentLang);
     const roiText = formatPercent(roiPercent, 2, numberFormat, currentLang);
@@ -92,12 +93,6 @@ export const TimeframeHeaderBanner: React.FC<Props> = React.memo(
       onUpdateMonthlyGoal(isNaN(val) || val < 0 ? 0 : val);
       setGoalDialogOpen(false);
     }, [goalInput, onUpdateMonthlyGoal]);
-
-    const handleSaveCustomRange = useCallback(() => {
-      onUpdateCustomRange(startDateInput, endDateInput);
-      onSelectTimeframe('CUSTOM');
-      setCustomRangeDialogOpen(false);
-    }, [startDateInput, endDateInput, onUpdateCustomRange, onSelectTimeframe]);
 
     const handleOpenGoalDialog = useCallback(() => {
       setGoalInput(monthlyGoal > 0 ? String(monthlyGoal) : '');
@@ -121,16 +116,17 @@ export const TimeframeHeaderBanner: React.FC<Props> = React.memo(
       setCustomRangeDialogOpen(false);
     }, []);
 
+    const handleApplyCustomRange = useCallback(
+      (start: string, end: string) => {
+        onUpdateCustomRange(start, end);
+        onSelectTimeframe('CUSTOM');
+        setCustomRangeDialogOpen(false);
+      },
+      [onUpdateCustomRange, onSelectTimeframe]
+    );
+
     const handleGoalInputChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
       setGoalInput(e.target.value);
-    }, []);
-
-    const handleStartDateChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-      setStartDateInput(e.target.value);
-    }, []);
-
-    const handleEndDateChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-      setEndDateInput(e.target.value);
     }, []);
 
     const goalProgress =
@@ -350,56 +346,18 @@ export const TimeframeHeaderBanner: React.FC<Props> = React.memo(
           </DialogActions>
         </Dialog>
 
-        {/* Custom Range Dialog */}
-        <Dialog
-          open={customRangeDialogOpen}
-          onClose={handleCloseCustomRangeDialog}
-          maxWidth="xs"
-          fullWidth
-        >
-          <DialogTitle
-            sx={{
-              fontSize: '1rem',
-              fontWeight: 700,
-              display: 'flex',
-              justifyContent: 'space-between',
-              alignItems: 'center',
-            }}
-          >
-            {t('banner.customRange', { defaultValue: 'Свій діапазон' })}
-            <IconButton size="small" onClick={handleCloseCustomRangeDialog}>
-              <CloseIcon fontSize="small" />
-            </IconButton>
-          </DialogTitle>
-          <DialogContent>
-            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, pt: 1 }}>
-              <TextField
-                type="date"
-                label={t('banner.startDate', { defaultValue: 'Дата початку' })}
-                value={startDateInput}
-                onChange={handleStartDateChange}
-                slotProps={{ inputLabel: { shrink: true } }}
-                fullWidth
-              />
-              <TextField
-                type="date"
-                label={t('banner.endDate', { defaultValue: 'Дата кінця' })}
-                value={endDateInput}
-                onChange={handleEndDateChange}
-                slotProps={{ inputLabel: { shrink: true } }}
-                fullWidth
-              />
-            </Box>
-          </DialogContent>
-          <DialogActions>
-            <Button onClick={handleCloseCustomRangeDialog}>
-              {t('common.cancel', { defaultValue: 'Скасувати' })}
-            </Button>
-            <Button variant="contained" onClick={handleSaveCustomRange}>
-              {t('common.save', { defaultValue: 'Застосувати' })}
-            </Button>
-          </DialogActions>
-        </Dialog>
+        {/* Lazy-loaded Custom Range Dialog */}
+        {customRangeDialogOpen && (
+          <React.Suspense fallback={null}>
+            <CustomRangePickerDialog
+              open={customRangeDialogOpen}
+              onClose={handleCloseCustomRangeDialog}
+              customStartDate={customStartDate}
+              customEndDate={customEndDate}
+              onApply={handleApplyCustomRange}
+            />
+          </React.Suspense>
+        )}
       </Paper>
     );
   }

@@ -151,6 +151,7 @@
     "customRange": "Custom Range",
     "startDate": "Start Date",
     "endDate": "End Date",
+    "defaultPeriod": "3 months (default)",
     "initialDeposit": "Initial Deposit"
   },
   "insights": {
