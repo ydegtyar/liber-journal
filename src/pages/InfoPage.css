@@ -961,6 +961,36 @@
   gap: 8px;
 }
 
+/* Responsive Mobile Media Queries for Navigation & Header */
+@media (max-width: 900px) {
+  .info-nav-container {
+    padding: 10px 16px;
+  }
+
+  .info-nav-links {
+    display: none;
+  }
+
+  .info-brand-tag {
+    display: none;
+  }
+
+  .info-btn-launch {
+    padding: 6px 14px;
+    font-size: 0.8125rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .info-brand-name {
+    font-size: 1rem;
+  }
+
+  .info-btn-launch span {
+    font-size: 0.75rem;
+  }
+}
+
 /* Accessibility: respect reduced motion */
 @media (prefers-reduced-motion: reduce) {
   .info-orb,

@@ -13,6 +13,7 @@ import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import WifiOffOutlinedIcon from '@mui/icons-material/WifiOffOutlined';
 import LayersOutlinedIcon from '@mui/icons-material/LayersOutlined';
 import ShowChartOutlinedIcon from '@mui/icons-material/ShowChartOutlined';
+import { Logo } from '../components/common/Logo';
 import './InfoPage.css';
 
 interface ThemeOption {
@@ -289,7 +290,7 @@ const InfoPage: React.FC = () => {
       <header className="info-header">
         <nav className="info-nav-container" aria-label="Main Navigation">
           <Link to="/" className="info-brand" title="Liber Journal Home">
-            <div className="info-brand-icon">LJ</div>
+            <Logo size={28} />
             <div>
               <span className="info-brand-name">Liber Journal</span>
             </div>
@@ -483,9 +484,6 @@ const InfoPage: React.FC = () => {
                 Instant macro overview of active trading period (Day, Week, Month, Year, All-Time,
                 Custom). Real-time deposit quick-editor and monthly profit target progress tracking.
               </p>
-              <div className="info-card-meta">
-                <span>Block ID: timeframeBanner</span>
-              </div>
             </article>
 
             {/* Block 2: Quantitative Risk Metrics */}
@@ -499,9 +497,6 @@ const InfoPage: React.FC = () => {
                 Breakeven), dedicated Breakeven Rate, Profit Factor, Mathematical Expectancy, and
                 Average Win/Loss ratio.
               </p>
-              <div className="info-card-meta">
-                <span>Block ID: statsGrid</span>
-              </div>
             </article>
 
             {/* Block 3: Period Insights */}
@@ -514,25 +509,19 @@ const InfoPage: React.FC = () => {
                 Automated algorithmic observations detecting trading discipline, peak risk exposure,
                 session strengths, and period-over-period performance acceleration.
               </p>
-              <div className="info-card-meta">
-                <span>Block ID: periodInsights</span>
-              </div>
             </article>
 
-            {/* Block 4: Recharts Visual Suite */}
+            {/* Block 4: Interactive Visual Suite */}
             <article className="info-bento-card info-card-col-6">
               <div className="info-card-icon">
                 <ShowChartOutlinedIcon />
               </div>
-              <h3 className="info-card-title">Five Recharts Interactive Visualizations</h3>
+              <h3 className="info-card-title">Five Interactive Visualizations</h3>
               <p className="info-card-desc">
                 Smooth 60fps responsive charts: Cumulative Running Equity Curve, Periodic Net
                 P&amp;L bars (color-coded by gain/loss/breakeven), Day-of-Week edge distribution,
                 Underwater Drawdown area chart, and Symbol comparison.
               </p>
-              <div className="info-card-meta">
-                <span>Block ID: visualizations · Recharts Engine</span>
-              </div>
             </article>
 
             {/* Block 5: Daily Orders Matrix */}
@@ -546,9 +535,6 @@ const InfoPage: React.FC = () => {
                 count, sequential trade P&amp;Ls, and daily total. Features 1-click TSV clipboard
                 copy and drag-and-drop column reordering.
               </p>
-              <div className="info-card-meta">
-                <span>Block ID: tradesView · @dnd-kit Sortable</span>
-              </div>
             </article>
 
             {/* Block 6: Performance Forecast & Scenarios */}
@@ -561,11 +547,8 @@ const InfoPage: React.FC = () => {
                 Four statistical methodologies (Monte Carlo 2,000 bootstrap resampling, OLS linear
                 regression, rolling run-rate, and compounding geometric rate). Generates
                 Conservative (10th percentile), Average (50th percentile), and Optimistic (90th
-                percentile) fan charts offloaded to a Web Worker.
+                percentile) fan charts offloaded to background threads.
               </p>
-              <div className="info-card-meta">
-                <span>Block ID: forecast · Multithreaded Web Worker</span>
-              </div>
             </article>
 
             {/* Block 7: Streak Analysis */}
@@ -578,9 +561,6 @@ const InfoPage: React.FC = () => {
                 Tracks active runs and historical records of winning, losing, and breakeven streaks
                 to combat tilt and maintain psychological discipline.
               </p>
-              <div className="info-card-meta">
-                <span>Block ID: streakAnalysis</span>
-              </div>
             </article>
           </div>
         </section>
@@ -865,11 +845,11 @@ const InfoPage: React.FC = () => {
               <div className="info-card-icon">
                 <LockOutlinedIcon />
               </div>
-              <h3 className="info-card-title">IndexedDB Local Storage</h3>
+              <h3 className="info-card-title">Local Browser Storage</h3>
               <p className="info-card-desc">
-                All records, broker deals, notes, and custom setups are stored inside your
-                browser&apos;s IndexedDB engine using Dexie.js. Zero database accounts, zero
-                passwords, zero remote tracking.
+                All records, broker deals, notes, and custom setups are stored securely inside your
+                browser&apos;s local database. Zero database accounts, zero passwords, zero remote
+                tracking.
               </p>
             </div>
 
@@ -879,7 +859,7 @@ const InfoPage: React.FC = () => {
               </div>
               <h3 className="info-card-title">Full Offline Functionality</h3>
               <p className="info-card-desc">
-                Registered as an installable Progressive Web App (PWA) with Workbox service worker
+                Registered as an installable Progressive Web App (PWA) with intelligent offline
                 caching. Analyze your trades on an airplane, off-grid, or during network disruptions
                 with complete parity.
               </p>
@@ -889,9 +869,9 @@ const InfoPage: React.FC = () => {
               <div className="info-card-icon">
                 <FileDownloadOutlinedIcon />
               </div>
-              <h3 className="info-card-title">Dynamic ExcelJS Export</h3>
+              <h3 className="info-card-title">Dynamic Excel Export</h3>
               <p className="info-card-desc">
-                Generates native multi-sheet Excel files (.xlsx) with actual formulas (
+                Generates native multi-sheet Excel files (.xlsx) with live calculated formulas (
                 <code>=SUM</code>, <code>=COUNT</code>, named range <code>InitialDeposit</code>).
                 Edit any cell in Excel and the entire workbook recalculates automatically.
               </p>
@@ -918,9 +898,8 @@ const InfoPage: React.FC = () => {
               </summary>
               <div className="info-faq-content">
                 No. Liber Journal is a zero-backend, client-side application. When you drop a broker
-                CSV file, it is parsed directly by your browser using PapaParse and stored in your
-                local IndexedDB database via Dexie.js. No third-party servers ever touch your
-                trading data.
+                CSV file, it is parsed directly inside your browser and stored in your local browser
+                database. No third-party servers ever touch your trading data.
               </div>
             </details>
 
@@ -956,11 +935,11 @@ const InfoPage: React.FC = () => {
                 <span className="info-faq-icon">+</span>
               </summary>
               <div className="info-faq-content">
-                Rather than dumping static numbers, the export engine leverages ExcelJS to write
-                native Excel formulas. The Daily Orders Matrix features dynamic{' '}
-                <code>=COUNT(...)</code> and <code>=SUM(...)</code> formulas, named ranges, and
-                bilingual explanatory notes. Modifying any trade in Excel or Google Sheets
-                automatically updates daily, weekly, and monthly totals.
+                Rather than dumping static numbers, the export engine writes native Excel formulas.
+                The Daily Orders Matrix features dynamic <code>=COUNT(...)</code> and{' '}
+                <code>=SUM(...)</code> formulas, named ranges, and bilingual explanatory notes.
+                Modifying any trade in Excel or Google Sheets automatically updates daily, weekly,
+                and monthly totals.
               </div>
             </details>
 
@@ -971,9 +950,8 @@ const InfoPage: React.FC = () => {
               </summary>
               <div className="info-faq-content">
                 Yes. All 9 dashboard blocks can be rearranged via accessible drag-and-drop
-                (supporting both mouse and keyboard navigation via @dnd-kit). You can toggle
-                individual block visibility, and your layout sequence persists automatically in
-                IndexedDB.
+                (supporting both mouse and keyboard navigation). You can toggle individual block
+                visibility, and your layout sequence persists automatically in your browser.
               </div>
             </details>
           </div>
