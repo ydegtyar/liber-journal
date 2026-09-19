@@ -47,14 +47,14 @@ export const SEOHead: React.FC<Props> = React.memo(
             description:
               'Institutional-grade client-side trading journal terminal with real-time analytics, Sharpe ratio, continuous ledger, and live-formula Excel exports.',
             inLanguage: ['en', 'uk'],
-            browserRequirements: 'Requires JavaScript and IndexedDB support',
+            browserRequirements: 'Requires modern web browser',
             offers: {
               '@type': 'Offer',
               price: '0',
               priceCurrency: 'USD',
             },
             featureList: [
-              'Client-side zero-knowledge privacy with Dexie.js and IndexedDB',
+              'Client-side zero-knowledge privacy with local browser storage',
               'Multi-broker CSV import (MT4/5, Interactive Brokers, Binance, Bybit)',
               'Real-time calculation of Win Rate, Profit Factor, Sharpe Ratio, and Drawdowns',
               'Dynamic Recharts equity curve and daily PnL distribution',
@@ -70,7 +70,7 @@ export const SEOHead: React.FC<Props> = React.memo(
                 name: 'Is my financial trading data uploaded to external servers?',
                 acceptedAnswer: {
                   '@type': 'Answer',
-                  text: 'No. Liber Journal runs entirely inside your browser. All trade records, notes, and metrics remain client-side in your local IndexedDB storage.',
+                  text: 'No. Liber Journal runs entirely inside your browser. All trade records, notes, and metrics remain client-side in your local browser storage.',
                 },
               },
               {

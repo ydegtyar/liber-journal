@@ -112,7 +112,7 @@
             "operatingSystem": "All modern browsers (Web Standards), Windows, macOS, Linux, iOS, Android",
             "description": "Institutional-grade client-side trading journal terminal with real-time analytics, quantitative edge calculations, continuous ledger, Monte Carlo forecasting, and live-formula ExcelJS exports.",
             "inLanguage": ["en", "uk"],
-            "browserRequirements": "Requires JavaScript and IndexedDB support",
+            "browserRequirements": "Requires JavaScript and modern local browser storage support",
             "codeRepository": "https://github.com/ydegtyar/liber-journal",
             "license": "https://opensource.org/licenses/MIT",
             "author": {
@@ -126,7 +126,7 @@
               "priceCurrency": "USD"
             },
             "featureList": [
-              "100% Client-side zero-knowledge privacy with Dexie.js and IndexedDB (no servers, no tracking)",
+              "100% Client-side zero-knowledge privacy with encrypted local browser storage (no servers, no tracking)",
               "Multi-broker CSV/TSV parser for Libertex (UA & EN), MT4, MT5, Interactive Brokers, Binance, Bybit",
               "Win Rate formula strictly excluding Breakeven: Wins / (Wins + Losses) * 100",
               "Dedicated Breakeven Metric tracking count and BE rate %",
@@ -150,7 +150,7 @@
                 "name": "Is my trading data uploaded to external servers?",
                 "acceptedAnswer": {
                   "@type": "Answer",
-                  "text": "No. Liber Journal is a 100% client-side, zero-knowledge terminal. Your trade records, execution history, and portfolio balances are stored locally in your browser via IndexedDB using Dexie.js. No server databases, telemetry, or remote backups ever touch your trades."
+                  "text": "No. Liber Journal is a 100% client-side, zero-knowledge terminal. Your trade records, execution history, and portfolio balances are stored locally in your browser storage. No server databases, telemetry, or remote backups ever touch your trades."
                 }
               },
               {
@@ -688,9 +688,9 @@
         </h1>
         <p>
           Liber Journal is an institutional-grade, client-side trading terminal engineered to
-          replace fragile spreadsheets. It executes 100% inside your browser using IndexedDB
-          (Dexie.js) with zero cloud persistence and zero tracking. Please enable JavaScript to
-          access the terminal.
+          replace fragile spreadsheets. It executes 100% inside your browser using local browser
+          storage with zero cloud persistence and zero tracking. Please enable JavaScript to access
+          the terminal.
         </p>
         <p>
           To view the complete terminal architecture, quantitative formulas, and interactive
@@ -703,8 +703,8 @@
         <h2 style="color: #f0f6fc; font-size: 1.2rem">Core Architectural Highlights</h2>
         <ul>
           <li>
-            <strong>Zero-Knowledge Privacy:</strong> Trades are saved exclusively in local
-            IndexedDB.
+            <strong>Zero-Knowledge Privacy:</strong> Trades are saved exclusively in local browser
+            storage.
           </li>
           <li>
             <strong>Institutional Risk Metrics:</strong> Win Rate strictly excluding Breakeven,

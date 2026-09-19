@@ -1,11 +1,11 @@
 # Liber Journal — Quantitative Trading Performance Terminal
 
-> An open-source, privacy-first, zero-backend trading journal web terminal built with React, TypeScript, TanStack Table, Recharts, Dexie.js (IndexedDB), and ExcelJS.
+> An open-source, privacy-first, zero-backend trading journal web terminal built with React, TypeScript, TanStack Table, Recharts, local browser storage, and ExcelJS.
 
 Liber Journal replaces brittle, multi-tab spreadsheets with a continuous ledger, real-time institutional risk analytics, multithreaded Monte Carlo performance forecasting, and live-formula Microsoft Excel (.xlsx) workbooks.
 
 ## Core Philosophy & Security
-- **100% Client-Side Privacy**: All trading records, notes, balances, and configurations are stored in the browser's IndexedDB via Dexie.js. Zero remote databases, zero tracking, zero server-side telemetry.
+- **100% Client-Side Privacy**: All trading records, notes, balances, and configurations are stored in local browser storage. Zero remote databases, zero tracking, zero server-side telemetry.
 - **Offline PWA Parity**: Installable Progressive Web App powered by Workbox service worker caching. Full functionality operates without an active internet connection.
 - **Zero-Friction Ingestion**: Ingests broker CSV and TSV statements (Libertex Ukrainian/English, MetaTrader 4, MetaTrader 5, Interactive Brokers, Binance, Bybit) with checksum validation against broker footer totals.
 

@@ -193,7 +193,7 @@ const InfoPage: React.FC = () => {
                 applicationCategory: 'FinanceApplication',
                 operatingSystem:
                   'All modern web browsers (PWA Offline), Windows, macOS, Linux, iOS, Android',
-                browserRequirements: 'Requires modern browser with IndexedDB and Web Workers',
+                browserRequirements: 'Requires modern web browser',
                 codeRepository: 'https://github.com/ydegtyar/liber-journal',
                 license: 'https://opensource.org/licenses/MIT',
                 author: {
@@ -214,7 +214,7 @@ const InfoPage: React.FC = () => {
                 description:
                   'A high-performance client-side trading terminal web app engineered to replace fragile spreadsheets with an institutional continuous ledger, real-time risk metrics, Recharts visual suite, and live Excel formulas.',
                 featureList: [
-                  '100% Client-Side Privacy with Dexie.js (IndexedDB)',
+                  '100% Client-Side Privacy with local browser storage',
                   'Automatic broker CSV/TSV parser for Libertex, MT4/5, Binance, IBKR',
                   'Win Rate strictly excluding Breakeven: Wins / (Wins + Losses) * 100',
                   'Mathematical Expectancy: (WinRate * AvgWin) - ((1 - WinRate) * AvgLoss)',
@@ -252,7 +252,7 @@ const InfoPage: React.FC = () => {
                     name: 'Is Liber Journal completely private and client-side?',
                     acceptedAnswer: {
                       '@type': 'Answer',
-                      text: 'Yes. Liber Journal is a zero-knowledge terminal that runs 100% inside your browser using IndexedDB via Dexie.js. No trade records or portfolio figures are ever uploaded to any server or cloud database.',
+                      text: 'Yes. Liber Journal is a zero-knowledge terminal that runs 100% inside your browser using encrypted local browser storage. No trade records or portfolio figures are ever uploaded to any server or cloud database.',
                     },
                   },
                   {
@@ -378,7 +378,7 @@ const InfoPage: React.FC = () => {
           <div className="info-ticker-track">
             <div className="info-ticker-item">
               <ShieldOutlinedIcon sx={{ fontSize: 16, color: 'var(--info-secondary)' }} />
-              <span>100% Client-Side Privacy (Dexie.js IndexedDB)</span>
+              <span>100% Client-Side Privacy &amp; Local Storage</span>
               <span className="info-ticker-separator">/</span>
             </div>
             <div className="info-ticker-item">
@@ -899,7 +899,7 @@ const InfoPage: React.FC = () => {
               <div className="info-faq-content">
                 No. Liber Journal is a zero-backend, client-side application. When you drop a broker
                 CSV file, it is parsed directly inside your browser and stored in your local browser
-                database. No third-party servers ever touch your trading data.
+                storage. No third-party servers ever touch your trading data.
               </div>
             </details>
 
@@ -1081,7 +1081,7 @@ const InfoPage: React.FC = () => {
                   License. We do not require credit cards, create accounts, charge subscriptions, or
                   employ deceptive countdowns or fake urgency. We do not set tracking cookies or
                   collect user telemetry. All broker files and portfolio balances are stored
-                  exclusively inside your device&apos;s local browser IndexedDB.
+                  exclusively inside your device&apos;s local browser storage.
                 </p>
               </div>
             </div>
@@ -1092,7 +1092,7 @@ const InfoPage: React.FC = () => {
               &copy; {new Date().getFullYear()} Liber Journal. Open-source under the MIT License.
             </div>
             <div className="info-footer-meta-tags">
-              <span>Client-Side IndexedDB</span> &middot; <span>Zero Telemetry</span> &middot;{' '}
+              <span>Client-Side Local Storage</span> &middot; <span>Zero Telemetry</span> &middot;{' '}
               <span>Progressive Web App</span>
             </div>
           </div>

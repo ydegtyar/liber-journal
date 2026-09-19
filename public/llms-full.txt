@@ -17,7 +17,7 @@ Liber Journal is an institutional-grade, zero-knowledge, client-side trading ter
 Client Browser Architecture:
 ├── React 19 + TypeScript (Strict Mode) + Vite 6
 ├── UI Layer: Material UI v6 (with global disableRipple & visible focus rings)
-├── Data Persistence: Dexie.js 4 (IndexedDB)
+├── Data Persistence: Encrypted Local Browser Storage
 ├── Ingestion Engine: PapaParse (streaming CSV/TSV parser with delimiter auto-detection)
 ├── Math Engine: Pure functional calculations in src/lib/calculations.ts
 ├── Multithreaded Analytics: Dedicated Web Worker (src/workers/forecast.worker.ts)
@@ -128,6 +128,6 @@ The workbook generator (`src/lib/xlsxTemplate.ts`) produces 3 sheets:
 
 ## 6. Privacy & Offline Guarantees
 
-- **No Remote Storage**: Data is saved locally using Dexie.js on top of browser IndexedDB.
+- **No Remote Storage**: Data is saved locally in browser storage.
 - **Zero Third-Party Telemetry**: No user trades or financial metrics are ever uploaded to any cloud server or database.
 - **Offline PWA**: Fully functional offline via Service Worker (`vite-plugin-pwa` + Workbox `generateSW`).
