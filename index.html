@@ -74,32 +74,73 @@
       />
     </noscript>
 
+    <!-- Generative AI Optimization (GEO) & Machine-Readable Discovery -->
+    <link
+      rel="alternate"
+      type="text/plain"
+      href="https://liber-journal.vercel.app/llms.txt"
+      title="LLM-friendly description"
+    />
+    <link
+      rel="alternate"
+      type="text/plain"
+      href="https://liber-journal.vercel.app/llms-full.txt"
+      title="Complete LLM specification"
+    />
+    <meta name="ai-content-declaration" content="human-authored" />
+    <meta
+      name="citation_title"
+      content="Liber Journal — Quantitative Trading Terminal &amp; Performance Architecture"
+    />
+    <meta name="citation_author" content="Yuriy Degtyar" />
+    <meta name="citation_publication_date" content="2026/01/01" />
+
     <!-- Schema.org JSON-LD for Generative Engine Optimization (GEO) & Search Engines -->
     <script type="application/ld+json">
       {
         "@context": "https://schema.org",
         "@graph": [
           {
-            "@type": "WebApplication",
+            "@type": "SoftwareApplication",
             "@id": "https://liber-journal.vercel.app/#webapp",
             "name": "Liber Journal",
             "url": "https://liber-journal.vercel.app/",
+            "sameAs": [
+              "https://github.com/ydegtyar/liber-journal",
+              "https://www.wikidata.org/wiki/Q1048607",
+              "https://www.wikidata.org/wiki/Q2334803"
+            ],
             "applicationCategory": "FinanceApplication",
-            "operatingSystem": "All modern browsers (Web Standards)",
-            "description": "Institutional-grade client-side trading journal terminal with real-time analytics, Sharpe ratio, continuous ledger, and live-formula Excel exports.",
+            "operatingSystem": "All modern browsers (Web Standards), Windows, macOS, Linux, iOS, Android",
+            "description": "Institutional-grade client-side trading journal terminal with real-time analytics, quantitative edge calculations, continuous ledger, Monte Carlo forecasting, and live-formula ExcelJS exports.",
             "inLanguage": ["en", "uk"],
             "browserRequirements": "Requires JavaScript and IndexedDB support",
+            "codeRepository": "https://github.com/ydegtyar/liber-journal",
+            "license": "https://opensource.org/licenses/MIT",
+            "author": {
+              "@type": "Person",
+              "name": "Yuriy Degtyar",
+              "url": "https://github.com/ydegtyar"
+            },
             "offers": {
               "@type": "Offer",
               "price": "0",
               "priceCurrency": "USD"
             },
             "featureList": [
-              "Client-side zero-knowledge privacy with Dexie.js and IndexedDB",
-              "Multi-broker CSV import (MT4/5, Interactive Brokers, Binance, Bybit)",
-              "Real-time calculation of Win Rate, Profit Factor, Sharpe Ratio, and Drawdowns",
-              "Dynamic Recharts equity curve and daily PnL distribution",
-              "Institutional ExcelJS live-formula workbooks with dynamic monthly sheets"
+              "100% Client-side zero-knowledge privacy with Dexie.js and IndexedDB (no servers, no tracking)",
+              "Multi-broker CSV/TSV parser for Libertex (UA & EN), MT4, MT5, Interactive Brokers, Binance, Bybit",
+              "Win Rate formula strictly excluding Breakeven: Wins / (Wins + Losses) * 100",
+              "Dedicated Breakeven Metric tracking count and BE rate %",
+              "Mathematical Expectancy: (WinRate * AvgWin) - ((1 - WinRate) * AvgLoss)",
+              "Profit Factor: Gross Win / abs(Gross Loss)",
+              "Peak-to-trough Drawdown in currency amount ($) and percentage (%)",
+              "Multithreaded Monte Carlo simulation with 2,000 bootstrap random-walk resamples",
+              "Dynamic Recharts equity curves, monthly returns matrix, and day-of-week distributions",
+              "Institutional ExcelJS live-formula workbooks with dynamic recalculation (=SUM, =COUNT)",
+              "Daily Orders Matrix Table with 1-click TSV clipboard copy and drag-and-drop column reordering",
+              "Progressive Web App (PWA) with Workbox service worker and 100% offline parity",
+              "5 Terminal Themes (Midnight OLED, Dark, Unicorn Synthwave, Light, System)"
             ]
           },
           {
@@ -111,7 +152,15 @@
                 "name": "Is my trading data uploaded to external servers?",
                 "acceptedAnswer": {
                   "@type": "Answer",
-                  "text": "No. Liber Journal is a 100% client-side, zero-knowledge terminal. Your trade records, execution history, and portfolio balances are stored locally in your browser via IndexedDB."
+                  "text": "No. Liber Journal is a 100% client-side, zero-knowledge terminal. Your trade records, execution history, and portfolio balances are stored locally in your browser via IndexedDB using Dexie.js. No server databases, telemetry, or remote backups ever touch your trades."
+                }
+              },
+              {
+                "@type": "Question",
+                "name": "How does Liber Journal calculate Win Rate and Breakeven trades?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "Unlike spreadsheets that dilute win rate by treating breakeven trades as losses or inflating the denominator, Liber Journal follows quantitative standards: Win Rate = Wins / (Wins + Losses) * 100. Breakeven trades (PnL = 0) are tracked separately with dedicated count and Breakeven Rate percentages."
                 }
               },
               {
@@ -119,7 +168,7 @@
                 "name": "Which broker CSV export formats are supported?",
                 "acceptedAnswer": {
                   "@type": "Answer",
-                  "text": "Liber Journal supports trade exports from MetaTrader 4, MetaTrader 5, Interactive Brokers, Binance, Bybit, and generic customizable CSV schemas."
+                  "text": "Liber Journal natively parses broker statements from Libertex (both Ukrainian and English formats), MetaTrader 4, MetaTrader 5, Interactive Brokers, Binance, Bybit, and generic tabular CSV/TSV files with automated delimiter detection."
                 }
               },
               {
@@ -127,7 +176,23 @@
                 "name": "Does the Excel export support live dynamic formulas?",
                 "acceptedAnswer": {
                   "@type": "Answer",
-                  "text": "Yes. Spreadsheets exported from Liber Journal use native ExcelJS formulas (SUM, AVERAGE, IF), allowing dynamic auditing directly in Excel or Google Sheets."
+                  "text": "Yes. Spreadsheets exported from Liber Journal use native ExcelJS formulas (=SUM, =COUNT, =AVERAGE) and named range InitialDeposit, allowing live dynamic recalculation in Microsoft Excel, Apple Numbers, LibreOffice, and Google Sheets."
+                }
+              },
+              {
+                "@type": "Question",
+                "name": "What performance forecasting models are included?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "The terminal features Monte Carlo Bootstrap Resampling (2,000 iterations), Ordinary Least Squares (OLS) Linear Regression, Moving Average Run-Rate, and Compounding Geometric Growth models, multithreaded in a dedicated Web Worker."
+                }
+              },
+              {
+                "@type": "Question",
+                "name": "Can Liber Journal work completely offline?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "Yes. Liber Journal is an installable Progressive Web App (PWA) with Workbox service worker caching. All parsing, calculations, charting, and Excel exports execute client-side with 100% feature parity when offline."
                 }
               }
             ]
@@ -139,28 +204,8 @@
     <!--
       Pre-hydration loader styles.
       Once React mounts, #root content is replaced — the loader disappears naturally.
-      The .seo-fallback section lives OUTSIDE #root so it is never flash-removed by React;
-      it is hidden immediately by JS so users never see it, but crawlers do.
     -->
     <style>
-      /*
-       * Visually hide SEO content from sighted users without removing from DOM.
-       * Unlike display:none, this keeps content fully parseable by search engine
-       * renderers (Googlebot WRS, Bingbot, GPTBot, PerplexityBot) and accessible
-       * to screen readers, preserving full SEO and GEO value.
-       */
-      .seo-fallback {
-        position: absolute !important;
-        width: 1px !important;
-        height: 1px !important;
-        padding: 0 !important;
-        margin: -1px !important;
-        overflow: hidden !important;
-        clip: rect(0, 0, 0, 0) !important;
-        white-space: nowrap !important;
-        border: 0 !important;
-      }
-
       @keyframes preCandlePulse {
         0%,
         100% {
@@ -623,56 +668,66 @@
     </div>
 
     <!--
-      SEO-only semantic content for AI crawlers and search engines.
-      Lives OUTSIDE #root so React never touches it — no hydration shift.
-      Hidden via CSS for JS-capable browsers (the .seo-fallback class rule above).
-      Non-JS crawlers and <noscript> override make it visible for indexing.
+      Noscript fallback for non-JavaScript users and web crawlers.
+      Provides transparent, compliant overview without cloaking or off-screen hidden text.
     -->
-    <div class="seo-fallback">
-      <section
-        aria-label="Terminal Overview"
+    <noscript>
+      <div
         style="
-          max-width: 1280px;
-          margin: 0 auto;
-          padding: 2rem 1.5rem;
+          max-width: 800px;
+          margin: 40px auto;
+          padding: 28px;
+          background-color: #161b22;
+          border: 1px solid #30363d;
+          border-radius: 8px;
+          color: #c9d1d9;
+          font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
           line-height: 1.6;
-          color: #8b949e;
-          font-size: 0.95rem;
         "
       >
-        <h2 style="font-size: 1.25rem; color: #f0f6fc; margin-top: 0">
-          Institutional Trading Journal Features &amp; Capabilities
-        </h2>
+        <h1 style="color: #58a6ff; margin-top: 0; font-size: 1.5rem">
+          JavaScript Required to Launch Liber Journal
+        </h1>
         <p>
-          Liber Journal is an open-source, privacy-first web terminal designed for professional
-          traders, proprietary funds, and retail investors. Built with client-side cryptography and
-          local IndexedDB database persistence, no trade information or financial records ever leave
-          your computer.
+          Liber Journal is an institutional-grade, client-side trading terminal engineered to
+          replace fragile spreadsheets. It executes 100% inside your browser using IndexedDB
+          (Dexie.js) with zero cloud persistence and zero tracking. Please enable JavaScript to
+          access the terminal.
         </p>
-        <ul style="padding-left: 1.25rem; margin-top: 0.75rem">
+        <p>
+          To view the complete terminal architecture, quantitative formulas, and interactive
+          showcases, visit our
+          <a href="/info" style="color: #58a6ff; text-decoration: underline"
+            >Presentation &amp; Documentation Page (/info)</a
+          >.
+        </p>
+        <hr style="border: 0; border-top: 1px solid #30363d; margin: 20px 0" />
+        <h2 style="color: #f0f6fc; font-size: 1.2rem">Core Architectural Highlights</h2>
+        <ul>
           <li>
-            <strong>Continuous Ledger:</strong> Comprehensive trade journal supporting multiple
-            executions, commissions, swap, and automated R:R calculation.
+            <strong>Zero-Knowledge Privacy:</strong> Trades are saved exclusively in local
+            IndexedDB.
           </li>
           <li>
-            <strong>Quantitative Risk Metrics:</strong> Automated computation of Expectancy, Sharpe
-            Ratio, Profit Factor, Win/Loss Streaks, and Max Drawdown.
+            <strong>Institutional Risk Metrics:</strong> Win Rate strictly excluding Breakeven,
+            Profit Factor, and Mathematical Expectancy.
           </li>
           <li>
-            <strong>Interactive Visualizations:</strong> Recharts equity curves, monthly PnL
-            heatmaps, and weekday distribution analysis.
+            <strong>Multithreaded Forecasting:</strong> Monte Carlo 2,000 bootstrap resamples in a
+            Web Worker.
           </li>
           <li>
-            <strong>Multi-Broker CSV Import:</strong> Direct parsing for MetaTrader 4, MetaTrader 5,
-            Interactive Brokers, Binance, and Bybit.
-          </li>
-          <li>
-            <strong>Dynamic ExcelJS Export:</strong> Multi-tab Excel workbook with live dynamic
-            formulas for institutional audit trails.
+            <strong>Live ExcelJS Formulas:</strong> Dynamic workbooks that recalculate on the fly.
           </li>
         </ul>
-      </section>
-    </div>
+        <p style="margin-top: 20px; font-size: 0.85rem; color: #8b949e">
+          Machine-readable AI specifications:
+          <a href="/llms.txt" style="color: #58a6ff">/llms.txt</a> &middot;
+          <a href="/llms-full.txt" style="color: #58a6ff">/llms-full.txt</a> &middot;
+          <a href="/sitemap.xml" style="color: #58a6ff">/sitemap.xml</a>
+        </p>
+      </div>
+    </noscript>
 
     <script type="module" src="/src/main.tsx"></script>
   </body>

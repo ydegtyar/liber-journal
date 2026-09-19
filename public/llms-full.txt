@@ -1,0 +1,133 @@
+# Liber Journal — Full Quantitative Terminal Specification & Engineering Reference
+
+Version: 1.2.0
+Repository: https://github.com/ydegtyar/liber-journal
+Live Terminal: https://liber-journal.vercel.app/
+Documentation & Presentation: https://liber-journal.vercel.app/info
+License: MIT
+Primary Authors: Yuriy Degtyar
+
+---
+
+## 1. System Architecture Overview
+
+Liber Journal is an institutional-grade, zero-knowledge, client-side trading terminal web application designed to replace fragile multi-tab spreadsheets.
+
+```
+Client Browser Architecture:
+├── React 19 + TypeScript (Strict Mode) + Vite 6
+├── UI Layer: Material UI v6 (with global disableRipple & visible focus rings)
+├── Data Persistence: Dexie.js 4 (IndexedDB)
+├── Ingestion Engine: PapaParse (streaming CSV/TSV parser with delimiter auto-detection)
+├── Math Engine: Pure functional calculations in src/lib/calculations.ts
+├── Multithreaded Analytics: Dedicated Web Worker (src/workers/forecast.worker.ts)
+├── Visualization: Recharts (Equity curves, P&L bars, Heatmaps, Drawdowns)
+├── Export Engine: ExcelJS (Multi-sheet workbooks with native Excel formulas)
+└── Offline Service Worker: Workbox (PWA with autoUpdate & 5 MiB precache)
+```
+
+---
+
+## 2. Quantitative Formulas & Mathematical Models
+
+All financial calculations are implemented as pure, side-effect-free functions in `src/lib/calculations.ts`.
+
+### 2.1 Deposit & Return on Investment (ROI)
+- **Current Deposit**:
+  $$\text{Current Deposit} = \text{Initial Deposit} + \sum \text{PnL}$$
+- **ROI Percentage**:
+  $$\text{ROI \%} = \left(\frac{\sum \text{PnL}}{\text{Initial Deposit}}\right) \times 100$$
+
+### 2.2 Win Rate Adjusted for Breakeven Trades
+Traditional retail journals distort win rate by treating breakeven trades as losses or counting them in the denominator. Liber Journal follows institutional quantitative risk standards:
+- **Breakeven (BE) Condition**:
+  $$\text{BE Trade} \iff \text{PnL} = 0$$
+- **Win Rate (Excluding Breakeven)**:
+  $$\text{Win Rate \%} = \frac{N_{\text{wins}}}{N_{\text{wins}} + N_{\text{losses}}} \times 100$$
+  *(Where $N_{\text{wins}} = \text{count}(\text{PnL} > 0)$ and $N_{\text{losses}} = \text{count}(\text{PnL} < 0)$).*
+- **Breakeven Rate**:
+  $$\text{BE Rate \%} = \frac{N_{\text{be}}}{N_{\text{total}}} \times 100$$
+
+### 2.3 Profit Factor & Expectancy
+- **Profit Factor**:
+  $$\text{Profit Factor} = \frac{\sum_{\text{wins}} \text{PnL}}{\left|\sum_{\text{losses}} \text{PnL}\right|}$$
+  *(Returns $\infty$ if total losses equal zero).*
+- **Mathematical Expectancy ($)**:
+  $$\text{Expectancy} = (\text{WinRate}_{\text{dec}} \times \text{AvgWin}) - ((1 - \text{WinRate}_{\text{dec}}) \times \text{AvgLoss})$$
+  *(Where $\text{AvgWin} = \frac{\sum \text{Wins}}{N_{\text{wins}}}$, $\text{AvgLoss} = \left|\frac{\sum \text{Losses}}{N_{\text{losses}}}\right|$, and $\text{WinRate}_{\text{dec}} = \frac{N_{\text{wins}}}{N_{\text{wins}} + N_{\text{losses}}}$).*
+
+### 2.4 Peak-to-Trough Drawdown
+- **Running Peak Equity**:
+  $$\text{Peak}_t = \max_{0 \le i \le t} (\text{Equity}_i)$$
+- **Max Drawdown Amount ($)**:
+  $$\text{Max Drawdown} = \max_{t} (\text{Peak}_t - \text{Equity}_t)$$
+- **Max Drawdown Percentage (%)**:
+  $$\text{Max Drawdown \%} = \max_{t} \left(\frac{\text{Peak}_t - \text{Equity}_t}{\text{Peak}_t}\right) \times 100$$
+
+---
+
+## 3. Multithreaded Forecasting Engine
+
+Located in `src/lib/forecastEngine.ts` and offloaded to `src/workers/forecast.worker.ts`:
+1. **Monte Carlo Bootstrap Resampling**:
+   - Executes 2,000 independent random walk simulations sampled with replacement from historical trade P&Ls.
+   - Derives empirical distribution percentiles: 10th percentile (Conservative), 50th percentile / Median (Average), and 90th percentile (Optimistic).
+   - Computes probability of net profit and estimated maximum drawdown risk.
+2. **Ordinary Least Squares (OLS) Linear Regression**:
+   - Fits cumulative equity trendline $\hat{y} = \alpha + \beta t$.
+   - Projects expanding standard error bands using critical value $z = 1.28$ (80% confidence interval spanning 10th to 90th percentiles).
+3. **Rolling Run-Rate & Compounding Geometric Models**:
+   - Projects forward trajectories adjusted for volatility and capital compounding.
+4. **Caching**:
+   - Results are cached in memory for 1 hour (`3,600,000 ms`) keyed by trade count, deposit, timestamps, and model ID.
+
+---
+
+## 4. Broker File Ingestion & Canonical Schema
+
+The ingestion parser (`src/lib/csvParser.ts`) auto-detects line endings (CRLF / LF) and delimiters (Tab / Comma). It skips pre-header platform banners, extracts account preamble metadata (`Account ID`, `Account Currency`, `Report Date`), identifies headers using canonical aliases, and validates checksums against summary footer rows (`Обсяг:`).
+
+Canonical Trade Object Schema:
+```typescript
+export interface Trade {
+  id: string;              // Unique identifier (dealId or uuid)
+  dealId?: string;        // Broker deal number
+  instrument: string;     // e.g. "EUR/USD", "Natural Gas Cash"
+  direction: 'buy' | 'sell';
+  openedAt: string;       // ISO 8601 string
+  closedAt: string;       // ISO 8601 string
+  openPrice: number;
+  closePrice: number;
+  margin: number;         // Collateral allocated
+  leverage: number;       // Multiplier (e.g. 50)
+  grossReturn: number;    // margin + pnl
+  pnl: number;            // Net profit or loss in account currency
+  tag?: string;           // Custom setup tag (e.g. "Breakout")
+  session?: 'asian' | 'london' | 'new_york' | 'other';
+  note?: string;          // Trader reflection notes
+  plannedRisk?: number;   // Planned risk ($) for R-multiple
+}
+```
+
+---
+
+## 5. Dynamic Live-Formula ExcelJS Export Engine
+
+The workbook generator (`src/lib/xlsxTemplate.ts`) produces 3 sheets:
+1. **Daily Journal**:
+   - Account KPI Card: Initial deposit named range `InitialDeposit`, live formulas `=InitialDeposit + B5`, ROI% `=(B5/InitialDeposit)*100`.
+   - Monthly Summary: `=SUM(...)` formulas for monthly P&L and closed order count.
+   - Daily Orders Matrix: Each trading row contains dynamic `=COUNT(C{row}:{lastTrade}{row})` for closed orders, individual trade P&Ls, and `=SUM(C{row}:{lastTrade}{row})` for daily net P&L.
+   - Dynamic Column Reordering: When user rearranges matrix columns (date, ordersCount, dailyPnl, orders), Excel formulas dynamically adjust their coordinates.
+2. **Trades Sheet**:
+   - Full 13-column ledger formatted as a native Excel Table (`TradesTable`).
+3. **Analytics Sheet**:
+   - Summary of Win Rate, Profit Factor, Mathematical Expectancy, and Peak Drawdown.
+
+---
+
+## 6. Privacy & Offline Guarantees
+
+- **No Remote Storage**: Data is saved locally using Dexie.js on top of browser IndexedDB.
+- **Zero Third-Party Telemetry**: No user trades or financial metrics are ever uploaded to any cloud server or database.
+- **Offline PWA**: Fully functional offline via Service Worker (`vite-plugin-pwa` + Workbox `generateSW`).

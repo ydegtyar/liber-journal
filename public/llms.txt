@@ -1,0 +1,58 @@
+# Liber Journal — Quantitative Trading Performance Terminal
+
+> An open-source, privacy-first, zero-backend trading journal web terminal built with React, TypeScript, TanStack Table, Recharts, Dexie.js (IndexedDB), and ExcelJS.
+
+Liber Journal replaces brittle, multi-tab spreadsheets with a continuous ledger, real-time institutional risk analytics, multithreaded Monte Carlo performance forecasting, and live-formula Microsoft Excel (.xlsx) workbooks.
+
+## Core Philosophy & Security
+- **100% Client-Side Privacy**: All trading records, notes, balances, and configurations are stored in the browser's IndexedDB via Dexie.js. Zero remote databases, zero tracking, zero server-side telemetry.
+- **Offline PWA Parity**: Installable Progressive Web App powered by Workbox service worker caching. Full functionality operates without an active internet connection.
+- **Zero-Friction Ingestion**: Ingests broker CSV and TSV statements (Libertex Ukrainian/English, MetaTrader 4, MetaTrader 5, Interactive Brokers, Binance, Bybit) with checksum validation against broker footer totals.
+
+## Quantitative Risk & Edge Metrics
+All calculations reside in `src/lib/calculations.ts` as pure, unit-tested functions:
+- **Win Rate (Excluding Breakeven)**: `Win Rate = Wins / (Wins + Losses) * 100`. Breakeven trades (`pnl === 0`) are excluded from the denominator to avoid dilution.
+- **Dedicated Breakeven Metric**: Explicitly surfaces Breakeven Trade Count and Breakeven Rate (`BE Count / Total Trades * 100`).
+- **Mathematical Expectancy ($)**: `Expectancy = (WinRateDec * AvgWin) - ((1 - WinRateDec) * AvgLoss)`. Quantifies expected dollar return per decisive trade.
+- **Profit Factor**: `Profit Factor = Gross Wins / abs(Gross Losses)` (returns `Infinity` if 0 losses).
+- **Peak-to-Trough Drawdown**: Tracks maximum drawdown in dollar amount (`MaxDrawdownAmount`) and percentage (`MaxDrawdownPercent`) along running equity peaks.
+- **Current Streak**: Sequential streak analysis tracking active winning, losing, or breakeven runs.
+- **Best & Worst Instruments**: Automated asset ranking by net cumulative profit/loss.
+
+## Nine Modular Dashboard Blocks
+The terminal viewport comprises 9 modular sections reorderable via accessible drag-and-drop (`@dnd-kit`) with WCAG 2.1 AA keyboard support:
+1. `timeframeBanner`: Macro KPI header, deposit editor, and monthly profit target progress.
+2. `statsGrid`: Responsive grid of institutional KPI cards (Net P&L, Win Rate, BE Rate, Profit Factor, Expectancy, Drawdown).
+3. `periodInsights`: Algorithmic trading discipline, execution risk, and session observations.
+4. `visualizations`: Five interactive Recharts visualizations (Cumulative Equity Curve, Periodic P&L bars, Day-of-Week edge, Drawdown underwater area chart, Instrument comparison).
+5. `streakAnalysis`: Historical records and current consecutive streak tracker.
+6. `instrumentsTable`: Symbol-by-symbol breakdown with click-to-filter capability.
+7. `monthlyReturns`: Multi-year monthly percentage and dollar returns calendar matrix.
+8. `tradesView`: Dual-view container switching between continuous TanStack Table ledger and Daily Orders Matrix table.
+9. `forecast`: Predictive scenario suite running in a multithreaded Web Worker across Conservative (10th percentile), Average (50th percentile), and Optimistic (90th percentile) horizons.
+
+## Forecasting Engine
+- **Monte Carlo Bootstrap Resampling**: Generates 2,000 empirical random walks sampled with replacement from historical trades.
+- **Ordinary Least Squares (OLS) Regression**: Fits cumulative equity trendlines with expanding confidence cones.
+- **Rolling Run-Rate & Compounding Geometric Models**: Calculates volatility-adjusted and capital-reinvestment growth projections.
+- **Multithreading**: Executed off-main-thread in `src/workers/forecast.worker.ts` with a 1-hour in-memory cache.
+
+## Dynamic Live-Formula ExcelJS Export
+Generates multi-sheet Excel (.xlsx) workbooks containing real native formulas:
+- `Daily Journal`: Daily Orders Matrix (`=COUNT(...)`, individual trade columns, `=SUM(...)` daily totals), Monthly Summary (`=SUM(...)`), Weekly Breakdown, and named range `InitialDeposit`.
+- `Trades`: Full 13-column ledger structured as an Excel Table.
+- `Analytics`: Institutional metrics summary table.
+- Modifying any trade cell in Excel, Apple Numbers, or Google Sheets dynamically triggers automatic recalculation.
+
+## Five Terminal Themes
+1. `Dark Midnight`: Pure `#000000` pitch-black OLED background with `#1A1D24` borders.
+2. `Dark`: Refined charcoal surface (`#0D1117` / `#161B22`).
+3. `Unicorn`: Synthwave high-contrast terminal with `#00F5D4` turquoise and `#38BDF8` sky accents.
+4. `Light`: Crisp institutional terminal palette (`#F6F8FA`).
+5. `System`: Live listener automatically syncing with OS `prefers-color-scheme`.
+
+## URLs & Key Documentation
+- Production Web Terminal: https://liber-journal.vercel.app/
+- Presentation & Architecture: https://liber-journal.vercel.app/info
+- Full LLM Documentation: https://liber-journal.vercel.app/llms-full.txt
+- GitHub Source Repository: https://github.com/ydegtyar/liber-journal

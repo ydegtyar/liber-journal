@@ -17,6 +17,8 @@ import TranslateIcon from '@mui/icons-material/Translate';
 import CheckIcon from '@mui/icons-material/Check';
 import TuneIcon from '@mui/icons-material/Tune';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
+import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
+import { Link as RouterLink } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { LanguageSelector } from '../settings/LanguageSelector';
 import { ThemeSwitcher } from '../settings/ThemeSwitcher';
@@ -218,6 +220,28 @@ export const JournalHeader: React.FC<Props> = React.memo(
                 </IconButton>
               </Tooltip>
             )}
+            <Tooltip title="Presentation & Specs (/info)" arrow>
+              <IconButton
+                component={RouterLink}
+                to="/info"
+                size="small"
+                aria-label="Presentation & Specs"
+                data-testid="header-info-button"
+                sx={{
+                  width: 32,
+                  height: 32,
+                  border: (theme) => `1px solid ${theme.palette.divider}`,
+                  borderRadius: 1,
+                  color: 'text.secondary',
+                  '&:hover': {
+                    backgroundColor: 'action.hover',
+                    color: 'primary.main',
+                  },
+                }}
+              >
+                <InfoOutlinedIcon sx={{ fontSize: 18 }} />
+              </IconButton>
+            </Tooltip>
           </Box>
 
           {/* Mobile / Tablet Controls (< 900px): Compact, Space-Saving Dropdowns */}
@@ -444,6 +468,30 @@ export const JournalHeader: React.FC<Props> = React.memo(
                 </IconButton>
               </Tooltip>
             )}
+
+            {/* Mobile Info Button */}
+            <Tooltip title="Presentation & Specs (/info)" arrow>
+              <IconButton
+                component={RouterLink}
+                to="/info"
+                size="small"
+                aria-label="Presentation & Specs"
+                data-testid="header-info-button-mobile"
+                sx={{
+                  width: 32,
+                  height: 32,
+                  border: (theme) => `1px solid ${theme.palette.divider}`,
+                  borderRadius: 1,
+                  color: 'text.secondary',
+                  '&:hover': {
+                    backgroundColor: 'action.hover',
+                    color: 'primary.main',
+                  },
+                }}
+              >
+                <InfoOutlinedIcon sx={{ fontSize: 18 }} />
+              </IconButton>
+            </Tooltip>
           </Box>
         </Toolbar>
 
