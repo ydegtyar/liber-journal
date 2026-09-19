@@ -604,9 +604,9 @@ const InfoPage: React.FC = () => {
             }}
           >
             <div className="info-bento-card" style={{ padding: '20px' }}>
-              <h4 style={{ margin: '0 0 12px', fontSize: '1rem', color: '#fff' }}>
+              <h3 style={{ margin: '0 0 12px', fontSize: '1rem', color: '#fff' }}>
                 Interactive Charting Demo
-              </h4>
+              </h3>
               <div
                 style={{
                   borderRadius: '8px',
@@ -641,9 +641,9 @@ const InfoPage: React.FC = () => {
             </div>
 
             <div className="info-bento-card" style={{ padding: '20px' }}>
-              <h4 style={{ margin: '0 0 12px', fontSize: '1rem', color: '#fff' }}>
+              <h3 style={{ margin: '0 0 12px', fontSize: '1rem', color: '#fff' }}>
                 Five Adaptive Themes
-              </h4>
+              </h3>
               <div
                 style={{
                   borderRadius: '8px',
@@ -1067,39 +1067,45 @@ const InfoPage: React.FC = () => {
           <hr className="info-footer-divider" />
 
           {/* Regulatory Compliance & Risk Disclosures */}
-          <div className="info-footer-compliance">
-            <div className="info-compliance-col">
-              <h4>Financial Risk Disclosure</h4>
-              <p>
-                Trading foreign exchange (Forex), contracts for difference (CFDs), stocks, futures,
-                and cryptocurrencies carries a high degree of risk to your capital and is not
-                appropriate for all investors. Leveraged products can result in losses that exceed
-                initial deposits. You should carefully evaluate your trading objectives, experience
-                level, and risk tolerance prior to engaging in speculative trading. Past performance
-                or mathematical simulations do not guarantee future market returns.
-              </p>
-            </div>
+          <div className="info-footer-compliance-wrapper">
+            <h2 className="info-footer-compliance-title">
+              Regulatory Disclosures &amp; Compliance Standards
+            </h2>
+            <div className="info-footer-compliance">
+              <div className="info-compliance-col">
+                <h3>Financial Risk Disclosure</h3>
+                <p>
+                  Trading foreign exchange (Forex), contracts for difference (CFDs), stocks,
+                  futures, and cryptocurrencies carries a high degree of risk to your capital and is
+                  not appropriate for all investors. Leveraged products can result in losses that
+                  exceed initial deposits. You should carefully evaluate your trading objectives,
+                  experience level, and risk tolerance prior to engaging in speculative trading.
+                  Past performance or mathematical simulations do not guarantee future market
+                  returns.
+                </p>
+              </div>
 
-            <div className="info-compliance-col">
-              <h4>Non-Investment Advisory Notice</h4>
-              <p>
-                Liber Journal is a standalone, client-side analytical software application designed
-                for recordkeeping and trade journal discipline. Liber Journal is not a registered
-                broker-dealer, investment advisor, or commodity trading advisor. No calculations,
-                visualizations, forecasts, or documentation provided within this application
-                constitute financial, investment, legal, or tax advice.
-              </p>
-            </div>
+              <div className="info-compliance-col">
+                <h3>Non-Investment Advisory Notice</h3>
+                <p>
+                  Liber Journal is a standalone, client-side analytical software application
+                  designed for recordkeeping and trade journal discipline. Liber Journal is not a
+                  registered broker-dealer, investment advisor, or commodity trading advisor. No
+                  calculations, visualizations, forecasts, or documentation provided within this
+                  application constitute financial, investment, legal, or tax advice.
+                </p>
+              </div>
 
-            <div className="info-compliance-col">
-              <h4>Zero Dark Patterns &amp; Privacy Guarantee</h4>
-              <p>
-                Liber Journal is 100% free and open-source software distributed under the MIT
-                License. We do not require credit cards, create accounts, charge subscriptions, or
-                employ deceptive countdowns or fake urgency. We do not set tracking cookies or
-                collect user telemetry. All broker files and portfolio balances are stored
-                exclusively inside your device&apos;s local browser IndexedDB.
-              </p>
+              <div className="info-compliance-col">
+                <h3>Zero Dark Patterns &amp; Privacy Guarantee</h3>
+                <p>
+                  Liber Journal is 100% free and open-source software distributed under the MIT
+                  License. We do not require credit cards, create accounts, charge subscriptions, or
+                  employ deceptive countdowns or fake urgency. We do not set tracking cookies or
+                  collect user telemetry. All broker files and portfolio balances are stored
+                  exclusively inside your device&apos;s local browser IndexedDB.
+                </p>
+              </div>
             </div>
           </div>
 

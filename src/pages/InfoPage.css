@@ -182,7 +182,7 @@
 }
 
 .info-nav-link {
-  color: var(--info-text-muted);
+  color: #e6edf3;
   text-decoration: none;
   font-size: 0.875rem;
   font-weight: 500;
@@ -190,7 +190,7 @@
 }
 
 .info-nav-link:hover {
-  color: var(--info-text);
+  color: var(--info-secondary);
 }
 
 .info-nav-actions {
@@ -904,14 +904,30 @@
   margin: 0;
 }
 
+.info-footer-compliance-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.info-footer-compliance-title {
+  margin: 0;
+  font-size: 0.8125rem;
+  font-family: var(--info-font-mono);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--info-secondary);
+  font-weight: 700;
+}
+
 .info-footer-compliance {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
   gap: 28px;
-  padding: 12px 0;
+  padding: 4px 0 12px;
 }
 
-.info-compliance-col h4 {
+.info-compliance-col h3 {
   margin: 0 0 10px;
   font-size: 0.75rem;
   font-family: var(--info-font-mono);
