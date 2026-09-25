@@ -111,7 +111,7 @@ const InfoPage: React.FC = () => {
       <title>Liber Journal — Institutional Trading Performance Terminal &amp; Architecture</title>
       <meta
         name="description"
-        content="Experience the modern trading journal web terminal. Zero-knowledge privacy, continuous ledger, dynamic Recharts, Monte Carlo forecasting, and ExcelJS live-formula workbooks."
+        content="Experience the modern trading journal web terminal. Zero-knowledge privacy, continuous ledger, dynamic Recharts, Monte Carlo forecasting, and live-formula spreadsheet exports."
       />
       <link rel="canonical" href="https://liber-journal.vercel.app/info" />
       <link rel="preload" as="image" href="/assets/info/terminal-hero.png" fetchPriority="high" />
@@ -151,7 +151,7 @@ const InfoPage: React.FC = () => {
       />
       <meta
         name="twitter:description"
-        content="Zero-knowledge privacy, continuous ledger, real-time Recharts visualizations, and ExcelJS live formulas."
+        content="Zero-knowledge privacy, continuous ledger, real-time Recharts visualizations, and live-formula spreadsheet exports."
       />
       <meta
         name="twitter:image"
@@ -221,7 +221,7 @@ const InfoPage: React.FC = () => {
                   'Profit Factor: Gross Win / abs(Gross Loss)',
                   'Monte Carlo 2,000-resample bootstrap forecasting in background Web Worker',
                   'Daily Orders Matrix table with accessible drag & drop column reordering',
-                  'Dynamic formula-rich XLSX exports via ExcelJS with live recalculation',
+                  'Dynamic formula-rich XLSX exports with live recalculation',
                   '5 High-Contrast Terminal Themes (Midnight OLED, Dark, Unicorn, Light, System)',
                   'Installable PWA with 100% offline functionality via Workbox',
                 ],
@@ -398,7 +398,7 @@ const InfoPage: React.FC = () => {
             </div>
             <div className="info-ticker-item">
               <FileDownloadOutlinedIcon sx={{ fontSize: 16, color: 'var(--info-primary)' }} />
-              <span>Dynamic Live Formula ExcelJS XLSX</span>
+              <span>Dynamic Live Formula XLSX Export</span>
               <span className="info-ticker-separator">/</span>
             </div>
             <div className="info-ticker-item">

@@ -1,6 +1,6 @@
 # Liber Journal — Quantitative Trading Performance Terminal
 
-> An open-source, privacy-first, zero-backend trading journal web terminal built with React, TypeScript, TanStack Table, Recharts, local browser storage, and ExcelJS.
+> An open-source, privacy-first, zero-backend trading journal web terminal built with React, TypeScript, TanStack Table, Recharts, and local browser storage.
 
 Liber Journal replaces brittle, multi-tab spreadsheets with a continuous ledger, real-time institutional risk analytics, multithreaded Monte Carlo performance forecasting, and live-formula Microsoft Excel (.xlsx) workbooks.
 
@@ -37,7 +37,7 @@ The terminal viewport comprises 9 modular sections reorderable via accessible dr
 - **Rolling Run-Rate & Compounding Geometric Models**: Calculates volatility-adjusted and capital-reinvestment growth projections.
 - **Multithreading**: Executed off-main-thread in `src/workers/forecast.worker.ts` with a 1-hour in-memory cache.
 
-## Dynamic Live-Formula ExcelJS Export
+## Dynamic Live-Formula Spreadsheet Export
 Generates multi-sheet Excel (.xlsx) workbooks containing real native formulas:
 - `Daily Journal`: Daily Orders Matrix (`=COUNT(...)`, individual trade columns, `=SUM(...)` daily totals), Monthly Summary (`=SUM(...)`), Weekly Breakdown, and named range `InitialDeposit`.
 - `Trades`: Full 13-column ledger structured as an Excel Table.

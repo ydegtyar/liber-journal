@@ -111,7 +111,7 @@ export interface Trade {
 
 ---
 
-## 5. Dynamic Live-Formula ExcelJS Export Engine
+## 5. Dynamic Live-Formula XLSX Export Engine
 
 The workbook generator (`src/lib/xlsxTemplate.ts`) produces 3 sheets:
 1. **Daily Journal**:

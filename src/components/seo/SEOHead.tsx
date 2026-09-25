@@ -58,7 +58,7 @@ export const SEOHead: React.FC<Props> = React.memo(
               'Multi-broker CSV import (MT4/5, Interactive Brokers, Binance, Bybit)',
               'Real-time calculation of Win Rate, Profit Factor, Sharpe Ratio, and Drawdowns',
               'Dynamic Recharts equity curve and daily PnL distribution',
-              'Institutional ExcelJS live-formula workbooks with dynamic monthly sheets',
+              'Institutional live-formula workbooks with dynamic monthly sheets',
             ],
           },
           {
@@ -86,7 +86,7 @@ export const SEOHead: React.FC<Props> = React.memo(
                 name: 'Are exported Excel reports static or dynamic?',
                 acceptedAnswer: {
                   '@type': 'Answer',
-                  text: 'Exported spreadsheets use ExcelJS live formulas (SUM, AVERAGE, IF), allowing you to audit calculations natively in Microsoft Excel or Google Sheets.',
+                  text: 'Exported spreadsheets use live Excel formulas (SUM, AVERAGE, IF), allowing you to audit calculations natively in Microsoft Excel or Google Sheets.',
                 },
               },
             ],

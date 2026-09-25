@@ -69,6 +69,10 @@ export default defineConfig(({ mode }) => ({
         skipWaiting: true,
         maximumFileSizeToCacheInBytes: 5 * 1024 * 1024,
         globPatterns: ['**/*.{js,css,html,ico,png,svg,json,woff,woff2}'],
+        navigateFallbackDenylist: [
+          /^\/(llms(-full)?\.txt|sitemap\.xml|robots\.txt)/,
+          /^\/[^?]+\.[a-zA-Z0-9]+(\?.*)?$/,
+        ],
         runtimeCaching: [
           {
             urlPattern: /^https:\/\/fonts\.googleapis\.com\/.*/i,
