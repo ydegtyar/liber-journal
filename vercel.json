@@ -35,7 +35,7 @@
       ]
     },
     {
-      "source": "/(llms(-full)?\\.txt|robots\\.txt)",
+      "source": "/:file(llms\\.txt|llms-full\\.txt|robots\\.txt)",
       "headers": [
         {
           "key": "Content-Type",
