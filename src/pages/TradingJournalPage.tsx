@@ -199,6 +199,7 @@ export const TradingJournalPage: React.FC = () => {
             <section key="instrumentsTable" aria-label="Instruments Performance Breakdown">
               <InstrumentsTable
                 data={analytics.instrumentBreakdown}
+                trades={filteredTrades}
                 currency={settings.currency}
                 numberFormat={numberFormat}
                 selectedInstrument={selectedInstrument}

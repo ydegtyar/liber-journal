@@ -7,6 +7,10 @@ export const getRowSx = (isSelected: boolean) => ({
   transition: 'background-color 0.15s ease',
   '&:hover': {
     backgroundColor: isSelected ? 'action.selected' : 'action.hover',
+    '& .instrument-filter-icon': {
+      transform: 'scale(1.15) rotate(8deg)',
+      color: (theme: Theme) => theme.palette.primary.main,
+    },
   },
   '&:focus-visible': {
     outline: (theme: Theme) => `2px solid ${theme.palette.primary.main}`,
@@ -28,5 +32,8 @@ export const styles = {
   },
   shareCell: {
     fontSize: '0.8rem',
+  },
+  scoreCell: {
+    minWidth: 100,
   },
 } as const satisfies Record<string, CSSProperties>;
