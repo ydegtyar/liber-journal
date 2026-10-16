@@ -72,6 +72,7 @@ export interface InstrumentSummary {
   avgPnl: number;
   sharePercent: number;
   sparkline: number[];
+  avgDurationMs: number;
 }
 
 export interface MonthlyReturnItem {

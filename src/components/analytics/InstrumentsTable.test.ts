@@ -13,6 +13,7 @@ describe('InstrumentsTable i18n and filtering logic', () => {
       avgPnl: 120.875,
       sharePercent: 35.5,
       sparkline: [100, 200, 300],
+      avgDurationMs: 3600000,
     },
     {
       symbol: 'ETHUSDT',
@@ -22,6 +23,7 @@ describe('InstrumentsTable i18n and filtering logic', () => {
       avgPnl: -27.5,
       sharePercent: 24.5,
       sparkline: [-50, -100, -220],
+      avgDurationMs: 1800000,
     },
     {
       symbol: 'SOLUSDT',
@@ -31,6 +33,7 @@ describe('InstrumentsTable i18n and filtering logic', () => {
       avgPnl: 68.0,
       sharePercent: 40.0,
       sparkline: [50, 150, 340],
+      avgDurationMs: 900000,
     },
   ];
 
@@ -43,6 +46,7 @@ describe('InstrumentsTable i18n and filtering logic', () => {
       'winRate',
       'netPnl',
       'avg',
+      'avgDuration',
       'share',
       'trend',
       'details',
@@ -77,5 +81,19 @@ describe('InstrumentsTable i18n and filtering logic', () => {
     expect(filterInstruments(mockInstruments, 'usdt')).toHaveLength(3);
     expect(filterInstruments(mockInstruments, 'NONEXISTENT')).toHaveLength(0);
     expect(filterInstruments(mockInstruments, '   ')).toHaveLength(3);
+  });
+
+  it('sorts instruments by duration ascending and descending', () => {
+    const sortInstruments = (data: InstrumentSummary[], asc: boolean) => {
+      return [...data].sort((a, b) =>
+        asc ? a.avgDurationMs - b.avgDurationMs : b.avgDurationMs - a.avgDurationMs
+      );
+    };
+
+    const ascSorted = sortInstruments(mockInstruments, true);
+    expect(ascSorted.map((i) => i.symbol)).toEqual(['SOLUSDT', 'ETHUSDT', 'BTCUSDT']);
+
+    const descSorted = sortInstruments(mockInstruments, false);
+    expect(descSorted.map((i) => i.symbol)).toEqual(['BTCUSDT', 'ETHUSDT', 'SOLUSDT']);
   });
 });

@@ -582,6 +582,7 @@ export function calculateInstrumentBreakdown(trades: Trade[]): InstrumentSummary
     const netPnl = calculateNetPnl(instTrades);
     const winRate = calculateWinRate(instTrades);
     const avgPnl = count > 0 ? round(netPnl / count) : 0;
+    const avgDurationMs = calculateAvgTradeDuration(instTrades);
 
     const instGrossWin = instTrades.filter((t) => t.pnl > 0).reduce((sum, t) => sum + t.pnl, 0);
 
@@ -603,6 +604,7 @@ export function calculateInstrumentBreakdown(trades: Trade[]): InstrumentSummary
       avgPnl,
       sharePercent,
       sparkline,
+      avgDurationMs,
     };
   });
 

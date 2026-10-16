@@ -182,6 +182,7 @@
     "winRate": "WIN %",
     "netPnl": "NET P&L",
     "avg": "AVG",
+    "avgDuration": "AVG DURATION",
     "share": "SHARE",
     "trend": "TREND",
     "details": "Details",

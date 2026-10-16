@@ -9,18 +9,16 @@ import {
   TableCell,
   TableBody,
   TableSortLabel,
-  Button,
   TextField,
   InputAdornment,
   IconButton,
 } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
 import ClearIcon from '@mui/icons-material/Clear';
-import { Sparkline } from './Sparkline';
 import { useTranslation } from 'react-i18next';
 import { InstrumentSummary } from '../../types/trade';
 import { NumberFormatOption } from '../../types/preferences';
-import { formatPercent, formatSignedPnl } from '../../lib/formatters';
+import { InstrumentRow } from './InstrumentRow';
 
 interface Props {
   data: InstrumentSummary[];
@@ -30,12 +28,12 @@ interface Props {
   onSelectInstrument: (symbol: string) => void;
 }
 
-type SortField = 'symbol' | 'trades' | 'winRate' | 'netPnl' | 'avgPnl' | 'sharePercent';
+type SortField =
+  'symbol' | 'trades' | 'winRate' | 'netPnl' | 'avgPnl' | 'avgDuration' | 'sharePercent';
 
 export const InstrumentsTable: React.FC<Props> = React.memo(
   ({ data, currency, numberFormat, selectedInstrument, onSelectInstrument }) => {
-    const { t, i18n } = useTranslation();
-    const currentLang = i18n.language || 'en-US';
+    const { t } = useTranslation();
 
     const [sortField, setSortField] = useState<SortField>('netPnl');
     const [sortAsc, setSortAsc] = useState(false);
@@ -67,6 +65,7 @@ export const InstrumentsTable: React.FC<Props> = React.memo(
         else if (sortField === 'winRate') diff = a.winRate - b.winRate;
         else if (sortField === 'netPnl') diff = a.netPnl - b.netPnl;
         else if (sortField === 'avgPnl') diff = a.avgPnl - b.avgPnl;
+        else if (sortField === 'avgDuration') diff = a.avgDurationMs - b.avgDurationMs;
         else if (sortField === 'sharePercent') diff = a.sharePercent - b.sharePercent;
         return sortAsc ? diff : -diff;
       });
@@ -112,31 +111,33 @@ export const InstrumentsTable: React.FC<Props> = React.memo(
             placeholder={t('instruments.filterPlaceholder', {
               defaultValue: 'Фільтр інструментів...',
             })}
-            inputProps={{
-              'aria-label': t('instruments.filterLabel', {
-                defaultValue: 'Фільтрувати інструменти',
-              }),
-            }}
-            InputProps={{
-              startAdornment: (
-                <InputAdornment position="start">
-                  <SearchIcon fontSize="small" sx={{ color: 'text.secondary' }} />
-                </InputAdornment>
-              ),
-              endAdornment: filterQuery ? (
-                <InputAdornment position="end">
-                  <IconButton
-                    size="small"
-                    onClick={() => setFilterQuery('')}
-                    edge="end"
-                    sx={{ p: 0.25 }}
-                    aria-label={t('instruments.clearFilter', { defaultValue: 'Очистити фільтр' })}
-                  >
-                    <ClearIcon sx={{ fontSize: 16 }} />
-                  </IconButton>
-                </InputAdornment>
-              ) : null,
-              sx: { height: 32, fontSize: '0.8rem', minWidth: 160, maxWidth: 220 },
+            slotProps={{
+              htmlInput: {
+                'aria-label': t('instruments.filterLabel', {
+                  defaultValue: 'Фільтрувати інструменти',
+                }),
+              },
+              input: {
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <SearchIcon fontSize="small" sx={{ color: 'text.secondary' }} />
+                  </InputAdornment>
+                ),
+                endAdornment: filterQuery ? (
+                  <InputAdornment position="end">
+                    <IconButton
+                      size="small"
+                      onClick={() => setFilterQuery('')}
+                      edge="end"
+                      sx={{ p: 0.25 }}
+                      aria-label={t('instruments.clearFilter', { defaultValue: 'Очистити фільтр' })}
+                    >
+                      <ClearIcon sx={{ fontSize: 16 }} />
+                    </IconButton>
+                  </InputAdornment>
+                ) : null,
+                sx: { height: 32, fontSize: '0.8rem', minWidth: 160, maxWidth: 220 },
+              },
             }}
           />
         </Box>
@@ -202,6 +203,16 @@ export const InstrumentsTable: React.FC<Props> = React.memo(
 
                 <TableCell align="right">
                   <TableSortLabel
+                    active={sortField === 'avgDuration'}
+                    direction={sortAsc ? 'asc' : 'desc'}
+                    onClick={() => handleSort('avgDuration')}
+                  >
+                    {t('instruments.avgDuration', { defaultValue: 'СЕР. ТРИВАЛІСТЬ' })}
+                  </TableSortLabel>
+                </TableCell>
+
+                <TableCell align="right">
+                  <TableSortLabel
                     active={sortField === 'sharePercent'}
                     direction={sortAsc ? 'asc' : 'desc'}
                     onClick={() => handleSort('sharePercent')}
@@ -219,7 +230,7 @@ export const InstrumentsTable: React.FC<Props> = React.memo(
             <TableBody>
               {sortedData.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={8} align="center" sx={{ py: 3, color: 'text.secondary' }}>
+                  <TableCell colSpan={9} align="center" sx={{ py: 3, color: 'text.secondary' }}>
                     <Typography variant="body2">
                       {t('instruments.noMatchingInstruments', {
                         defaultValue: 'Не знайдено інструментів',
@@ -228,107 +239,16 @@ export const InstrumentsTable: React.FC<Props> = React.memo(
                   </TableCell>
                 </TableRow>
               ) : (
-                sortedData.map((row) => {
-                  const isSelected = selectedInstrument?.toLowerCase() === row.symbol.toLowerCase();
-                  const pnlData = formatSignedPnl(row.netPnl, currency, numberFormat, currentLang);
-                  const avgData = formatSignedPnl(row.avgPnl, currency, numberFormat, currentLang);
-
-                  return (
-                    <TableRow
-                      key={row.symbol}
-                      hover
-                      onClick={() => onSelectInstrument(row.symbol)}
-                      sx={{
-                        cursor: 'pointer',
-                        backgroundColor: isSelected ? 'action.selected' : 'inherit',
-                      }}
-                    >
-                      {/* Symbol */}
-                      <TableCell
-                        sx={{ fontWeight: 700, fontFamily: "'JetBrains Mono', monospace" }}
-                      >
-                        {row.symbol}
-                      </TableCell>
-
-                      {/* Trades */}
-                      <TableCell align="right">{row.trades}</TableCell>
-
-                      {/* Win % */}
-                      <TableCell
-                        align="right"
-                        sx={{
-                          fontWeight: 600,
-                          color: (theme) =>
-                            row.winRate >= 60
-                              ? theme.palette.trade.gain
-                              : row.winRate < 45
-                                ? theme.palette.trade.loss
-                                : 'text.primary',
-                        }}
-                      >
-                        {formatPercent(row.winRate, 0, numberFormat, currentLang)}
-                      </TableCell>
-
-                      {/* Net P&L */}
-                      <TableCell
-                        align="right"
-                        sx={{
-                          fontWeight: 700,
-                          fontFamily: "'JetBrains Mono', monospace",
-                          color: (theme) =>
-                            pnlData.isPositive
-                              ? theme.palette.trade.gain
-                              : pnlData.isNegative
-                                ? theme.palette.trade.loss
-                                : theme.palette.trade.breakeven,
-                        }}
-                      >
-                        {pnlData.text}
-                      </TableCell>
-
-                      {/* Avg P&L */}
-                      <TableCell
-                        align="right"
-                        sx={{
-                          fontFamily: "'JetBrains Mono', monospace",
-                          color: (theme) =>
-                            avgData.isPositive
-                              ? theme.palette.trade.gain
-                              : avgData.isNegative
-                                ? theme.palette.trade.loss
-                                : 'text.secondary',
-                        }}
-                      >
-                        {avgData.text}
-                      </TableCell>
-
-                      {/* Share % */}
-                      <TableCell align="right" sx={{ color: 'text.secondary', fontSize: '0.8rem' }}>
-                        {formatPercent(row.sharePercent, 1, numberFormat, currentLang)}
-                      </TableCell>
-
-                      {/* Trend Sparkline */}
-                      <TableCell align="center" sx={{ py: 0.5 }}>
-                        <Sparkline points={row.sparkline} isPositive={row.netPnl >= 0} />
-                      </TableCell>
-
-                      {/* Action */}
-                      <TableCell align="right" sx={{ py: 0.5 }}>
-                        <Button
-                          size="small"
-                          variant={isSelected ? 'contained' : 'text'}
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            onSelectInstrument(row.symbol);
-                          }}
-                          sx={{ fontSize: '0.75rem', py: 0.25, px: 1 }}
-                        >
-                          {t('instruments.details', { defaultValue: 'Деталі' })}
-                        </Button>
-                      </TableCell>
-                    </TableRow>
-                  );
-                })
+                sortedData.map((row) => (
+                  <InstrumentRow
+                    key={row.symbol}
+                    row={row}
+                    currency={currency}
+                    numberFormat={numberFormat}
+                    isSelected={selectedInstrument?.toLowerCase() === row.symbol.toLowerCase()}
+                    onSelect={onSelectInstrument}
+                  />
+                ))
               )}
             </TableBody>
           </Table>
