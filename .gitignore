@@ -30,3 +30,4 @@ dist-ssr
 
 # User raw exports in root
 /closed_deals_*.csv
+brag-ouput

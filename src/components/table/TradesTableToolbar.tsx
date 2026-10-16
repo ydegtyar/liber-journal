@@ -81,26 +81,28 @@ const TradesTableToolbarComponent: React.FC<Props> = ({
             value={searchQuery}
             onChange={(e) => onSearchChange(e.target.value)}
             placeholder={t('table.searchInstruments', { defaultValue: 'Search instruments...' })}
-            InputProps={{
-              startAdornment: (
-                <InputAdornment position="start">
-                  <SearchIcon fontSize="small" sx={{ color: 'text.secondary' }} />
-                </InputAdornment>
-              ),
-              endAdornment: searchQuery ? (
-                <InputAdornment position="end">
-                  <IconButton
-                    size="small"
-                    onClick={() => onSearchChange('')}
-                    edge="end"
-                    sx={{ p: 0.25 }}
-                    aria-label="clear search"
-                  >
-                    <ClearIcon sx={{ fontSize: 16 }} />
-                  </IconButton>
-                </InputAdornment>
-              ) : null,
-              sx: { height: 32, fontSize: '0.8rem', minWidth: 160, maxWidth: 220 },
+            slotProps={{
+              input: {
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <SearchIcon fontSize="small" sx={{ color: 'text.secondary' }} />
+                  </InputAdornment>
+                ),
+                endAdornment: searchQuery ? (
+                  <InputAdornment position="end">
+                    <IconButton
+                      size="small"
+                      onClick={() => onSearchChange('')}
+                      edge="end"
+                      sx={{ p: 0.25 }}
+                      aria-label="clear search"
+                    >
+                      <ClearIcon sx={{ fontSize: 16 }} />
+                    </IconButton>
+                  </InputAdornment>
+                ) : null,
+                sx: { height: 32, fontSize: '0.8rem', minWidth: 160, maxWidth: 220 },
+              },
             }}
           />
         )}
