@@ -1,133 +1,108 @@
-# Liber Journal — Full Quantitative Terminal Specification & Engineering Reference
+# Liber Journal — Quantitative Trading Terminal & Performance Platform (Full Product Guide)
 
-Version: 1.2.0
-Repository: https://github.com/ydegtyar/liber-journal
-Live Terminal: https://liber-journal.vercel.app/
-Documentation & Presentation: https://liber-journal.vercel.app/info
+> An institutional-grade, privacy-first trading terminal engineered to replace fragile spreadsheets with quantitative risk analytics, probabilistic scenario forecasting, multi-broker statement ingestion, and live-formula Excel integration.
+
+Platform: https://liber-journal.vercel.app/
+Product Tour & Feature Guide: https://liber-journal.vercel.app/info
+Open Source Repository: https://github.com/ydegtyar/liber-journal
 License: MIT
-Primary Authors: Yuriy Degtyar
+Author: Yuriy Degtyar
 
 ---
 
-## 1. System Architecture Overview
+## 1. Executive Summary & Value Proposition
 
-Liber Journal is an institutional-grade, zero-knowledge, client-side trading terminal web application designed to replace fragile multi-tab spreadsheets.
+Spreadsheets are prone to broken formula references, clumsy manual data entry, and slow performance as trade histories grow. Liber Journal bridges the gap between chaotic multi-tab spreadsheets and bloated subscription-based journals.
 
-```
-Client Browser Architecture:
-├── React 19 + TypeScript (Strict Mode) + Vite 6
-├── UI Layer: Material UI v6 (with global disableRipple & visible focus rings)
-├── Data Persistence: Encrypted Local Browser Storage
-├── Ingestion Engine: PapaParse (streaming CSV/TSV parser with delimiter auto-detection)
-├── Math Engine: Pure functional calculations in src/lib/calculations.ts
-├── Multithreaded Analytics: Dedicated Web Worker (src/workers/forecast.worker.ts)
-├── Visualization: Recharts (Equity curves, P&L bars, Heatmaps, Drawdowns)
-├── Export Engine: ExcelJS (Multi-sheet workbooks with native Excel formulas)
-└── Offline Service Worker: Workbox (PWA with autoUpdate & 5 MiB precache)
-```
+Designed for active equities, forex, futures, and crypto traders, Liber Journal delivers an institutional trading workstation directly inside your web browser with zero latency, zero subscription paywalls, and unmatched data security.
+
+### Core Pillars
+- **Zero-Knowledge Privacy**: Your trades, strategies, P&L, and account sizes stay 100% in your personal browser storage. No cloud servers, no account tracking, and zero monetization of your trade data.
+- **Offline Reliability**: Full Progressive Web App (PWA) readiness means you can journal, review executions, and analyze performance offline on any device.
+- **Quantitative Edge Mastery**: Built around institutional math — true win rates (breakeven-adjusted), mathematical expectancy, max drawdown curves, and streak dynamics.
+- **Forward-Looking Confidence**: Advanced Monte Carlo and regression simulations project future risk/reward horizons instead of only looking at the past.
 
 ---
 
-## 2. Quantitative Formulas & Mathematical Models
+## 2. Platform Features & Capabilities
 
-All financial calculations are implemented as pure, side-effect-free functions in `src/lib/calculations.ts`.
+### Multi-Broker Statement Ingestion
+Ditch tedious manual trade entry. Liber Journal offers automated statement parsing with built-in data verification:
+- Instant ingestion across major brokers and exchanges: MetaTrader 4, MetaTrader 5, Interactive Brokers, Binance, Bybit, and Libertex (both English and Ukrainian statement formats).
+- Automatic integrity checks and checksum verification against broker statement summary totals to ensure perfect bookkeeping.
+- Flexible CSV / TSV support with intelligent column mapping and auto-detection.
 
-### 2.1 Deposit & Return on Investment (ROI)
-- **Current Deposit**:
-  $$\text{Current Deposit} = \text{Initial Deposit} + \sum \text{PnL}$$
-- **ROI Percentage**:
-  $$\text{ROI \%} = \left(\frac{\sum \text{PnL}}{\text{Initial Deposit}}\right) \times 100$$
+### Institutional Metric Suite & Edge Diagnostics
+Elevate your analytical standard with metrics that reveal true strategy health:
+- **True Win Rate (Breakeven Adjusted)**: Retail journals count breakeven trades as losses or dilute win rates. Liber Journal explicitly separates decisive wins, decisive losses, and breakeven trades, delivering true statistical clarity.
+- **Mathematical Expectancy ($)**: Quantifies your expected dollar payout per trade, letting you measure your edge objectively across different market regimes.
+- **Profit Factor & Gross Payoffs**: Instantly verify your profit-to-loss ratio to confirm whether your winners sufficiently outpace your drawdowns.
+- **Peak-to-Trough Drawdown Curves**: Continuous tracking of maximum historical and ongoing equity pullbacks in both dollar amount and percentage.
+- **Consecutive Streak Analytics**: Live identification of winning, losing, and neutral streaks to prevent revenge trading and manage position sizing during drawdown cycles.
+- **Asset Attribution & Ranking**: Automatic ranking of all traded instruments to highlight your most profitable markets and reveal profit leaks.
 
-### 2.2 Win Rate Adjusted for Breakeven Trades
-Traditional retail journals distort win rate by treating breakeven trades as losses or counting them in the denominator. Liber Journal follows institutional quantitative risk standards:
-- **Breakeven (BE) Condition**:
-  $$\text{BE Trade} \iff \text{PnL} = 0$$
-- **Win Rate (Excluding Breakeven)**:
-  $$\text{Win Rate \%} = \frac{N_{\text{wins}}}{N_{\text{wins}} + N_{\text{losses}}} \times 100$$
-  *(Where $N_{\text{wins}} = \text{count}(\text{PnL} > 0)$ and $N_{\text{losses}} = \text{count}(\text{PnL} < 0)$).*
-- **Breakeven Rate**:
-  $$\text{BE Rate \%} = \frac{N_{\text{be}}}{N_{\text{total}}} \times 100$$
-
-### 2.3 Profit Factor & Expectancy
-- **Profit Factor**:
-  $$\text{Profit Factor} = \frac{\sum_{\text{wins}} \text{PnL}}{\left|\sum_{\text{losses}} \text{PnL}\right|}$$
-  *(Returns $\infty$ if total losses equal zero).*
-- **Mathematical Expectancy ($)**:
-  $$\text{Expectancy} = (\text{WinRate}_{\text{dec}} \times \text{AvgWin}) - ((1 - \text{WinRate}_{\text{dec}}) \times \text{AvgLoss})$$
-  *(Where $\text{AvgWin} = \frac{\sum \text{Wins}}{N_{\text{wins}}}$, $\text{AvgLoss} = \left|\frac{\sum \text{Losses}}{N_{\text{losses}}}\right|$, and $\text{WinRate}_{\text{dec}} = \frac{N_{\text{wins}}}{N_{\text{wins}} + N_{\text{losses}}}$).*
-
-### 2.4 Peak-to-Trough Drawdown
-- **Running Peak Equity**:
-  $$\text{Peak}_t = \max_{0 \le i \le t} (\text{Equity}_i)$$
-- **Max Drawdown Amount ($)**:
-  $$\text{Max Drawdown} = \max_{t} (\text{Peak}_t - \text{Equity}_t)$$
-- **Max Drawdown Percentage (%)**:
-  $$\text{Max Drawdown \%} = \max_{t} \left(\frac{\text{Peak}_t - \text{Equity}_t}{\text{Peak}_t}\right) \times 100$$
+### 9 Modular Drag-and-Drop Workspace Blocks
+Customize your terminal layout to match your review routine:
+1. **Macro KPI Header**: Immediate pulse on total account balance, cumulative P&L, ROI %, and monthly profit target completion.
+2. **Institutional Stats Grid**: High-contrast KPI cards covering Net P&L, Win Rate, Profit Factor, Breakeven Rate, Expectancy, and Max Drawdown.
+3. **Execution & Discipline Insights**: Intelligent, algorithmic feedback on trading discipline, daily frequency, and session execution risk.
+4. **Interactive Visualizations**: Five responsive charting tools:
+   - Cumulative Equity Curve with continuous growth trendlines
+   - Periodic P&L Bar Charts (Daily / Weekly / Monthly performance)
+   - Day-of-Week Edge Analysis (spotting weekday tendencies)
+   - Underwater Drawdown Area Charts (visualizing depth and duration of drawdowns)
+   - Comparative Asset Performance Charts
+5. **Streak Dynamics Tracker**: Real-time streak tracking paired with all-time personal records.
+6. **Instrument Breakdown Matrix**: In-depth symbol breakdown with interactive click-to-filter ledger views.
+7. **Multi-Year Monthly Calendar Matrix**: Visual heatmapped calendar of monthly performance in both dollar amounts and percentages.
+8. **Dual Ledger & Daily Orders Matrix**: Instant switching between an itemized continuous trade ledger and a structured daily calendar matrix.
+9. **Probabilistic Forecasting Suite**: Multi-horizon predictive modeling based on your real historical trading distribution.
 
 ---
 
-## 3. Multithreaded Forecasting Engine
+## 3. Predictive Forecasting & Scenario Modeling
 
-Located in `src/lib/forecastEngine.ts` and offloaded to `src/workers/forecast.worker.ts`:
-1. **Monte Carlo Bootstrap Resampling**:
-   - Executes 2,000 independent random walk simulations sampled with replacement from historical trade P&Ls.
-   - Derives empirical distribution percentiles: 10th percentile (Conservative), 50th percentile / Median (Average), and 90th percentile (Optimistic).
-   - Computes probability of net profit and estimated maximum drawdown risk.
-2. **Ordinary Least Squares (OLS) Linear Regression**:
-   - Fits cumulative equity trendline $\hat{y} = \alpha + \beta t$.
-   - Projects expanding standard error bands using critical value $z = 1.28$ (80% confidence interval spanning 10th to 90th percentiles).
-3. **Rolling Run-Rate & Compounding Geometric Models**:
-   - Projects forward trajectories adjusted for volatility and capital compounding.
-4. **Caching**:
-   - Results are cached in memory for 1 hour (`3,600,000 ms`) keyed by trade count, deposit, timestamps, and model ID.
+Liber Journal helps you plan ahead with sophisticated statistical forecasting:
+- **Monte Carlo Bootstrap Simulation**: Runs 2,000 independent random walk iterations resampled from your verified trade history. Generates empirical 10th percentile (Conservative), 50th percentile (Median / Expected), and 90th percentile (Optimistic) equity pathways.
+- **Probability of Profit & Drawdown Forecasts**: Computes the statistical likelihood of reaching profit milestones while estimating maximum expected drawdown risks.
+- **Linear Trendline & Confidence Cones**: Visualizes regression channels to highlight standard deviation boundaries and strategy drift.
+- **Compounding & Reinvestment Horizons**: Models capital acceleration and reinvestment dynamics adjusted for volatility.
 
 ---
 
-## 4. Broker File Ingestion & Canonical Schema
+## 4. Live-Formula Dynamic Excel (.xlsx) Workbooks
 
-The ingestion parser (`src/lib/csvParser.ts`) auto-detects line endings (CRLF / LF) and delimiters (Tab / Comma). It skips pre-header platform banners, extracts account preamble metadata (`Account ID`, `Account Currency`, `Report Date`), identifies headers using canonical aliases, and validates checksums against summary footer rows (`Обсяг:`).
-
-Canonical Trade Object Schema:
-```typescript
-export interface Trade {
-  id: string;              // Unique identifier (dealId or uuid)
-  dealId?: string;        // Broker deal number
-  instrument: string;     // e.g. "EUR/USD", "Natural Gas Cash"
-  direction: 'buy' | 'sell';
-  openedAt: string;       // ISO 8601 string
-  closedAt: string;       // ISO 8601 string
-  openPrice: number;
-  closePrice: number;
-  margin: number;         // Collateral allocated
-  leverage: number;       // Multiplier (e.g. 50)
-  grossReturn: number;    // margin + pnl
-  pnl: number;            // Net profit or loss in account currency
-  tag?: string;           // Custom setup tag (e.g. "Breakout")
-  session?: 'asian' | 'london' | 'new_york' | 'other';
-  note?: string;          // Trader reflection notes
-  plannedRisk?: number;   // Planned risk ($) for R-multiple
-}
-```
+Unlike basic CSV exports that dump flat, static numbers, Liber Journal generates fully functional, dynamic Excel spreadsheets powered by live formulas:
+- **Daily Orders Matrix**: Built-in dynamic `=COUNT(...)` and `=SUM(...)` formulas that instantly recalculate if you tweak trade outcomes or add new rows in Excel, Numbers, or Google Sheets.
+- **Dynamic Deposit & ROI Tracking**: Real formulas linked to your initial account balance to dynamically update overall ROI % and equity balances.
+- **13-Column Structured Ledger**: Formatted as a professional native Excel Table ready for custom filtering, pivots, and audits.
+- **Investor & Prop-Firm Ready Analytics**: Complete metrics summary sheet formatted for quick reporting and performance presentations.
 
 ---
 
-## 5. Dynamic Live-Formula XLSX Export Engine
+## 5. Ergonomics, Accessibility & Theming
 
-The workbook generator (`src/lib/xlsxTemplate.ts`) produces 3 sheets:
-1. **Daily Journal**:
-   - Account KPI Card: Initial deposit named range `InitialDeposit`, live formulas `=InitialDeposit + B5`, ROI% `=(B5/InitialDeposit)*100`.
-   - Monthly Summary: `=SUM(...)` formulas for monthly P&L and closed order count.
-   - Daily Orders Matrix: Each trading row contains dynamic `=COUNT(C{row}:{lastTrade}{row})` for closed orders, individual trade P&Ls, and `=SUM(C{row}:{lastTrade}{row})` for daily net P&L.
-   - Dynamic Column Reordering: When user rearranges matrix columns (date, ordersCount, dailyPnl, orders), Excel formulas dynamically adjust their coordinates.
-2. **Trades Sheet**:
-   - Full 13-column ledger formatted as a native Excel Table (`TradesTable`).
-3. **Analytics Sheet**:
-   - Summary of Win Rate, Profit Factor, Mathematical Expectancy, and Peak Drawdown.
+Designed for marathon trading sessions and deep focus:
+- **Five Tailored Terminal Themes**:
+  - *Dark Midnight*: Pure OLED pitch-black background with subtle slate borders.
+  - *Classic Dark*: Sophisticated charcoal palette designed for low eye strain.
+  - *Unicorn*: Synthwave-inspired terminal with high-contrast cyan and electric blue highlights.
+  - *Clean Light*: Crisp, high-contrast daylight theme.
+  - *System*: Automatically adapts to your operating system's light or dark mode.
+- **Accessible & Responsive**: Fully responsive layout designed for desktop workstations, laptops, and tablets with seamless keyboard navigation and focus management.
 
 ---
 
-## 6. Privacy & Offline Guarantees
+## 6. Commitment to Privacy & Freedom
 
-- **No Remote Storage**: Data is saved locally in browser storage.
-- **Zero Third-Party Telemetry**: No user trades or financial metrics are ever uploaded to any cloud server or database.
-- **Offline PWA**: Fully functional offline via Service Worker (`vite-plugin-pwa` + Workbox `generateSW`).
+- **Zero Cloud Footprint**: We do not store, view, or monetize your trading data. Everything lives exclusively in your browser.
+- **No Subscriptions, No Paywalls**: Liber Journal is 100% free and open-source under the MIT License.
+- **Platform Independence**: Run it online, save it locally as an offline PWA app, or review workbooks in your favorite spreadsheet suite.
+
+---
+
+## Getting Started
+
+1. Visit the live terminal: **https://liber-journal.vercel.app/**
+2. Click **Import Statement** to drag and drop your broker CSV/TSV, or explore with preloaded demo data.
+3. Review your automated metrics, test scenario forecasts, and export your dynamic Excel journal anytime.
